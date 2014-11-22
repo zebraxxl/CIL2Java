@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CIL2Java", "CIL2Java\CIL2Java.csproj", "{E140F935-845A-4D05-A013-FA3DB544CFAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Decompiler", "ILSpy\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj", "{984CC812-9470-4A13-AFF9-CC44068D666C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ILSpy", "ILSpy", "{1D352BB2-B49A-4FB2-9259-FAEEBC217C13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory", "ILSpy\NRefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj", "{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.CSharp", "ILSpy\NRefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj", "{53DCA265-3C3C-42F9-B647-F72BA678122B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Cecil", "ILSpy\Mono.Cecil\Mono.Cecil.csproj", "{D68133BD-1E63-496E-9EDE-4FBDBF77B486}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "corlib", "corlib\corlib.csproj", "{7F606665-4D6E-427F-87FC-660959FBD893}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E140F935-845A-4D05-A013-FA3DB544CFAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E140F935-845A-4D05-A013-FA3DB544CFAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E140F935-845A-4D05-A013-FA3DB544CFAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E140F935-845A-4D05-A013-FA3DB544CFAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{984CC812-9470-4A13-AFF9-CC44068D666C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{984CC812-9470-4A13-AFF9-CC44068D666C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{984CC812-9470-4A13-AFF9-CC44068D666C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{984CC812-9470-4A13-AFF9-CC44068D666C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DCA265-3C3C-42F9-B647-F72BA678122B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DCA265-3C3C-42F9-B647-F72BA678122B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DCA265-3C3C-42F9-B647-F72BA678122B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DCA265-3C3C-42F9-B647-F72BA678122B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug|Any CPU.ActiveCfg = net_4_0_Debug|Any CPU
+		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Debug|Any CPU.Build.0 = net_4_0_Debug|Any CPU
+		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Release|Any CPU.ActiveCfg = net_4_0_Release|Any CPU
+		{D68133BD-1E63-496E-9EDE-4FBDBF77B486}.Release|Any CPU.Build.0 = net_4_0_Release|Any CPU
+		{7F606665-4D6E-427F-87FC-660959FBD893}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F606665-4D6E-427F-87FC-660959FBD893}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F606665-4D6E-427F-87FC-660959FBD893}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F606665-4D6E-427F-87FC-660959FBD893}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{984CC812-9470-4A13-AFF9-CC44068D666C} = {1D352BB2-B49A-4FB2-9259-FAEEBC217C13}
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371} = {1D352BB2-B49A-4FB2-9259-FAEEBC217C13}
+		{53DCA265-3C3C-42F9-B647-F72BA678122B} = {1D352BB2-B49A-4FB2-9259-FAEEBC217C13}
+		{D68133BD-1E63-496E-9EDE-4FBDBF77B486} = {1D352BB2-B49A-4FB2-9259-FAEEBC217C13}
+	EndGlobalSection
+EndGlobal

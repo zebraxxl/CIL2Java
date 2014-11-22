@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E140F935-845A-4D05-A013-FA3DB544CFAC}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CIL2Java</RootNamespace>
+    <AssemblyName>CIL2Java</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyResolver.cs" />
+    <Compile Include="Attributes\BoxedAttribute.cs" />
+    <Compile Include="Attributes\JavaBoxMethodMapAttribute.cs" />
+    <Compile Include="Attributes\JavaBoxTypeMapAttribute.cs" />
+    <Compile Include="Attributes\FromJavaAttribute.cs" />
+    <Compile Include="Attributes\JavaBoxedAttribute.cs" />
+    <Compile Include="Attributes\MethodMapAttribute.cs" />
+    <Compile Include="Attributes\TypeMapAttribute.cs" />
+    <Compile Include="BinaryReaderBigEndian.cs" />
+    <Compile Include="BinaryWriterBigEndian.cs" />
+    <Compile Include="BitConverterBE.cs" />
+    <Compile Include="BitConverterHelpers.cs" />
+    <Compile Include="BoxingType.cs" />
+    <Compile Include="ClassNames.cs" />
+    <Compile Include="CodeCompiler.cs" />
+    <Compile Include="CodeCompiler\CodeCompiler.ExpectType.cs" />
+    <Compile Include="CodeCompiler\CodeCompiler.StackSimulator.cs" />
+    <Compile Include="CodeCompiler\CodeCompiler.Vars.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.Call.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.Consts.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.Fields.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.Vars.cs" />
+    <Compile Include="Compiler.cs" />
+    <Compile Include="Compiler\Compiler.Field.cs" />
+    <Compile Include="Compiler\Compiler.INamesController.cs" />
+    <Compile Include="Compiler\Compiler.IResolver.cs" />
+    <Compile Include="Compiler\Compiler.Java.cs" />
+    <Compile Include="Compiler\Compiler.Method.cs" />
+    <Compile Include="Compiler\Compiler.Names.cs" />
+    <Compile Include="Compiler\Compiler.Type.cs" />
+    <Compile Include="GenericArgument.cs" />
+    <Compile Include="INamesController.cs" />
+    <Compile Include="InterField.cs" />
+    <Compile Include="InterMethod.cs" />
+    <Compile Include="InterParameter.cs" />
+    <Compile Include="InterType.cs" />
+    <Compile Include="IResolver.cs" />
+    <Compile Include="JavaBytecodeWriter.cs" />
+    <Compile Include="JavaHelpers.cs" />
+    <Compile Include="JavaPrimitiveType.cs" />
+    <Compile Include="Java\Annotation.cs" />
+    <Compile Include="Java\AnnotationElementValues.cs" />
+    <Compile Include="Java\Attribute.cs" />
+    <Compile Include="Java\Attributes\AnnotationDefault.cs" />
+    <Compile Include="Java\Attributes\Code.cs" />
+    <Compile Include="Java\Attributes\ConstantValue.cs" />
+    <Compile Include="Java\Attributes\Deprecated.cs" />
+    <Compile Include="Java\Attributes\Exceptions.cs" />
+    <Compile Include="Java\Attributes\InnerClasses.cs" />
+    <Compile Include="Java\Attributes\LineNumberTable.cs" />
+    <Compile Include="Java\Attributes\LocalVariableTable.cs" />
+    <Compile Include="Java\Attributes\RuntimeInvisibleAnnotations.cs" />
+    <Compile Include="Java\Attributes\RuntimeInvisibleParameterAnnotations.cs" />
+    <Compile Include="Java\Attributes\RuntimeVisibleAnnotations.cs" />
+    <Compile Include="Java\Attributes\RuntimeVisibleParameterAnnotations.cs" />
+    <Compile Include="Java\Attributes\Signature.cs" />
+    <Compile Include="Java\Attributes\SourceFile.cs" />
+    <Compile Include="Java\Attributes\Synthetic.cs" />
+    <Compile Include="Java\ByteCode.cs" />
+    <Compile Include="Java\Class.cs" />
+    <Compile Include="Java\Constant.cs" />
+    <Compile Include="Java\ConstantPool.cs" />
+    <Compile Include="Java\ConstantPoolReader.cs" />
+    <Compile Include="Java\Constants\Class.cs" />
+    <Compile Include="Java\Constants\Double.cs" />
+    <Compile Include="Java\Constants\FieldRef.cs" />
+    <Compile Include="Java\Constants\Float.cs" />
+    <Compile Include="Java\Constants\Integer.cs" />
+    <Compile Include="Java\Constants\InterfaceMethodRef.cs" />
+    <Compile Include="Java\Constants\InvokeDynamic.cs" />
+    <Compile Include="Java\Constants\Long.cs" />
+    <Compile Include="Java\Constants\MethodHandle.cs" />
+    <Compile Include="Java\Constants\MethodRef.cs" />
+    <Compile Include="Java\Constants\MethodType.cs" />
+    <Compile Include="Java\Constants\NameAndType.cs" />
+    <Compile Include="Java\Constants\String.cs" />
+    <Compile Include="Java\Constants\Utf8.cs" />
+    <Compile Include="Java\Dumper.cs" />
+    <Compile Include="Java\Field.cs" />
+    <Compile Include="Java\Method.cs" />
+    <Compile Include="Java\OpCodes.cs" />
+    <Compile Include="Messages.cs" />
+    <Compile Include="PrimitiveType.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ILSpy\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
+      <Project>{984cc812-9470-4a13-aff9-cc44068d666c}</Project>
+      <Name>ICSharpCode.Decompiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ILSpy\Mono.Cecil\Mono.Cecil.csproj">
+      <Project>{d68133bd-1e63-496e-9ede-4fbdbf77b486}</Project>
+      <Name>Mono.Cecil</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
