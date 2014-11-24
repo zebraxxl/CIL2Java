@@ -1,6 +1,7 @@
 using System.Security;
 using System.IO;
 using System.Text;
+using javaSystem = java.lang.System;
 
 namespace System
 {
@@ -413,7 +414,7 @@ namespace System
         /// <summary>Writes the text representation of the specified 32-bit signed integer value, followed by the current line terminator, to the standard output stream.</summary><param name="value">The value to write. </param><exception cref="T:System.IO.IOException">An I/O error occurred. </exception><filterpriority>1</filterpriority>
         public static void WriteLine(int value)
         {
-            java.lang.System.@out.println(value);
+            javaSystem.@out.print(value);
         }
         
         
@@ -448,7 +449,7 @@ namespace System
         /// <summary>Writes the specified string value, followed by the current line terminator, to the standard output stream.</summary><param name="value">The value to write. </param><exception cref="T:System.IO.IOException">An I/O error occurred. </exception><filterpriority>1</filterpriority>
         public static void WriteLine(string value)
         {
-            java.lang.System.@out.println(value);
+            javaSystem.@out.print(value);
         }
         
         
@@ -574,7 +575,7 @@ namespace System
         /// <summary>Writes the text representation of the specified 32-bit signed integer value to the standard output stream.</summary><param name="value">The value to write. </param><exception cref="T:System.IO.IOException">An I/O error occurred. </exception><filterpriority>1</filterpriority>
         public static void Write(int value)
         {
-             throw new NotImplementedException();
+            javaSystem.@out.print(value);
         }
         
         
@@ -609,7 +610,7 @@ namespace System
         /// <summary>Writes the specified string value to the standard output stream.</summary><param name="value">The value to write. </param><exception cref="T:System.IO.IOException">An I/O error occurred. </exception><filterpriority>1</filterpriority>
         public static void Write(string value)
         {
-             throw new NotImplementedException();
+            javaSystem.@out.print(value);
         }
         
         
