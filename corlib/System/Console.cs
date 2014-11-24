@@ -414,7 +414,7 @@ namespace System
         /// <summary>Writes the text representation of the specified 32-bit signed integer value, followed by the current line terminator, to the standard output stream.</summary><param name="value">The value to write. </param><exception cref="T:System.IO.IOException">An I/O error occurred. </exception><filterpriority>1</filterpriority>
         public static void WriteLine(int value)
         {
-            javaSystem.@out.print(value);
+            javaSystem.@out.println(value);
         }
         
         
@@ -449,7 +449,7 @@ namespace System
         /// <summary>Writes the specified string value, followed by the current line terminator, to the standard output stream.</summary><param name="value">The value to write. </param><exception cref="T:System.IO.IOException">An I/O error occurred. </exception><filterpriority>1</filterpriority>
         public static void WriteLine(string value)
         {
-            javaSystem.@out.print(value);
+            javaSystem.@out.println(value);
         }
         
         

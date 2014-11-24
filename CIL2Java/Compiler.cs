@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace CIL2Java
 {
-    public partial class Compiler : IResolver, INamesController
+    public partial class Compiler : IResolver, INamesController, IByRefController
     {
         private List<InterType> typesToCompile = new List<InterType>();
         private List<ModuleDefinition> loadedModules = new List<ModuleDefinition>();
@@ -55,6 +55,8 @@ namespace CIL2Java
                 Java.Class javaClass = ComplileType(type);
                 WriteClass(javaClass);
             }
+
+            GenerateByRefTypesCode();
         }
     }
 }

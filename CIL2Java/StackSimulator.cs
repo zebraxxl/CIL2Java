@@ -1,11 +1,11 @@
-﻿using System;
+﻿using CIL2Java.Java;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using CIL2Java.Java;
 
 namespace CIL2Java
 {
-    public partial class CodeCompiler
+    public static class StackSimulator
     {
         private class StackImitator
         {
@@ -34,7 +34,79 @@ namespace CIL2Java
             }
         }
 
-        private void SimulateStack(Java.ConstantPool Pool)
+        private static Dictionary<OpCodes, int> OpCodeToVarIndex = new Dictionary<OpCodes, int>
+        {
+            {OpCodes.astore, -1},
+            {OpCodes.astore_0, 0},
+            {OpCodes.astore_1, 1},
+            {OpCodes.astore_2, 2},
+            {OpCodes.astore_3, 3},
+
+            {OpCodes.istore, -1},
+            {OpCodes.istore_0, 0},
+            {OpCodes.istore_1, 1},
+            {OpCodes.istore_2, 2},
+            {OpCodes.istore_3, 3},
+
+            {OpCodes.lstore, -1},
+            {OpCodes.lstore_0, 0},
+            {OpCodes.lstore_1, 1},
+            {OpCodes.lstore_2, 2},
+            {OpCodes.lstore_3, 3},
+
+            {OpCodes.fstore, -1},
+            {OpCodes.fstore_0, 0},
+            {OpCodes.fstore_1, 1},
+            {OpCodes.fstore_2, 2},
+            {OpCodes.fstore_3, 3},
+
+            {OpCodes.dstore, -1},
+            {OpCodes.dstore_0, 0},
+            {OpCodes.dstore_1, 1},
+            {OpCodes.dstore_2, 2},
+            {OpCodes.dstore_3, 3},
+
+
+            {OpCodes.aload, -1},
+            {OpCodes.aload_0, 0},
+            {OpCodes.aload_1, 1},
+            {OpCodes.aload_2, 2},
+            {OpCodes.aload_3, 3},
+
+            {OpCodes.iload, -1},
+            {OpCodes.iload_0, 0},
+            {OpCodes.iload_1, 1},
+            {OpCodes.iload_2, 2},
+            {OpCodes.iload_3, 3},
+
+            {OpCodes.lload, -1},
+            {OpCodes.lload_0, 0},
+            {OpCodes.lload_1, 1},
+            {OpCodes.lload_2, 2},
+            {OpCodes.lload_3, 3},
+
+            {OpCodes.fload, -1},
+            {OpCodes.fload_0, 0},
+            {OpCodes.fload_1, 1},
+            {OpCodes.fload_2, 2},
+            {OpCodes.fload_3, 3},
+
+            {OpCodes.dload, -1},
+            {OpCodes.dload_0, 0},
+            {OpCodes.dload_1, 1},
+            {OpCodes.dload_2, 2},
+            {OpCodes.dload_3, 3},
+        };
+
+        private static OpCodes[] DoubleSizeVars = new OpCodes[]
+        {
+            OpCodes.lstore, OpCodes.lstore_0, OpCodes.lstore_1, OpCodes.lstore_2, OpCodes.lstore_3,
+            OpCodes.dstore, OpCodes.dstore_0, OpCodes.dstore_1, OpCodes.dstore_2, OpCodes.dstore_3,
+            OpCodes.lload, OpCodes.lload_0, OpCodes.lload_1, OpCodes.lload_2, OpCodes.lload_3,
+            OpCodes.dload, OpCodes.dload_0, OpCodes.dload_1, OpCodes.dload_2, OpCodes.dload_3,
+        };
+
+        public static void SimulateStack(Java.ConstantPool Pool, Java.Attributes.Code resultCode)
         {
             List<int> SimulatedInstructions = new List<int>();
             Dictionary<int, int> Branches = new Dictionary<int, int>();
@@ -47,6 +119,7 @@ namespace CIL2Java
             byte[] Code = resultCode.CodeBytes;
             int CodeLength = Code.Length;
             bool LastWide = false;
+            int LocalVarCount = 0;
 
             while (Branches.Count > 0)
             {
@@ -72,6 +145,7 @@ namespace CIL2Java
 
                     ByteCode.JavaInstructionDescption Desc = ByteCode.JavaInstructions[OpCode];
                     int Size = Desc.Size;
+
                     if (LastWide)
                     {
                         Size = (Size - 1) * 2 + 1;
@@ -81,6 +155,19 @@ namespace CIL2Java
                     int Operand = 0;
                     if ((Desc.OpType != ByteCode.JavaOperandType.None) && (Desc.OpType != ByteCode.JavaOperandType.Special))
                         Operand = BitConverterBE.ReadAsInt32(Code, Position + 1, Size - 1);
+
+                    if (OpCodeToVarIndex.ContainsKey(OpCode))
+                    {
+                        int varIndex = OpCodeToVarIndex[OpCode];
+
+                        if (varIndex < 0)
+                            varIndex = Operand;
+
+                        if (Array.IndexOf(DoubleSizeVars, OpCode) >= 0)
+                            varIndex++;
+
+                        LocalVarCount = Math.Max(LocalVarCount, varIndex + 1);
+                    }
 
                     if (Desc.OpType == ByteCode.JavaOperandType.Special)
                     {
@@ -159,6 +246,7 @@ namespace CIL2Java
             }
 
             resultCode.MaxStack = (ushort)Stack.MaxValue;
+            resultCode.MaxLocals = (ushort)LocalVarCount;
         }
     }
 }

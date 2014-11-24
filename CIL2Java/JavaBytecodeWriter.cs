@@ -145,7 +145,7 @@ namespace CIL2Java
                     case Java.ByteCode.JavaOperandType.ConstValue:
                         switch (operandSize)
                         {
-                            case 1: codeBytesWriter.Write((byte)instr.Operand); break;
+                            case 1: codeBytesWriter.Write((sbyte)instr.Operand); break;
                             case 2: codeBytesWriter.WriteBE((short)instr.Operand); break;
                             case 4: codeBytesWriter.WriteBE((int)instr.Operand); break;
                         }
@@ -327,6 +327,26 @@ namespace CIL2Java
             return AddInstruction(new JavaInstruction(op, operand, tag));
         }
 
+        public JavaBytecodeWriter AddStore(JavaPrimitiveType varType, int varIndex, object tag)
+        {
+            return AddLocalVarInstruction(LocalVarInstruction.Store, varType, varIndex, tag);
+        }
+
+        public JavaBytecodeWriter AddStore(JavaPrimitiveType varType, int varIndex)
+        {
+            return AddLocalVarInstruction(LocalVarInstruction.Store, varType, varIndex, null);
+        }
+
+        public JavaBytecodeWriter AddLoad(JavaPrimitiveType varType, int varIndex, object tag)
+        {
+            return AddLocalVarInstruction(LocalVarInstruction.Load, varType, varIndex, tag);
+        }
+
+        public JavaBytecodeWriter AddLoad(JavaPrimitiveType varType, int varIndex)
+        {
+            return AddLocalVarInstruction(LocalVarInstruction.Load, varType, varIndex, null);
+        }
+
         public JavaBytecodeWriter Label(string name)
         {
             labels.Add(name, outputCode.Count);
@@ -369,11 +389,17 @@ namespace CIL2Java
                 case JavaPrimitiveType.Long: opcode = Java.OpCodes.lreturn; break;
                 case JavaPrimitiveType.Float: opcode = Java.OpCodes.freturn; break;
                 case JavaPrimitiveType.Double: opcode = Java.OpCodes.dreturn; break;
+                case JavaPrimitiveType.Void: opcode = Java.OpCodes._return; break;
             }
 
             AddInstruction(new JavaInstruction(opcode, null, tag));
 
             return this;
+        }
+
+        public JavaBytecodeWriter AddReturn(JavaPrimitiveType jp)
+        {
+            return AddReturn(jp, null);
         }
 
         public JavaBytecodeWriter AddDefaultValue(JavaPrimitiveType jp, object tag)
@@ -412,6 +438,14 @@ namespace CIL2Java
         {
             LinkPass1(pool);
             return LinkPass2();
+        }
+
+        public Java.Attributes.Code End(Java.ConstantPool pool)
+        {
+            Java.Attributes.Code result = new Java.Attributes.Code();
+            result.CodeBytes = Link(pool);
+            StackSimulator.SimulateStack(pool, result);
+            return result;
         }
     }
 }

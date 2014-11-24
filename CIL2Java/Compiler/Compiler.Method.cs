@@ -49,7 +49,7 @@ namespace CIL2Java
 
             if (method.HasBody)
             {
-                CodeCompiler codeCompiler = new CodeCompiler(this, this, method, currentJavaClass.ConstantPool);
+                CodeCompiler codeCompiler = new CodeCompiler(this, this, this, method, currentJavaClass.ConstantPool);
                 codeCompiler.Compile();
                 result.Attributes.Add(codeCompiler.Result);
             }

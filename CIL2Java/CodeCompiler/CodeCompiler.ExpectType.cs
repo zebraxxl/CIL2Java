@@ -10,7 +10,8 @@ namespace CIL2Java
             None,
             Any,
             Primitive,
-            Reference
+            Reference,
+            ByRef
         }
 
         private ExpectType GetExpectType(InterParameter param)
@@ -20,7 +21,9 @@ namespace CIL2Java
 
         private ExpectType GetExpectType(InterType type)
         {
-            if (type.IsPrimitive)
+            if (type.IsByRef)
+                return ExpectType.ByRef;
+            else if (type.IsPrimitive)
                 return ExpectType.Primitive;
             else
                 return ExpectType.Reference;
@@ -29,6 +32,14 @@ namespace CIL2Java
         private ExpectType GetExpectType(InterField fld)
         {
             return GetExpectType(fld.FieldType);
+        }
+
+        private ExpectType GetExpectType(JavaPrimitiveType type)
+        {
+            if (type == JavaPrimitiveType.Ref)
+                return ExpectType.Reference;
+            else
+                return ExpectType.Primitive;
         }
 
         private void TranslateType(InterType type, ExpectType expected, object tag)
@@ -51,6 +62,10 @@ namespace CIL2Java
                 {
                     //TODO: Box???
                 }
+            }
+            else if (expected == ExpectType.ByRef)
+            {
+
             }
         }
     }

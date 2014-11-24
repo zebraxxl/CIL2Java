@@ -16,6 +16,11 @@ namespace CIL2Java
                 result
                     .Append('[', type.ArrayRank)
                     .Append(GetFieldDescriptor(type.ElementType));
+            else if (type.IsByRef)
+                result
+                    .Append('L')
+                    .Append(TypeNameToJava(GetByRefTypeName(type)))
+                    .Append(';');
             else if (type.IsPrimitive)
                 result.Append(JavaPrimitive2FieldChar[(int)JavaHelpers.PrimitiveTypeToJavaPrimitive(type.PrimitiveType)]);
             else

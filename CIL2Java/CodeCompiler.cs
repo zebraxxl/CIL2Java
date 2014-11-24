@@ -11,6 +11,7 @@ namespace CIL2Java
     {
         private IResolver resolver;
         private INamesController namesController;
+        private IByRefController byRefController;
         private InterMethod thisMethod;
         private JavaBytecodeWriter codeGenerator = new JavaBytecodeWriter();
         private Java.ConstantPool constsPool;
@@ -18,10 +19,12 @@ namespace CIL2Java
 
         public Java.Attributes.Code Result { get { return resultCode; } }
 
-        public CodeCompiler(IResolver resolver, INamesController namesController, InterMethod method, Java.ConstantPool constsPool)
+        public CodeCompiler(IResolver resolver, INamesController namesController, IByRefController byRefController,
+            InterMethod method,Java.ConstantPool constsPool)
         {
             this.resolver = resolver;
             this.namesController = namesController;
+            this.byRefController = byRefController;
             this.thisMethod = method;
             this.constsPool = constsPool;
         }
@@ -55,10 +58,10 @@ namespace CIL2Java
 
             resultCode = new Java.Attributes.Code();
             resultCode.CodeBytes = codeBytes;
-            resultCode.MaxLocals = (ushort)nextVarIndex;
 
-            Messages.Verbose("      Simulating stack to calculate MaxStack...");
-            SimulateStack(constsPool);
+            Messages.Verbose("      Simulating stack to calculate MaxStack and MaxLocals...");
+            StackSimulator.SimulateStack(constsPool, resultCode);
+            resultCode.MaxLocals = (ushort)nextVarIndex;
         }
 
         private void CompileNode(ILNode node, ExpectType expectType)
@@ -84,11 +87,13 @@ namespace CIL2Java
             {
                 //Consts
                 case ILCode.Ldstr: CompileLdstr(e, expectType); break;
-                case ILCode.Ldc_R4: CompileLdcR8(e, expectType); break;
+                case ILCode.Ldc_I4: CompileLdcI4(e, expectType); break;
+                case ILCode.Ldc_R4: CompileLdcR4(e, expectType); break;
                 case ILCode.DefaultValue: CompileDefaultValue(e, expectType); break;
 
                 //Vars
                 case ILCode.Ldloc: CompileLdloc(e, expectType); break;
+                case ILCode.Stloc: CompileStloc(e, expectType); break;
 
                 //Fields
                 case ILCode.Stfld: CompileStfld(e, expectType); break;
@@ -100,6 +105,13 @@ namespace CIL2Java
                 case ILCode.Call: CompileCall(e, expectType); break;
                 case ILCode.Callvirt: CompileCall(e, expectType); break;
                 case ILCode.Ret: CompileRet(e, expectType); break;
+
+                //ByRef
+                case ILCode.Ldloca: CompileLdloca(e, expectType); break;
+                case ILCode.Stind_Ref: CompileStind(e, expectType); break;
+
+                //Objects
+                case ILCode.Stobj: CompileStobj(e, expectType); break;
 
                 default: unknownNode = true; break;
             }

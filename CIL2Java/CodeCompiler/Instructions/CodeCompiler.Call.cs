@@ -68,7 +68,7 @@ namespace CIL2Java
                     break;
             }
 
-            //TODO: Restore local refs
+            OnRestoreLocalByRefs();
 
             if ((!operand.ReturnParameter.Type.IsPrimitive) || (operand.ReturnParameter.Type.PrimitiveType != PrimitiveType.Void) ||
                 (operand.ReturnParameter.IsBoxed) || (operand.ReturnParameter.IsJavaBoxed))

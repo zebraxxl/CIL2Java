@@ -52,14 +52,17 @@
     <Compile Include="BoxingType.cs" />
     <Compile Include="ClassNames.cs" />
     <Compile Include="CodeCompiler.cs" />
+    <Compile Include="CodeCompiler\CodeCompiler.ByRef.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.ExpectType.cs" />
-    <Compile Include="CodeCompiler\CodeCompiler.StackSimulator.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Vars.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.ByRef.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Call.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Consts.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Fields.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.Objects.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Vars.cs" />
     <Compile Include="Compiler.cs" />
+    <Compile Include="Compiler\Compiler.ByRef.cs" />
     <Compile Include="Compiler\Compiler.Field.cs" />
     <Compile Include="Compiler\Compiler.INamesController.cs" />
     <Compile Include="Compiler\Compiler.IResolver.cs" />
@@ -68,6 +71,7 @@
     <Compile Include="Compiler\Compiler.Names.cs" />
     <Compile Include="Compiler\Compiler.Type.cs" />
     <Compile Include="GenericArgument.cs" />
+    <Compile Include="IByRefController.cs" />
     <Compile Include="INamesController.cs" />
     <Compile Include="InterField.cs" />
     <Compile Include="InterMethod.cs" />
@@ -122,6 +126,7 @@
     <Compile Include="PrimitiveType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StackSimulator.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

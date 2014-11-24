@@ -16,7 +16,7 @@ namespace CIL2Java
             TranslateType(resolver.Resolve(e.ExpectedType, thisMethod.FullGenericArguments), expect, e);
         }
 
-        private void CompileLdcR8(ILExpression e, ExpectType expect)
+        private void CompileLdcR4(ILExpression e, ExpectType expect)
         {
             float operand = (float)e.Operand;
 
@@ -37,6 +37,33 @@ namespace CIL2Java
             }
 
             TranslateType(InterType.PrimitiveTypes[(int)PrimitiveType.Single], expect, e);
+        }
+
+        private void CompileLdcI4(ILExpression e, ExpectType expect)
+        {
+            int operand = (int)e.Operand;
+
+            switch (operand)
+            {
+                case -1: codeGenerator.Add(Java.OpCodes.iconst_m1, null, e); break;
+                case 0: codeGenerator.Add(Java.OpCodes.iconst_0, null, e); break;
+                case 1: codeGenerator.Add(Java.OpCodes.iconst_1, null, e); break;
+                case 2: codeGenerator.Add(Java.OpCodes.iconst_2, null, e); break;
+                case 3: codeGenerator.Add(Java.OpCodes.iconst_3, null, e); break;
+                case 4: codeGenerator.Add(Java.OpCodes.iconst_4, null, e); break;
+                case 5: codeGenerator.Add(Java.OpCodes.iconst_5, null, e); break;
+
+                default:
+                    if ((operand >= sbyte.MinValue) && (operand <= sbyte.MaxValue))
+                        codeGenerator.Add(Java.OpCodes.bipush, (sbyte)operand, e);
+                    else if ((operand >= short.MinValue) && (operand <= short.MaxValue))
+                        codeGenerator.Add(Java.OpCodes.sipush, (short)operand);
+                    else
+                        codeGenerator.Add(Java.OpCodes.ldc, new Java.Constants.Integer(operand), e);
+                    break;
+            }
+
+            TranslateType(InterType.PrimitiveTypes[(int)PrimitiveType.Int32], expect, e);
         }
 
         private void CompileDefaultValue(ILExpression e, ExpectType expect)
