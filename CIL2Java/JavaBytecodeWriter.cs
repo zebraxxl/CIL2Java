@@ -52,6 +52,7 @@ namespace CIL2Java
     {
         private Dictionary<JavaInstruction, int> outputCodeOffsets = new Dictionary<JavaInstruction, int>();
         private List<JavaInstruction> outputCode = new List<JavaInstruction>();
+        private Dictionary<string, int> labels = new Dictionary<string, int>();
 
         public event InstructionAddedEventHandler OnNextInstruction;
 
@@ -165,7 +166,10 @@ namespace CIL2Java
                         break;
 
                     case Java.ByteCode.JavaOperandType.Offset:
-                        codeBytesWriter.WriteBE((short)(outputCodeOffsets[(JavaInstruction)instr.Operand] - outputCodeOffsets[instr]));
+                        if (instr.Operand is string)
+                            codeBytesWriter.WriteBE((short)(outputCodeOffsets[outputCode[labels[(string)instr.Operand]]] - outputCodeOffsets[instr]));
+                        else
+                            codeBytesWriter.WriteBE((short)(outputCodeOffsets[(JavaInstruction)instr.Operand] - outputCodeOffsets[instr]));
                         break;
 
                     case Java.ByteCode.JavaOperandType.Special:
@@ -295,7 +299,7 @@ namespace CIL2Java
         {
         }
 
-        public void AddInstruction(JavaInstruction i)
+        public JavaBytecodeWriter AddInstruction(JavaInstruction i)
         {
             outputCode.Add(i);
 
@@ -304,26 +308,52 @@ namespace CIL2Java
                 OnNextInstruction(i);
                 OnNextInstruction = null;
             }
+
+            return this;
         }
 
-        public void AddLocalVarInstruction(LocalVarInstruction instr, JavaPrimitiveType varType, int varIndex, object tag)
+        public JavaBytecodeWriter Add(Java.OpCodes op)
+        {
+            return AddInstruction(new JavaInstruction(op, null, null));
+        }
+
+        public JavaBytecodeWriter Add(Java.OpCodes op, object operand)
+        {
+            return AddInstruction(new JavaInstruction(op, operand, null));
+        }
+
+        public JavaBytecodeWriter Add(Java.OpCodes op, object operand, object tag)
+        {
+            return AddInstruction(new JavaInstruction(op, operand, tag));
+        }
+
+        public JavaBytecodeWriter Label(string name)
+        {
+            labels.Add(name, outputCode.Count);
+            return this;
+        }
+
+        public JavaBytecodeWriter AddLocalVarInstruction(LocalVarInstruction instr, JavaPrimitiveType varType, int varIndex, object tag)
         {
             if (instr == LocalVarInstruction.Load)
                 AddLocalVarLoad(varType, varIndex, tag);
             else
                 AddLocalVarStore(varType, varIndex, tag);
+
+            return this;
         }
 
-        public void AddPop(JavaPrimitiveType javaPrimitiveType, object tag)
+        public JavaBytecodeWriter AddPop(JavaPrimitiveType javaPrimitiveType, object tag)
         {
             if ((javaPrimitiveType == JavaPrimitiveType.Long) || (javaPrimitiveType == JavaPrimitiveType.Double))
                 AddInstruction(new JavaInstruction(Java.OpCodes.pop2, null, tag));
             else
                 AddInstruction(new JavaInstruction(Java.OpCodes.pop, null, tag));
 
+            return this;
         }
 
-        public void AddReturn(JavaPrimitiveType jp, object tag)
+        public JavaBytecodeWriter AddReturn(JavaPrimitiveType jp, object tag)
         {
             Java.OpCodes opcode = Java.OpCodes.areturn;
             switch (jp)
@@ -342,9 +372,11 @@ namespace CIL2Java
             }
 
             AddInstruction(new JavaInstruction(opcode, null, tag));
+
+            return this;
         }
 
-        public void AddDefaultValue(JavaPrimitiveType jp, object tag)
+        public JavaBytecodeWriter AddDefaultValue(JavaPrimitiveType jp, object tag)
         {
             Java.OpCodes opcode = Java.OpCodes.aconst_null;
 
@@ -372,6 +404,8 @@ namespace CIL2Java
             }
 
             AddInstruction(new JavaInstruction(opcode, null, tag));
+
+            return this;
         }
 
         public byte[] Link(Java.ConstantPool pool)
