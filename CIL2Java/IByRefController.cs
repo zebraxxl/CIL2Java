@@ -10,5 +10,8 @@ namespace CIL2Java
 
         string GetLocalByRefTypeName(InterType type);
         Java.Constants.MethodRef GetLocalByRefCtorMethodRef(InterType type);
+
+        string GetFieldByRefTypeName(InterType type);
+        Java.Constants.MethodRef GetFieldByRefCtorMethodRef(InterType type);
     }
 }

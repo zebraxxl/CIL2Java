@@ -1,4 +1,5 @@
 ﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
 using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
@@ -48,6 +49,33 @@ namespace CIL2Java
             });
 
             //TODO: TranslateType if neeeded
+        }
+
+        private void CompileLdflda(ILExpression e, ExpectType expectType)
+        {
+            InterField operand = resolver.Resolve((FieldReference)e.Operand, thisMethod.FullGenericArguments);
+
+            string byRefTypeName = byRefController.GetFieldByRefTypeName(operand.FieldType);
+
+            Java.Constants.Class constByRefType = new Java.Constants.Class(namesController.TypeNameToJava(byRefTypeName));
+            Java.Constants.Class constFieldDeclClass =
+                new Java.Constants.Class(namesController.TypeNameToJava(operand.DeclaringType.Fullname));
+            Java.Constants.String constFieldName = new Java.Constants.String(
+                namesController.FieldNameToJava(operand.Name));
+            MethodRef constFieldByRefCtorRef = byRefController.GetFieldByRefCtorMethodRef(operand.FieldType);
+
+            codeGenerator.Add(OpCodes._new, constByRefType, e);
+            codeGenerator.Add(OpCodes.dup, null, e);
+
+            if (e.Code == ILCode.Ldflda)
+                CompileExpression(e.Arguments[0], ExpectType.Reference);
+            else
+                codeGenerator.Add(OpCodes.aconst_null, null, e);
+
+            codeGenerator.Add(OpCodes.ldc, constFieldDeclClass, e);
+            codeGenerator.Add(OpCodes.ldc, constFieldName, e);
+            codeGenerator.Add(OpCodes.invokevirtual, ClassNames.JavaLangClass.getDeclaredField, e);
+            codeGenerator.Add(OpCodes.invokespecial, constFieldByRefCtorRef);
         }
 
         private void CompileStind(ILExpression e, ExpectType expectType)

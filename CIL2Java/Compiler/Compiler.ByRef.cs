@@ -1,4 +1,5 @@
 ﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -59,6 +60,30 @@ namespace CIL2Java
 
         private List<JavaByRefType> byRefToGenerate = new List<JavaByRefType>();
         private int baseTypesGenerated = 0;
+
+        private MethodRef[] fieldGetPrimitiveMethods = new MethodRef[] 
+        {
+            ClassNames.JavaLangReflectField.getByte,
+            ClassNames.JavaLangReflectField.getShort,
+            ClassNames.JavaLangReflectField.getInt,
+            ClassNames.JavaLangReflectField.getLong,
+            ClassNames.JavaLangReflectField.getFloat,
+            ClassNames.JavaLangReflectField.getDouble,
+            ClassNames.JavaLangReflectField.getBoolean,
+            ClassNames.JavaLangReflectField.getChar
+        };
+
+        private MethodRef[] fieldSetPrimitiveMethods = new MethodRef[] 
+        {
+            ClassNames.JavaLangReflectField.setByte,
+            ClassNames.JavaLangReflectField.setShort,
+            ClassNames.JavaLangReflectField.setInt,
+            ClassNames.JavaLangReflectField.setLong,
+            ClassNames.JavaLangReflectField.setFloat,
+            ClassNames.JavaLangReflectField.setDouble,
+            ClassNames.JavaLangReflectField.setBoolean,
+            ClassNames.JavaLangReflectField.setChar
+        };
 
         private string GetByRefTypeName(InterType byRefType)
         {
@@ -197,6 +222,124 @@ namespace CIL2Java
             WriteClass(javaClass);
         }
 
+        private void GenerateFieldByRefType(JavaPrimitiveType type)
+        {
+            GenerateBaseByRefType(type);
+
+            string valueFieldDesc = "L" + TypeNameToJava(ClassNames.JavaObject) + ";";
+            MethodRef getMethodRef = ClassNames.JavaLangReflectField.get;
+            MethodRef setMethodRef = ClassNames.JavaLangReflectField.set;
+
+            if (type != JavaPrimitiveType.Ref)
+            {
+                valueFieldDesc = JavaPrimitive2FieldChar[(int)type].ToString();
+                getMethodRef = fieldGetPrimitiveMethods[(int)type];
+                setMethodRef = fieldSetPrimitiveMethods[(int)type];
+            }
+
+            Java.Class javaClass = new Java.Class();
+            javaClass.AccessFlag = ClassAccessFlag.Final | ClassAccessFlag.Public | ClassAccessFlag.Super;
+            javaClass.ThisClass = TypeNameToJava(new JavaByRefType(ByRefPlace.Field, type).ToString());
+            javaClass.SuperClass = TypeNameToJava(new JavaByRefType(ByRefPlace.Unknown, type).ToString());
+
+            MethodRef baseTypeCtorRef = new MethodRef(javaClass.SuperClass, ClassNames.JavaConstructorMethodName, "()V");
+
+            Java.Field targetField = new Field();
+            targetField.AccessFlags = FieldAccessFlags.Private;
+            targetField.Name = "target";
+            targetField.Descriptor = "L" + TypeNameToJava(ClassNames.JavaObject) + ";";
+            javaClass.Fields.Add(targetField);
+
+            Java.Field fieldField = new Field();
+            fieldField.AccessFlags = FieldAccessFlags.Private;
+            fieldField.Name = "field";
+            fieldField.Descriptor = "L" + TypeNameToJava(ClassNames.JavaLangReflectField.ClassName) + ";";
+            javaClass.Fields.Add(fieldField);
+
+            Java.Field valueField = new Java.Field();
+            valueField.AccessFlags = FieldAccessFlags.Private;
+            valueField.Name = "value";
+            valueField.Descriptor = valueFieldDesc;
+            javaClass.Fields.Add(valueField);
+
+            FieldRef targetFieldRef = new FieldRef(javaClass.ThisClass, "target", targetField.Descriptor);
+            FieldRef fieldFieldRef = new FieldRef(javaClass.ThisClass, "field", fieldField.Descriptor);
+            FieldRef valueFieldRef = new FieldRef(javaClass.ThisClass, "value", valueField.Descriptor);
+
+            Java.Method ctorMethod = new Method();
+            ctorMethod.AccessFlags = MethodAccessFlags.Public;
+            ctorMethod.Name = ClassNames.JavaConstructorMethodName;
+            ctorMethod.Descriptor = ClassNames.ByRef.FieldCtorDescriptor;
+            ctorMethod.Attributes.Add(new JavaBytecodeWriter()
+                //super
+                .Add(OpCodes.aload_0)                           //this
+                .Add(OpCodes.invokespecial, baseTypeCtorRef)    //super()
+                
+                //this.target = target
+                .Add(OpCodes.aload_0)                           //this
+                .Add(OpCodes.aload_1)                           //target
+                .Add(OpCodes.putfield, targetFieldRef)
+
+                //this.fied = field
+                .Add(OpCodes.aload_0)                           //this
+                .Add(OpCodes.aload_2)                           //field
+                .Add(OpCodes.putfield, fieldFieldRef)
+
+                //field.setAccessible(true)
+                .Add(OpCodes.aload_2)                           //field
+                .Add(OpCodes.iconst_1)
+                .Add(OpCodes.invokevirtual, ClassNames.JavaLangReflectField.setAccessible)
+
+                //this.value = field.get[type](target)
+                .Add(OpCodes.aload_0)       //this
+                .Add(OpCodes.aload_2)       //field
+                .Add(OpCodes.aload_1)       //target
+                .Add(OpCodes.invokevirtual, getMethodRef)
+                .Add(OpCodes.putfield, valueFieldRef)
+
+                .AddReturn(JavaPrimitiveType.Void)
+
+                .End(javaClass.ConstantPool)
+                );
+            javaClass.Methods.Add(ctorMethod);
+
+            Java.Method getMethod = new Method();
+            getMethod.AccessFlags = MethodAccessFlags.Public | MethodAccessFlags.Final;
+            getMethod.Name = ClassNames.ByRef.GetValueMethodName;
+            getMethod.Descriptor = "()" + valueFieldDesc;
+            getMethod.Attributes.Add(new JavaBytecodeWriter()
+                //return this.value
+                .Add(OpCodes.aload_0)
+                .Add(OpCodes.getfield, valueFieldRef)
+                .AddReturn(type)
+                .End(javaClass.ConstantPool));
+            javaClass.Methods.Add(getMethod);
+
+            Java.Method setMethod = new Method();
+            setMethod.AccessFlags = MethodAccessFlags.Public | MethodAccessFlags.Final;
+            setMethod.Name = ClassNames.ByRef.SetValueMethodName;
+            setMethod.Descriptor = "(" + valueFieldDesc + ")V";
+            setMethod.Attributes.Add(new JavaBytecodeWriter()
+                //field.set[type](target, value)
+                .Add(OpCodes.aload_0)
+                .Add(OpCodes.getfield, fieldFieldRef)
+                .Add(OpCodes.aload_0)
+                .Add(OpCodes.getfield, targetFieldRef)
+                .AddLoad(type, 1)
+                .Add(OpCodes.invokevirtual, setMethodRef)
+
+                //this.value = value
+                .Add(OpCodes.aload_0)
+                .AddLoad(type, 1)
+                .Add(OpCodes.putfield, valueFieldRef)
+
+                .AddReturn(JavaPrimitiveType.Void)
+                .End(javaClass.ConstantPool));
+            javaClass.Methods.Add(setMethod);
+
+            WriteClass(javaClass);
+        }
+
         private void GenerateByRefTypesCode()
         {
             Messages.Verbose("  Generating ByRef types...");
@@ -208,6 +351,7 @@ namespace CIL2Java
                 {
                     case ByRefPlace.Unknown: GenerateBaseByRefType(javaType.type); break;
                     case ByRefPlace.Local: GenerateLocalByRefType(javaType.type); break;
+                    case ByRefPlace.Field: GenerateFieldByRefType(javaType.type); break;
                 }
             }
         }
@@ -235,6 +379,26 @@ namespace CIL2Java
                 TypeNameToJava(byRefType.ToString()),
                 ClassNames.JavaConstructorMethodName,
                 "(" + descr + ")V");
+        }
+
+        string IByRefController.GetFieldByRefTypeName(InterType type)
+        {
+            JavaByRefType byRefType = new JavaByRefType(ByRefPlace.Field, JavaHelpers.InterTypeToJavaPrimitive(type));
+
+            if (!byRefToGenerate.Contains(byRefType))
+                byRefToGenerate.Add(byRefType);
+
+            return byRefType.ToString();
+        }
+
+        Java.Constants.MethodRef IByRefController.GetFieldByRefCtorMethodRef(InterType type)
+        {
+            JavaByRefType byRefType = new JavaByRefType(ByRefPlace.Field, JavaHelpers.InterTypeToJavaPrimitive(type));
+
+            return new Java.Constants.MethodRef(
+                TypeNameToJava(byRefType.ToString()),
+                ClassNames.JavaConstructorMethodName,
+                ClassNames.ByRef.FieldCtorDescriptor);
         }
 
         Java.Constants.MethodRef IByRefController.GetByRefGetValueMethodRef(JavaPrimitiveType type)
