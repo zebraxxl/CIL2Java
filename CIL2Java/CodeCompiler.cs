@@ -125,6 +125,18 @@ namespace CIL2Java
                 case ILCode.Stelem_R4: CompileStelem(e, expectType); break;
                 case ILCode.Stelem_R8: CompileStelem(e, expectType); break;
                 case ILCode.Stelem_Ref: CompileStelem(e, expectType); break;
+                case ILCode.Ldelem_Any: CompileLdelem(e, expectType); break;
+                case ILCode.Ldelem_I: CompileLdelem(e, expectType); break;
+                case ILCode.Ldelem_I1: CompileLdelem(e, expectType); break;
+                case ILCode.Ldelem_I2: CompileLdelem(e, expectType); break;
+                case ILCode.Ldelem_I4: CompileLdelem(e, expectType); break;
+                case ILCode.Ldelem_I8: CompileLdelem(e, expectType); break;
+                case ILCode.Ldelem_R4: CompileLdelem(e, expectType); break;
+                case ILCode.Ldelem_R8: CompileLdelem(e, expectType); break;
+                case ILCode.Ldelem_Ref: CompileLdelem(e, expectType); break;
+                case ILCode.Ldelem_U1: CompileLdelem(e, expectType); break;
+                case ILCode.Ldelem_U2: CompileLdelem(e, expectType); break;
+                case ILCode.Ldelem_U4: CompileLdelem(e, expectType); break;
 
                 default: unknownNode = true; break;
             }

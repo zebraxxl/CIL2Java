@@ -34,7 +34,21 @@ namespace CIL2Java
             CompileExpression(e.Arguments[1], ExpectType.Primitive);    //index
             CompileExpression(e.Arguments[2], GetExpectType(operand));  //value
 
-            codeGenerator.AddArrayStore(arrType);
+            codeGenerator.AddArrayStore(arrType, e);
+        }
+
+        private void CompileLdelem(ILExpression e, ExpectType expect)
+        {
+            TypeReference typeRef = e.Operand as TypeReference ?? e.InferredType;
+            InterType operand = resolver.Resolve(typeRef, thisMethod.FullGenericArguments);
+            JavaArrayType arrType = JavaHelpers.JavaPrimitiveToArrayType(JavaHelpers.InterTypeToJavaPrimitive(operand));
+
+            CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
+            CompileExpression(e.Arguments[1], ExpectType.Primitive);    //index
+
+            codeGenerator.AddArrayLoad(arrType, e);
+
+            TranslateType(operand, expect, e);
         }
     }
 }
