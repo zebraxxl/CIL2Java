@@ -19,6 +19,12 @@ namespace CIL2Java
         {
             InterMethod operand = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
 
+            if (operand.DeclaringType.IsArray)
+            {
+                CompileArrayCall(e, expect);
+                return;
+            }
+
             int argIndex = 0;
             if ((operand.HasThis) && (operand.Parameters.Count < e.Arguments.Count))
                 CompileExpression(e.Arguments[argIndex++], ExpectType.Reference);

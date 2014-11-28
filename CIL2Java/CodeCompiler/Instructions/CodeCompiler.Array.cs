@@ -2,6 +2,7 @@
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CIL2Java
 {
@@ -63,6 +64,33 @@ namespace CIL2Java
 
             codeGenerator.AddMultianewarray(new Java.Constants.Class(namesController.GetFieldDescriptor(arrType)),
                 (byte)arrType.ArrayRank);
+        }
+
+        private void CompileArrayCall(ILExpression e, ExpectType expect)
+        {
+            InterMethod operand = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
+
+            CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
+            CompileExpression(e.Arguments[1], ExpectType.Primitive);    //first index
+
+            for (int i = 0; i < operand.DeclaringType.ArrayRank - 1; i++)
+            {
+                codeGenerator.Add(Java.OpCodes.aaload, null, e);
+                CompileExpression(e.Arguments[i + 2], ExpectType.Primitive);
+            }
+
+            if (operand.Name == "Set")
+                CompileArraySet(e, expect);
+        }
+
+        private void CompileArraySet(ILExpression e, ExpectType expect)
+        {
+            InterMethod operand = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
+
+            CompileExpression(e.Arguments.Last(), GetExpectType(operand.DeclaringType.ElementType));
+
+            JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand.DeclaringType);
+            codeGenerator.AddArrayStore(arrType, e);
         }
     }
 }
