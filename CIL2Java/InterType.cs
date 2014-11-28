@@ -39,6 +39,7 @@ namespace CIL2Java
         private List<InterMethod> methods = new List<InterMethod>();
         private InterType elementType = null;
         private int arrayRank = 0;
+        private ArrayDimension[] dimensions;
 
         public bool IsPrimitive { get { return primitiveType != PrimitiveType.None; } }
         public PrimitiveType PrimitiveType { get { return primitiveType; } }
@@ -53,7 +54,7 @@ namespace CIL2Java
                 {
                     string result = ElementType.ToString();
                     for (int i = 0; i < arrayRank; i++)
-                        result += "[]";
+                        result += "[" + dimensions[i].ToString() + "]";
                     return result;
                 }
                 else if (IsByRef)
@@ -91,6 +92,7 @@ namespace CIL2Java
 
         public InterType ElementType { get { return elementType; } }
         public int ArrayRank { get { return arrayRank; } }
+        public ArrayDimension[] Dimesnsions { get { return dimensions; } }
 
         public InterType(TypeReference typeRef, List<InterGenericArgument> genericArgs, IResolver resolver, Func<InterType, bool> register)
         {
@@ -101,7 +103,10 @@ namespace CIL2Java
             this.IsByRef = typeRef.IsByReference;
 
             if (this.IsArray)
+            {
                 this.arrayRank = ((ArrayType)typeRef).Rank;
+                this.dimensions = ((ArrayType)typeRef).Dimensions.ToArray();
+            }
 
             if ((IsArray) || (IsByRef))
             {
