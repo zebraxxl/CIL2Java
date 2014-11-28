@@ -114,6 +114,7 @@ namespace CIL2Java
                 case ILCode.Ldloca: CompileLdloca(e, expectType); break;
                 case ILCode.Ldflda: CompileLdflda(e, expectType); break;
                 case ILCode.Ldsflda: CompileLdflda(e, expectType); break;
+                case ILCode.Ldelema: CompileLdelema(e, expectType); break;
                 case ILCode.Stind_Ref: CompileStind(e, expectType); break;
 
                 //Objects

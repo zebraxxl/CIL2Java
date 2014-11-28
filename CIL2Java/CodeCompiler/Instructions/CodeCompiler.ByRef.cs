@@ -78,6 +78,28 @@ namespace CIL2Java
             codeGenerator.Add(OpCodes.invokespecial, constFieldByRefCtorRef);
         }
 
+        private void CompileLdelema(ILExpression e, ExpectType expectType)
+        {
+            TypeReference typeRef = e.Operand as TypeReference;
+            InterType operand = resolver.Resolve(typeRef, thisMethod.FullGenericArguments);
+            JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand);
+
+            string arrayByRefName = byRefController.GetArrayByRefTypeName(operand);
+            Java.Constants.Class arrayByRefNameClass =
+                new Java.Constants.Class(namesController.TypeNameToJava(arrayByRefName));
+            Java.Constants.MethodRef arrayByRefInitMethodRef =
+                byRefController.GetArrayByRefCtorMethodRef(operand);
+
+            codeGenerator
+                .Add(OpCodes._new, arrayByRefNameClass, e)
+                .Add(OpCodes.dup, null, e);
+
+            CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
+            CompileExpression(e.Arguments[1], ExpectType.Primitive);    //index
+
+            codeGenerator.Add(OpCodes.invokespecial, arrayByRefInitMethodRef, e);
+        }
+
         private void CompileStind(ILExpression e, ExpectType expectType)
         {
             JavaPrimitiveType type = JavaPrimitiveType.Ref;
