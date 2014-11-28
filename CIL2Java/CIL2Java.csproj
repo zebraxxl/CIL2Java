@@ -55,6 +55,7 @@
     <Compile Include="CodeCompiler\CodeCompiler.ByRef.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.ExpectType.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Vars.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.Array.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.ByRef.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Call.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Consts.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="InterParameter.cs" />
     <Compile Include="InterType.cs" />
     <Compile Include="IResolver.cs" />
+    <Compile Include="JavaArrayType.cs" />
     <Compile Include="JavaBytecodeWriter.cs" />
     <Compile Include="JavaHelpers.cs" />
     <Compile Include="JavaPrimitiveType.cs" />

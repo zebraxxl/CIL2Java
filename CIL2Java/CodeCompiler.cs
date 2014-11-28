@@ -115,6 +115,9 @@ namespace CIL2Java
                 //Objects
                 case ILCode.Stobj: CompileStobj(e, expectType); break;
 
+                //Arrays
+                case ILCode.Newarr: CompileNewarr(e, expectType); break;
+
                 default: unknownNode = true; break;
             }
 

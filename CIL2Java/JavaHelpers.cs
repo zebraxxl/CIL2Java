@@ -24,6 +24,24 @@ namespace CIL2Java
             JavaPrimitiveType.Void,     //Void
         };
 
+        public static JavaArrayType JavaPrimitiveToArrayType(JavaPrimitiveType jp)
+        {
+            switch (jp)
+            {
+                case JavaPrimitiveType.Bool: return JavaArrayType.Boolean;
+                case JavaPrimitiveType.Byte: return JavaArrayType.Byte;
+                case JavaPrimitiveType.Char: return JavaArrayType.Char;
+                case JavaPrimitiveType.Double: return JavaArrayType.Double;
+                case JavaPrimitiveType.Float: return JavaArrayType.Float;
+                case JavaPrimitiveType.Int: return JavaArrayType.Int;
+                case JavaPrimitiveType.Long: return JavaArrayType.Long;
+                case JavaPrimitiveType.Ref: return JavaArrayType.Ref;
+                case JavaPrimitiveType.Short: return JavaArrayType.Short;
+
+                default: return JavaArrayType.Ref;
+            }
+        }
+
         public static JavaPrimitiveType InterTypeToJavaPrimitive(InterType type)
         {
             if (!type.IsPrimitive)

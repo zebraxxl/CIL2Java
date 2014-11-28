@@ -434,6 +434,19 @@ namespace CIL2Java
             return this;
         }
 
+        public JavaBytecodeWriter AddNewArray(JavaArrayType arrType, object tag)
+        {
+            if (arrType == JavaArrayType.Ref)
+                return null;    //TODO: Must throw exception
+
+            return AddInstruction(new JavaInstruction(Java.OpCodes.newarray, (byte)arrType, tag));
+        }
+
+        public JavaBytecodeWriter AddNewArray(JavaArrayType arrType)
+        {
+            return AddNewArray(arrType, null);
+        }
+
         public byte[] Link(Java.ConstantPool pool)
         {
             LinkPass1(pool);
