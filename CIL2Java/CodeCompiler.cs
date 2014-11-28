@@ -117,6 +117,14 @@ namespace CIL2Java
 
                 //Arrays
                 case ILCode.Newarr: CompileNewarr(e, expectType); break;
+                case ILCode.Stelem_Any: CompileStelem(e, expectType); break;
+                case ILCode.Stelem_I1: CompileStelem(e, expectType); break;
+                case ILCode.Stelem_I2: CompileStelem(e, expectType); break;
+                case ILCode.Stelem_I4: CompileStelem(e, expectType); break;
+                case ILCode.Stelem_I8: CompileStelem(e, expectType); break;
+                case ILCode.Stelem_R4: CompileStelem(e, expectType); break;
+                case ILCode.Stelem_R8: CompileStelem(e, expectType); break;
+                case ILCode.Stelem_Ref: CompileStelem(e, expectType); break;
 
                 default: unknownNode = true; break;
             }

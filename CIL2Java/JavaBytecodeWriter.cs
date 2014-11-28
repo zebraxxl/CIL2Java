@@ -447,6 +447,30 @@ namespace CIL2Java
             return AddNewArray(arrType, null);
         }
 
+        public JavaBytecodeWriter AddArrayStore(JavaArrayType arrType, object tag)
+        {
+            Java.OpCodes opcode = Java.OpCodes.aastore;
+
+            switch (arrType)
+            {
+                case JavaArrayType.Boolean: opcode = Java.OpCodes.bastore; break;
+                case JavaArrayType.Byte: opcode = Java.OpCodes.bastore; break;
+                case JavaArrayType.Char: opcode = Java.OpCodes.castore; break;
+                case JavaArrayType.Double: opcode = Java.OpCodes.dastore; break;
+                case JavaArrayType.Float: opcode = Java.OpCodes.fastore; break;
+                case JavaArrayType.Int: opcode = Java.OpCodes.iastore; break;
+                case JavaArrayType.Long: opcode = Java.OpCodes.lastore; break;
+                case JavaArrayType.Short: opcode = Java.OpCodes.sastore; break;
+            }
+
+            return Add(opcode, null, tag);
+        }
+
+        public JavaBytecodeWriter AddArrayStore(JavaArrayType arrType)
+        {
+            return AddArrayStore(arrType, null);
+        }
+
         public byte[] Link(Java.ConstantPool pool)
         {
             LinkPass1(pool);
