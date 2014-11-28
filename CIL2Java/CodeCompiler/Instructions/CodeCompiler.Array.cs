@@ -12,7 +12,7 @@ namespace CIL2Java
         {
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
 
-            JavaArrayType arrayType = JavaHelpers.JavaPrimitiveToArrayType(JavaHelpers.InterTypeToJavaPrimitive(operand));
+            JavaArrayType arrayType = JavaHelpers.InterTypeToJavaArrayType(operand);
 
             CompileExpression(e.Arguments[0], ExpectType.Primitive);
 
@@ -29,7 +29,7 @@ namespace CIL2Java
         {
             TypeReference typeRef = e.Operand as TypeReference ?? e.InferredType;
             InterType operand = resolver.Resolve(typeRef, thisMethod.FullGenericArguments);
-            JavaArrayType arrType = JavaHelpers.JavaPrimitiveToArrayType(JavaHelpers.InterTypeToJavaPrimitive(operand));
+            JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand);
 
             CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
             CompileExpression(e.Arguments[1], ExpectType.Primitive);    //index
@@ -42,7 +42,7 @@ namespace CIL2Java
         {
             TypeReference typeRef = e.Operand as TypeReference ?? e.InferredType;
             InterType operand = resolver.Resolve(typeRef, thisMethod.FullGenericArguments);
-            JavaArrayType arrType = JavaHelpers.JavaPrimitiveToArrayType(JavaHelpers.InterTypeToJavaPrimitive(operand));
+            JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand);
 
             CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
             CompileExpression(e.Arguments[1], ExpectType.Primitive);    //index
