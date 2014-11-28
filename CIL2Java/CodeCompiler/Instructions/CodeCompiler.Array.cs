@@ -50,5 +50,19 @@ namespace CIL2Java
 
             TranslateType(operand, expect, e);
         }
+
+        private void CompileNewmultiarray(ILExpression e, ExpectType expect)
+        {
+            InterMethod ctor = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
+            InterType arrType = ctor.DeclaringType;
+
+            for (int i = 0; i < arrType.ArrayRank; i++)
+                CompileExpression(e.Arguments[i], ExpectType.Primitive);
+
+            //TODO: lower and apper bounds
+
+            codeGenerator.AddMultianewarray(new Java.Constants.Class(namesController.GetFieldDescriptor(arrType)),
+                (byte)arrType.ArrayRank);
+        }
     }
 }

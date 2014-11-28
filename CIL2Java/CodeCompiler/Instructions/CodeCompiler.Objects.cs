@@ -7,6 +7,17 @@ namespace CIL2Java
 {
     public partial class CodeCompiler
     {
+        private void CompileNewobj(ILExpression e, ExpectType expect)
+        {
+            InterMethod ctor = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
+
+            if (ctor.DeclaringType.IsArray)
+            {
+                CompileNewmultiarray(e, expect);
+                return;
+            }
+        }
+
         private void CompileStobj(ILExpression e, ExpectType expect)
         {
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);

@@ -50,6 +50,12 @@ namespace CIL2Java
 
     public class JavaBytecodeWriter
     {
+        public struct MultianewarrayOperand
+        {
+            public Java.Constants.Class ClassOperand;
+            public byte DimensionsOperand;
+        }
+
         private Dictionary<JavaInstruction, int> outputCodeOffsets = new Dictionary<JavaInstruction, int>();
         private List<JavaInstruction> outputCode = new List<JavaInstruction>();
         private Dictionary<string, int> labels = new Dictionary<string, int>();
@@ -98,6 +104,11 @@ namespace CIL2Java
                 object lastOperand = instr.Operand;
                 if (instr.Operand is Java.Constant)
                     instr.Operand = pool.AddConstant((Java.Constant)instr.Operand);
+                else if (instr.Operand is MultianewarrayOperand)
+                {
+                    MultianewarrayOperand operand = (MultianewarrayOperand)instr.Operand;
+                    instr.Operand = pool.AddConstant(operand.ClassOperand) | (operand.DimensionsOperand << 16);
+                }
 
                 if (instr.Opcode == Java.OpCodes.ldc)
                 {
@@ -200,7 +211,7 @@ namespace CIL2Java
                                 break;
 
                             case Java.OpCodes.multianewarray:
-                                uint data = (uint)instr.Operand;
+                                int data = (int)instr.Operand;
                                 codeBytesWriter.WriteBE((ushort)(data & 0xffff));
                                 codeBytesWriter.Write((byte)((data & 0xff0000) >> 16));
                                 break;
@@ -493,6 +504,20 @@ namespace CIL2Java
         public JavaBytecodeWriter AddArrayLoad(JavaArrayType arrType)
         {
             return AddArrayLoad(arrType, null);
+        }
+
+        public JavaBytecodeWriter AddMultianewarray(Java.Constants.Class arrayType, byte dimensions, object tag)
+        {
+            return Add(Java.OpCodes.multianewarray, new MultianewarrayOperand()
+            {
+                ClassOperand = arrayType,
+                DimensionsOperand = dimensions
+            }, tag);
+        }
+
+        public JavaBytecodeWriter AddMultianewarray(Java.Constants.Class arrayType, byte dimensions)
+        {
+            return AddMultianewarray(arrayType, dimensions, null);
         }
 
         public byte[] Link(Java.ConstantPool pool)
