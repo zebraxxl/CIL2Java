@@ -117,5 +117,36 @@ namespace CIL2Java
 
             codeGenerator.Add(OpCodes.invokevirtual, setMethodRef, e);
         }
+
+        private void CompileAddressOf(ILExpression e, ExpectType expectType)
+        {
+            e = e.Arguments[0];
+
+            InterMethod method = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
+            InterType operand = method.DeclaringType;
+
+            JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand);
+
+            string arrayByRefName = byRefController.GetArrayByRefTypeName(operand);
+            Java.Constants.Class arrayByRefNameClass =
+                new Java.Constants.Class(namesController.TypeNameToJava(arrayByRefName));
+            Java.Constants.MethodRef arrayByRefInitMethodRef =
+                byRefController.GetArrayByRefCtorMethodRef(operand);
+
+            codeGenerator
+                .Add(OpCodes._new, arrayByRefNameClass, e)
+                .Add(OpCodes.dup, null, e);
+
+            CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
+            CompileExpression(e.Arguments[1], ExpectType.Primitive);    //first index
+
+            for (int i = 0; i < operand.ArrayRank - 1; i++)
+            {
+                codeGenerator.Add(Java.OpCodes.aaload, null, e);
+                CompileExpression(e.Arguments[i + 2], ExpectType.Primitive);
+            }
+
+            codeGenerator.Add(OpCodes.invokespecial, arrayByRefInitMethodRef, e);
+        }
     }
 }
