@@ -1,4 +1,6 @@
-﻿using Mono.Cecil;
+﻿using ICSharpCode.Decompiler;
+using ICSharpCode.Decompiler.ILAst;
+using Mono.Cecil;
 using Mono.Cecil.Cil;
 using System;
 using System.Collections.Generic;
@@ -8,6 +10,77 @@ namespace CIL2Java
 {
     public partial class Compiler
     {
+        private void ProcessMethodDecencies(ILNode node, List<InterGenericArgument> genericArgs)
+        {
+            if (node is ILBlock)
+            {
+                ILBlock block = node as ILBlock;
+
+                foreach (ILNode n in block.Body)
+                    ProcessMethodDecencies(n, genericArgs);
+            }
+            else if (node is ILBasicBlock)
+            {
+                ILBasicBlock block = node as ILBasicBlock;
+
+                foreach (ILNode n in block.Body)
+                    ProcessMethodDecencies(n, genericArgs);
+            }
+            else if (node is ILTryCatchBlock)
+            {
+                ILTryCatchBlock block = node as ILTryCatchBlock;
+
+                foreach (ILNode n in block.TryBlock.Body) ProcessMethodDecencies(n, genericArgs);
+                if (block.FaultBlock != null)
+                    foreach (ILNode n in block.FaultBlock.Body) ProcessMethodDecencies(n, genericArgs);
+                if (block.FinallyBlock != null)
+                    foreach (ILNode n in block.FinallyBlock.Body) ProcessMethodDecencies(n, genericArgs);
+                foreach (var catchBlock in block.CatchBlocks)
+                {
+                    ((IResolver)this).Resolve(catchBlock.ExceptionType, genericArgs);
+                    ProcessMethodDecencies(catchBlock, genericArgs);
+                }
+            }
+            else if (node is ILExpression)
+            {
+                ILExpression e = node as ILExpression;
+
+                foreach (var n in e.Arguments) ProcessMethodDecencies(n, genericArgs);
+
+                if (e.Operand is TypeReference) ((IResolver)this).Resolve((TypeReference)e.Operand, genericArgs);
+                if (e.Operand is FieldReference) ((IResolver)this).Resolve((FieldReference)e.Operand, genericArgs);
+                if (e.Operand is MethodReference) ((IResolver)this).Resolve((MethodReference)e.Operand, genericArgs);
+
+                if (e.ExpectedType != null) ((IResolver)this).Resolve(e.ExpectedType, genericArgs);
+                if (e.InferredType != null) ((IResolver)this).Resolve(e.InferredType, genericArgs);
+            }
+            else if (node is ILWhileLoop)
+            {
+                ILWhileLoop loop = node as ILWhileLoop;
+                ProcessMethodDecencies(loop.Condition, genericArgs);
+                ProcessMethodDecencies(loop.BodyBlock, genericArgs);
+            }
+            else if (node is ILCondition)
+            {
+                ILCondition cond = node as ILCondition;
+                ProcessMethodDecencies(cond.Condition, genericArgs);
+                ProcessMethodDecencies(cond.TrueBlock, genericArgs);
+                ProcessMethodDecencies(cond.FalseBlock, genericArgs);
+            }
+            else if (node is ILSwitch)
+            {
+                ILSwitch sw = node as ILSwitch;
+                ProcessMethodDecencies(sw.Condition, genericArgs);
+                foreach (var c in sw.CaseBlocks) ProcessMethodDecencies(c, genericArgs);
+            }
+            else if (node is ILFixedStatement)
+            {
+                ILFixedStatement fs = node as ILFixedStatement;
+                foreach (var n in fs.Initializers) ProcessMethodDecencies(n, genericArgs);
+                ProcessMethodDecencies(fs.BodyBlock, genericArgs);
+            }
+        }
+
         InterType IResolver.Resolve(TypeReference typeRef, List<InterGenericArgument> genericArgs)
         {
             switch (typeRef.MetadataType)
@@ -97,13 +170,16 @@ namespace CIL2Java
 
                 if (tmp.HasBody)
                 {
-                    MethodBody body = tmp.Body;
-                    foreach (Instruction i in body.Instructions)
-                    {
-                        if ((i.Operand is TypeReference) && (!(i.Operand is GenericParameter))) ((IResolver)this).Resolve(i.Operand as TypeReference, unionedGenericArgs);
-                        if (i.Operand is FieldReference) ((IResolver)this).Resolve(i.Operand as FieldReference, unionedGenericArgs);
-                        if (i.Operand is MethodReference) ((IResolver)this).Resolve(i.Operand as MethodReference, unionedGenericArgs);
-                    }
+                    MethodDefinition methodDef = tmp.Body.Method;
+
+                    ILAstBuilder builder = new ILAstBuilder();
+                    ILBlock ilBody = new ILBlock();
+
+                    DecompilerContext context = new DecompilerContext(methodDef.Module) { CurrentType = methodDef.DeclaringType, CurrentMethod = methodDef };
+
+                    ilBody.Body = builder.Build(methodDef, true, context);
+                    new ILAstOptimizer().Optimize(context, ilBody);
+                    ProcessMethodDecencies(ilBody, tmp.FullGenericArguments);
                 }
             }
 
