@@ -44,7 +44,7 @@ namespace CIL2Java
 
         public static JavaArrayType InterTypeToJavaArrayType(InterType type)
         {
-            return JavaPrimitiveToArrayType(InterTypeToJavaPrimitive(type.ElementType));
+            return JavaPrimitiveToArrayType(InterTypeToJavaPrimitive(type.ElementType ?? type));
         }
 
         public static JavaPrimitiveType InterTypeToJavaPrimitive(InterType type)

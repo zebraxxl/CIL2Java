@@ -14,15 +14,36 @@ namespace CIL2Java
 
             JavaArrayType arrayType = JavaHelpers.InterTypeToJavaArrayType(operand);
 
-            CompileExpression(e.Arguments[0], ExpectType.Primitive);
+            if (e.Code == ILCode.Newarr)
+                CompileExpression(e.Arguments[0], ExpectType.Primitive);
+            else
+            {
+                if (operand.Dimesnsions[0].LowerBound != 0)
+                    Messages.Message(MessageCode.NotZeroLowerBound, operand.Fullname);
+                codeGenerator.AddIntConst(operand.Dimesnsions[0].UpperBound.Value, e);
+            }
 
             if (arrayType == JavaArrayType.Ref)
             {
                 codeGenerator.Add(Java.OpCodes.anewarray,
-                    new Java.Constants.Class(namesController.TypeNameToJava(operand.Fullname)), e);
+                    new Java.Constants.Class(namesController.TypeNameToJava(operand.ElementType.Fullname)), e);
             }
             else
                 codeGenerator.AddNewArray(arrayType, e);
+
+            if (e.Code == ILCode.InitArray)
+            {
+                for (int i = 0; i < e.Arguments.Count; i++)
+                {
+                    if (e.Arguments[i].Code == ILCode.DefaultValue)
+                        continue;
+
+                    codeGenerator.Add(Java.OpCodes.dup, null, e);
+                    codeGenerator.AddIntConst(i, e);
+                    CompileExpression(e.Arguments[i], GetExpectType(operand.ElementType));
+                    codeGenerator.AddArrayStore(arrayType, e);
+                }
+            }
         }
 
         private void CompileStelem(ILExpression e, ExpectType expect)

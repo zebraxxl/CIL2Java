@@ -520,6 +520,35 @@ namespace CIL2Java
             return AddMultianewarray(arrayType, dimensions, null);
         }
 
+        public JavaBytecodeWriter AddIntConst(int value, object tag)
+        {
+            if (value == -1)
+                return Add(Java.OpCodes.iconst_m1, null, tag);
+            else if (value == 0)
+                return Add(Java.OpCodes.iconst_0, null, tag);
+            else if (value == 1)
+                return Add(Java.OpCodes.iconst_1, null, tag);
+            else if (value == 2)
+                return Add(Java.OpCodes.iconst_2, null, tag);
+            else if (value == 3)
+                return Add(Java.OpCodes.iconst_3, null, tag);
+            else if (value == 4)
+                return Add(Java.OpCodes.iconst_4, null, tag);
+            else if (value == 5)
+                return Add(Java.OpCodes.iconst_5, null, tag);
+            else if ((value >= sbyte.MinValue) && (value <= sbyte.MaxValue))
+                return Add(Java.OpCodes.bipush, (sbyte)value, tag);
+            else if ((value >= short.MinValue) && (value <= short.MaxValue))
+                return Add(Java.OpCodes.sipush, (short)value, tag);
+            else
+                return Add(Java.OpCodes.ldc, new Java.Constants.Integer(value), tag);
+        }
+
+        public JavaBytecodeWriter AddIntConst(int value)
+        {
+            return AddIntConst(value, null);
+        }
+
         public byte[] Link(Java.ConstantPool pool)
         {
             LinkPass1(pool);
