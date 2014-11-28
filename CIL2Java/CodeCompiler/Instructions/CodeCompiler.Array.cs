@@ -81,6 +81,8 @@ namespace CIL2Java
 
             if (operand.Name == "Set")
                 CompileArraySet(e, expect);
+            else if (operand.Name == "Get")
+                CompileArrayGet(e, expect);
         }
 
         private void CompileArraySet(ILExpression e, ExpectType expect)
@@ -91,6 +93,14 @@ namespace CIL2Java
 
             JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand.DeclaringType);
             codeGenerator.AddArrayStore(arrType, e);
+        }
+
+        private void CompileArrayGet(ILExpression e, ExpectType expect)
+        {
+            InterMethod operand = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
+
+            JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand.DeclaringType);
+            codeGenerator.AddArrayLoad(arrType, e);
         }
     }
 }
