@@ -104,6 +104,10 @@ namespace CIL2Java
                 //Calls
                 case ILCode.Call: CompileCall(e, expectType); break;
                 case ILCode.Callvirt: CompileCall(e, expectType); break;
+                case ILCode.CallGetter: CompileCall(e, expectType); break;
+                case ILCode.CallSetter: CompileCall(e, expectType); break;
+                case ILCode.CallvirtGetter: CompileCall(e, expectType); break;
+                case ILCode.CallvirtSetter: CompileCall(e, expectType); break;
                 case ILCode.Ret: CompileRet(e, expectType); break;
 
                 //ByRef

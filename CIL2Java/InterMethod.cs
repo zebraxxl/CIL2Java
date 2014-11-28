@@ -49,9 +49,14 @@ namespace CIL2Java
 
             MethodDefinition methodDef = methodRef.Resolve();
 
-            CustomAttribute methodMapCustomAttr = methodDef.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.MethodMapAttribute).FirstOrDefault();
-            if ((methodMapCustomAttr == null) && (Program.BoxType == BoxingType.Java))
-                methodMapCustomAttr = methodDef.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.JavaBoxMethodMapAttribute).FirstOrDefault();
+            CustomAttribute methodMapCustomAttr = null;
+
+            if (methodDef != null)
+            {
+                methodMapCustomAttr = methodDef.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.MethodMapAttribute).FirstOrDefault();
+                if ((methodMapCustomAttr == null) && (Program.BoxType == BoxingType.Java))
+                    methodMapCustomAttr = methodDef.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.JavaBoxMethodMapAttribute).FirstOrDefault();
+            }
 
             if (methodMapCustomAttr != null)
                 declType = resolver.Resolve(methodMapCustomAttr.ConstructorArguments[0].Value as TypeReference, genericArgs);
@@ -66,13 +71,13 @@ namespace CIL2Java
             //TODO: Normal method map. We need return InterMethod of method we mapped to.
 
             genericArgs.AddRange(declType.GenericArguments);
-            if (methodDef.HasGenericParameters)
+            if (methodRef.HasGenericParameters)
             {
                 StringBuilder nameBuilder = new StringBuilder(name);
                 nameBuilder.Append("__GIM<");
 
                 GenericInstanceMethod gim = methodRef as GenericInstanceMethod;
-                foreach (GenericParameter gParam in methodDef.GenericParameters)
+                foreach (GenericParameter gParam in methodRef.GenericParameters)
                 {
                     TypeReference genericArgType = gParam;
                     InterGenericArgument genericArg = new InterGenericArgument();
@@ -113,40 +118,53 @@ namespace CIL2Java
                 this.name = nameBuilder.ToString();
             }
 
-            CustomAttribute fromJavaCustomAttr = methodDef.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.FromJavaAttribute).FirstOrDefault();
-            if (fromJavaCustomAttr != null)
+            if (methodDef != null)
             {
-                FromJava = true;
-                if (fromJavaCustomAttr.ConstructorArguments.Count > 0)
-                    name = fromJavaCustomAttr.ConstructorArguments[0].Value.ToString();
+                CustomAttribute fromJavaCustomAttr = methodDef.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.FromJavaAttribute).FirstOrDefault();
+                if (fromJavaCustomAttr != null)
+                {
+                    FromJava = true;
+                    if (fromJavaCustomAttr.ConstructorArguments.Count > 0)
+                        name = fromJavaCustomAttr.ConstructorArguments[0].Value.ToString();
+                }
             }
 
             if (methodRef.HasThis)
                 thisParam = new InterParameter(0, declType, "this");
 
             this.returnParam = new InterParameter(-1, resolver.Resolve(methodRef.ReturnType, this.FullGenericArguments), "return",
-                methodDef.MethodReturnType.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.BoxedAttribute).Count() > 0,
-                methodDef.MethodReturnType.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.JavaBoxedAttribute).Count() > 0);
+                methodRef.MethodReturnType.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.BoxedAttribute).Count() > 0,
+                methodRef.MethodReturnType.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.JavaBoxedAttribute).Count() > 0);
 
             foreach (ParameterDefinition paramDef in methodRef.Parameters)
                 parameters.Add(new InterParameter(paramDef, this.genericArgs, resolver));
 
-            if (methodDef.HasBody)
-                body = methodDef.Body;
+            if (methodDef != null)
+            {
+                if (methodDef.HasBody)
+                    body = methodDef.Body;
 
-            IsPublic = methodDef.IsPublic || methodDef.IsAssembly;
-            IsProtected = methodDef.IsFamily || methodDef.IsFamilyAndAssembly || methodDef.IsFamilyOrAssembly;
-            IsPrivate = methodDef.IsPrivate;
-            IsAbstract = methodDef.IsAbstract;
-            IsFinal = methodDef.IsFinal;
-            IsVirtual = methodDef.IsVirtual;
-            IsNewSlot = methodDef.IsNewSlot;
-            IsStatic = methodDef.IsStatic;
-            IsSynchronized = methodDef.IsSynchronized;
-            IsConstructor = methodDef.IsConstructor;
-            IsVarArg = methodDef.CallingConvention == MethodCallingConvention.VarArg;
-            HasThis = methodDef.HasThis;
-            HasBody = methodDef.HasBody;
+                IsPublic = methodDef.IsPublic || methodDef.IsAssembly;
+                IsProtected = methodDef.IsFamily || methodDef.IsFamilyAndAssembly || methodDef.IsFamilyOrAssembly;
+                IsPrivate = methodDef.IsPrivate;
+                IsAbstract = methodDef.IsAbstract;
+                IsFinal = methodDef.IsFinal;
+                IsVirtual = methodDef.IsVirtual;
+                IsNewSlot = methodDef.IsNewSlot;
+                IsStatic = methodDef.IsStatic;
+                IsSynchronized = methodDef.IsSynchronized;
+                IsConstructor = methodDef.IsConstructor;
+                IsVarArg = methodDef.CallingConvention == MethodCallingConvention.VarArg;
+                HasThis = methodDef.HasThis;
+                HasBody = methodDef.HasBody;
+            }
+            else
+            {
+                IsPublic = true;
+                IsFinal = true;
+                HasThis = methodRef.HasThis;
+                IsStatic = !methodRef.HasThis;
+            }
 
             InterMethod thisFromDecl = declType.Methods.Where(M => M.Equals(this)).FirstOrDefault();
             if (thisFromDecl != null)
