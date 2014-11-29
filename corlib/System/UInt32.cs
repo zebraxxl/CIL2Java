@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Globalization;
+using CIL2Java.Attributes;
 
 namespace System
 {
@@ -13,6 +14,19 @@ namespace System
         public const uint MaxValue = 4294967295;
         /// <summary>Represents the smallest possible value of <see cref="T:System.UInt32" />. This field is constant.</summary><filterpriority>1</filterpriority>
         public const uint MinValue = 0;
+
+        private uint value;
+
+        private UInt32(uint value)
+        {
+            this.value = value;
+        }
+
+        [return: Boxed]
+        public static uint valueOf(uint value)
+        {
+            return new UInt32(value);
+        }
     
         /// <summary>Compares this instance to a specified object and returns an indication of their relative values.</summary><returns>A signed number indicating the relative values of this instance and <paramref name="value" />.Return Value Description Less than zero This instance is less than <paramref name="value" />. Zero This instance is equal to <paramref name="value" />. Greater than zero This instance is greater than <paramref name="value" />.-or- <paramref name="value" /> is null. </returns><param name="value">An object to compare, or null. </param><exception cref="T:System.ArgumentException"><paramref name="value" /> is not a <see cref="T:System.UInt32" />. </exception><filterpriority>2</filterpriority>
         public int CompareTo(object value)
@@ -51,7 +65,7 @@ namespace System
         [SecuritySafeCriticalAttribute()]
         public override string ToString()
         {
-             throw new NotImplementedException();
+            return java.lang.Integer.toHexString((int)this.value);
         }
         
         
