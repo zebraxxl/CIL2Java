@@ -75,6 +75,18 @@ namespace CIL2Java
                 .End(currentJavaClass.ConstantPool));
             currentJavaClass.Methods.Add(valueOfMethod);
 
+            Method getValueMethod = new Method();
+            getValueMethod.AccessFlags = MethodAccessFlags.Public;
+            getValueMethod.Name = Utils.GetJavaTypeName(type.PrimitiveType) + "Value";
+            getValueMethod.Descriptor = "()" + GetFieldDescriptor(type);
+            getValueMethod.Attributes.Add(new JavaBytecodeWriter()
+                .Add(OpCodes.aload_0)
+                .Add(OpCodes.getfield, valueFieldRef)
+                .AddReturn(JavaHelpers.InterTypeToJavaPrimitive(type))
+
+                .End(currentJavaClass.ConstantPool));
+            currentJavaClass.Methods.Add(getValueMethod);
+
             currentJavaInnerClasses = new Java.Attributes.InnerClasses();
 
             foreach (InterField field in type.Fields)

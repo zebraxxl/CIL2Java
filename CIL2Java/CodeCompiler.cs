@@ -154,6 +154,7 @@ namespace CIL2Java
                 case ILCode.Ldobj: CompileLdobj(e, expectType); break;
                 case ILCode.Isinst: CompileIsinst(e, expectType); break;
                 case ILCode.Box: CompileBox(e, expectType); break;
+                case ILCode.Unbox_Any: CompileUnbox_Any(e, expectType); break;
 
                 //Arrays
                 case ILCode.Newarr: CompileNewarr(e, expectType); break;

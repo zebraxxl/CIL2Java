@@ -88,5 +88,23 @@ namespace CIL2Java
         {
             CompileExpression(e.Arguments[0], ExpectType.Boxed);
         }
+
+        private void CompileUnbox_Any(ILExpression e, ExpectType expect)
+        {
+            InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+            string boxType = GetBoxType(operand);
+
+            Java.Constants.Class operandRef = new Java.Constants.Class(namesController.TypeNameToJava(boxType));
+
+            
+
+            Java.Constants.MethodRef valueRef = new Java.Constants.MethodRef(operandRef.Value,
+                Utils.GetJavaTypeName(operand.PrimitiveType) + "Value",
+                "()" + namesController.GetFieldDescriptor(operand));
+
+            codeGenerator
+                .Add(Java.OpCodes.checkcast, operandRef, e)
+                .Add(Java.OpCodes.invokevirtual, valueRef, e);
+        }
     }
 }

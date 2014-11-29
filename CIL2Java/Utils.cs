@@ -32,5 +32,43 @@ namespace CIL2Java
                 default: return GenericArgumentOwnerType.Type;
             }
         }
+
+        public static string GetJavaTypeName(PrimitiveType pt)
+        {
+            string prefix = "";
+
+            switch (pt)
+            {
+                case PrimitiveType.Bool: prefix = "boolean"; break;
+                case PrimitiveType.Char: prefix = "char"; break;
+                case PrimitiveType.Double: prefix = "double"; break;
+
+                case PrimitiveType.SByte:
+                case PrimitiveType.Byte:
+                    prefix = "byte";
+                    break;
+
+                case PrimitiveType.Int16:
+                case PrimitiveType.UInt16:
+                    prefix = "short";
+                    break;
+
+                case PrimitiveType.Int32:
+                case PrimitiveType.UInt32:
+                    prefix = "int";
+                    break;
+
+                case PrimitiveType.Int64:
+                case PrimitiveType.UInt64:
+                    prefix = "long";
+                    break;
+
+                case PrimitiveType.Single:
+                    prefix = "float";
+                    break;
+            }
+
+            return prefix;
+        }
     }
 }
