@@ -7,7 +7,6 @@ namespace CIL2Java
 {
     public static class Program
     {
-        public static bool TestMode { get; set; }
         public static ReaderParameters AssemblyReaderParams { get; private set; }
 
         public static List<string> Input { get; private set; }

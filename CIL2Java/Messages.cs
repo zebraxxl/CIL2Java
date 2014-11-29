@@ -67,9 +67,6 @@ namespace CIL2Java
             else
                 Message = ErrorsStrings[MessageIndex];
 
-            if (Program.TestMode)
-                throw new Exception(String.Format(Message, MessageParams));
-
             Console.WriteLine(String.Format(Message, MessageParams));
         }
 
