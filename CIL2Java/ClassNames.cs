@@ -25,6 +25,9 @@ namespace CIL2Java
 
         public const string VESNamespace = "CIL2Java.VES";
 
+        public const string CorlibUtils = "CIL2Java.Utils";
+        public const string ReboxMethod = "Rebox";
+
         public static class ByRef
         {
             public const string TypeBase = "ByRef";

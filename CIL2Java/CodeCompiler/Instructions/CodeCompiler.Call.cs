@@ -19,6 +19,14 @@ namespace CIL2Java
         {
             InterMethod operand = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
 
+            if ((Program.BoxType == BoxingType.Java) && (operand.DeclaringType.Fullname == ClassNames.CorlibUtils) &&
+                (operand.Name == ClassNames.ReboxMethod))
+            {
+                //Skip CIL2Java.Utils::Rebox in java boxing mode due optimizations
+                CompileExpression(e.Arguments[0], expect);
+                return;
+            }
+
             if (operand.DeclaringType.IsArray)
             {
                 CompileArrayCall(e, expect);
