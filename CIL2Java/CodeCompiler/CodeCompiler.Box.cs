@@ -39,6 +39,20 @@ namespace CIL2Java
             {InterType.PrimitiveTypes[(int)PrimitiveType.Char], "java.lang.Character"}
         };
 
+        private string GetBoxType(InterType type)
+        {
+            Dictionary<InterType, string> boxDict = CilBoxTypes;
+            if (Program.BoxType == BoxingType.Java)
+                boxDict = JavaBoxTypes;
+
+            if (boxDict.ContainsKey(type))
+                return boxDict[type];
+            else if (type.IsPrimitive)
+                return type.CILBoxType;
+            else
+                return type.Fullname;
+        }
+
         private void BoxTypeImpl(Dictionary<InterType, string> BoxTypes, InterType type, object tag)
         {
             if (!BoxTypes.ContainsKey(type))

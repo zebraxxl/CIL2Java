@@ -60,6 +60,30 @@ namespace CIL2Java
             }
         }
 
+        private void CompileIsinst(ILExpression e, ExpectType expect)
+        {
+            InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+
+            //  dup
+            //  instanceof operand
+            //  ifne :end
+            //  pop
+            //  aconst_null
+            //:end
+
+            string endLabel = rnd.Next().ToString() + "end";
+
+            Java.Constants.Class operandRef = new Java.Constants.Class(namesController.TypeNameToJava(GetBoxType(operand)));
+
+            codeGenerator
+                .Add(Java.OpCodes.dup, null, e)
+                .Add(Java.OpCodes.instanceof, operandRef, e)
+                .Add(Java.OpCodes.ifne, endLabel, e)
+                .Add(Java.OpCodes.pop, null, e)
+                .Add(Java.OpCodes.aconst_null, null, e)
+                .Label(endLabel);
+        }
+
         private void CompileBox(ILExpression e, ExpectType expect)
         {
             CompileExpression(e.Arguments[0], ExpectType.Boxed);
