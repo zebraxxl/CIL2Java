@@ -16,6 +16,7 @@ namespace CIL2Java
         private JavaBytecodeWriter codeGenerator = new JavaBytecodeWriter();
         private Java.ConstantPool constsPool;
         private Java.Attributes.Code resultCode = null;
+        private Random rnd = new Random();
 
         public Java.Attributes.Code Result { get { return resultCode; } }
 
@@ -89,6 +90,7 @@ namespace CIL2Java
 
         private void CompileCondition(ILCondition node, ExpectType expectType)
         {
+            //TODO: remake to use labels
             CompileExpression(node.Condition, ExpectType.Primitive);
 
             JavaInstruction branchGoto = new JavaInstruction(Java.OpCodes.ifne, null, node);
@@ -177,6 +179,11 @@ namespace CIL2Java
 
                 //Exceptions
                 case ILCode.Throw: CompileThrow(e, expectType); break;
+
+                //Logic
+                case ILCode.LogicNot: CompileLogicNot(e, expectType); break;
+                case ILCode.Cle: CompileCle(e, expectType); break;
+                case ILCode.Cle_Un: CompileCle_Un(e, expectType); break;
 
                 default: unknownNode = true; break;
             }
