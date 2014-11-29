@@ -27,7 +27,8 @@ namespace CIL2Java
                 ((IResolver)this).Resolve(methodDef, null);
             }
 
-            //TODO: Nested types
+            foreach (TypeDefinition nestedType in typeDef.NestedTypes)
+                ((IResolver)this).Resolve(nestedType, null);
         }
 
         public void AddAssemblyToCompile(AssemblyDefinition assemblyDef)

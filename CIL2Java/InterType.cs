@@ -198,9 +198,12 @@ namespace CIL2Java
             if (this.IsNested)
             {
                 this.declType = resolver.Resolve(typeRef.DeclaringType, this.genericArgs);
-                this.declType.NestedClasses.Add(this);
 
                 this.name = this.declType.Name + '/' + this.name;
+                this.nameSpace = this.declType.NameSpace;
+
+                if (this.declType.NestedClasses.Where(T => T.Fullname == this.Fullname).Count() == 0)
+                    this.declType.NestedClasses.Add(this);
             }
 
             Attributes.FromJavaAttribute fromJavaAttr = null;
