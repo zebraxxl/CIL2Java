@@ -1,6 +1,7 @@
 ﻿using Mono.Cecil;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CIL2Java
 {
@@ -46,8 +47,11 @@ namespace CIL2Java
 
         public void Compile()
         {
-            Messages.Verbose("Start of compilation");
+            Messages.Verbose("Finding and adding overloading methods...");
+            for (int i = 0; i < typesToCompile.Count; i++)
+                typesToCompile[i].CheckOverloadingMethods(this, loadedModules.Where(MD=>MD.Name == "corlib.dll").FirstOrDefault());
 
+            Messages.Verbose("Start of compilation");
             foreach (InterType type in typesToCompile)
             {
                 if ((type.IsFromJava) || (type.IsArray) || (type.IsByRef))

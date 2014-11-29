@@ -60,6 +60,7 @@
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.ByRef.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Call.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Consts.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.Exceptions.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Fields.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Objects.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Vars.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Java\Method.cs" />
     <Compile Include="Java\OpCodes.cs" />
     <Compile Include="Messages.cs" />
+    <Compile Include="MethodSignature.cs" />
     <Compile Include="PrimitiveType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

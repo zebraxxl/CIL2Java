@@ -27,6 +27,8 @@ namespace CIL2Java
             new InterType(PrimitiveType.Void,   "", "void", "System.Void")
         };
 
+        private TypeReference typeRef;
+
         private PrimitiveType primitiveType;
         private string nameSpace;
         private string name;
@@ -98,6 +100,8 @@ namespace CIL2Java
 
         public InterType(TypeReference typeRef, List<InterGenericArgument> genericArgs, IResolver resolver, Func<InterType, bool> register)
         {
+            this.typeRef = typeRef;
+
             genericArgs = genericArgs ?? InterGenericArgument.EmptyGenericArgsList;
             this.primitiveType = PrimitiveType.None;
             
@@ -269,6 +273,50 @@ namespace CIL2Java
             }
 
             return false;
+        }
+
+        public void CheckOverloadingMethods(IResolver resolver, ModuleDefinition corlib)
+        {
+            InterType firstBaseType = this.baseType;
+
+            if (typeRef == null)
+            {
+                if (corlib == null)
+                    return;
+
+                typeRef = corlib.GetType(cilBoxType);    
+            }
+
+            TypeDefinition typeDef = typeRef.Resolve();
+
+            if ((firstBaseType == null) && (typeDef .BaseType != null))
+                firstBaseType = resolver.Resolve(typeDef.BaseType, genericArgs);
+
+            var notAddedOverloadMethods = typeDef.Methods.Where(MD =>
+            {
+                if ((!MD.IsVirtual) || (MD.IsNewSlot))
+                    return false;
+
+                MethodSignature ms = new MethodSignature(MD);
+
+                if (methods.Where(M => ms == new MethodSignature(M)).Count() > 0)
+                    return false;
+                return true;
+            });
+
+            foreach (var method in notAddedOverloadMethods)
+            {
+                InterType baseType = firstBaseType;
+                MethodSignature ms = new MethodSignature(method);
+
+                while (baseType != null)
+                {
+                    if (baseType.methods.Where(im => new MethodSignature(im) == ms).Count() > 0)
+                        resolver.Resolve(method, genericArgs);
+
+                    baseType = baseType.baseType;
+                }
+            }
         }
     }
 }
