@@ -66,6 +66,11 @@ namespace CIL2Java
             TranslateType(InterType.PrimitiveTypes[(int)PrimitiveType.Int32], expect, e);
         }
 
+        private void CompileLdnull(ILExpression e, ExpectType expect)
+        {
+            codeGenerator.Add(Java.OpCodes.aconst_null, null, e);
+        }
+
         private void CompileDefaultValue(ILExpression e, ExpectType expect)
         {
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
