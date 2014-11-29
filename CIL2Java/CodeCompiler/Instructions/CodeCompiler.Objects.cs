@@ -12,9 +12,17 @@ namespace CIL2Java
             InterMethod ctor = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
 
             if (ctor.DeclaringType.IsArray)
-            {
                 CompileNewmultiarray(e, expect);
-                return;
+            else
+            {
+                Java.Constants.Class declTypeClassRef = new Java.Constants.Class(
+                    namesController.TypeNameToJava(ctor.DeclaringType.Fullname));
+
+                codeGenerator
+                    .Add(Java.OpCodes._new, declTypeClassRef, e)
+                    .Add(Java.OpCodes.dup, null, e);
+
+                CompileCall(e, expect);
             }
         }
 
