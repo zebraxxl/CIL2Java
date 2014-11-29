@@ -126,6 +126,7 @@ namespace CIL2Java
                 //Objects
                 case ILCode.Newobj: CompileNewobj(e, expectType); break;
                 case ILCode.Stobj: CompileStobj(e, expectType); break;
+                case ILCode.Box: CompileBox(e, expectType); break;
 
                 //Arrays
                 case ILCode.Newarr: CompileNewarr(e, expectType); break;

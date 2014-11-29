@@ -445,6 +445,11 @@ namespace CIL2Java
             return this;
         }
 
+        public JavaBytecodeWriter AddDefaultValue(JavaPrimitiveType jp)
+        {
+            return AddDefaultValue(jp, null);
+        }
+
         public JavaBytecodeWriter AddNewArray(JavaArrayType arrType, object tag)
         {
             if (arrType == JavaArrayType.Ref)

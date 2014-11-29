@@ -83,23 +83,32 @@ namespace CIL2Java
 
         InterType IResolver.Resolve(TypeReference typeRef, List<InterGenericArgument> genericArgs)
         {
+            InterType primitive = null;
+
             switch (typeRef.MetadataType)
             {
-                case MetadataType.Boolean: return InterType.PrimitiveTypes[(int)PrimitiveType.Bool];
-                case MetadataType.Byte: return InterType.PrimitiveTypes[(int)PrimitiveType.Byte];
-                case MetadataType.Char: return InterType.PrimitiveTypes[(int)PrimitiveType.Char];
-                case MetadataType.Double: return InterType.PrimitiveTypes[(int)PrimitiveType.Double];
-                case MetadataType.Int16: return InterType.PrimitiveTypes[(int)PrimitiveType.Int16];
-                case MetadataType.Int32: return InterType.PrimitiveTypes[(int)PrimitiveType.Int32];
-                case MetadataType.Int64: return InterType.PrimitiveTypes[(int)PrimitiveType.Int64];
-                case MetadataType.IntPtr: return InterType.PrimitiveTypes[(int)PrimitiveType.IntPtr];
-                case MetadataType.SByte: return InterType.PrimitiveTypes[(int)PrimitiveType.SByte];
-                case MetadataType.Single: return InterType.PrimitiveTypes[(int)PrimitiveType.Single];
-                case MetadataType.UInt16: return InterType.PrimitiveTypes[(int)PrimitiveType.UInt16];
-                case MetadataType.UInt32: return InterType.PrimitiveTypes[(int)PrimitiveType.UInt32];
-                case MetadataType.UInt64: return InterType.PrimitiveTypes[(int)PrimitiveType.UInt64];
-                case MetadataType.UIntPtr: return InterType.PrimitiveTypes[(int)PrimitiveType.UIntPtr];
-                case MetadataType.Void: return InterType.PrimitiveTypes[(int)PrimitiveType.Void];
+                case MetadataType.Boolean: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.Bool]; break;
+                case MetadataType.Byte: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.Byte]; break;
+                case MetadataType.Char: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.Char]; break;
+                case MetadataType.Double: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.Double]; break;
+                case MetadataType.Int16: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.Int16]; break;
+                case MetadataType.Int32: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.Int32]; break;
+                case MetadataType.Int64: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.Int64]; break;
+                case MetadataType.IntPtr: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.IntPtr]; break;
+                case MetadataType.SByte: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.SByte]; break;
+                case MetadataType.Single: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.Single]; break;
+                case MetadataType.UInt16: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.UInt16]; break;
+                case MetadataType.UInt32: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.UInt32]; break;
+                case MetadataType.UInt64: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.UInt64]; break;
+                case MetadataType.UIntPtr: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.UIntPtr]; break;
+                case MetadataType.Void: primitive = InterType.PrimitiveTypes[(int)PrimitiveType.Void]; break;
+            }
+
+            if (primitive != null)
+            {
+                if (typesToCompile.Where(T => T.Fullname == primitive.Fullname).Count() == 0)
+                    typesToCompile.Add(primitive);
+                return primitive;
             }
 
             if (!loadedModules.Contains(typeRef.Module))

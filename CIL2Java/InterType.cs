@@ -10,26 +10,27 @@ namespace CIL2Java
     {
         public static readonly InterType[] PrimitiveTypes = new InterType[]
         {
-            new InterType(PrimitiveType.Byte,   "", "byte"),
-            new InterType(PrimitiveType.SByte,  "", "sbyte"),
-            new InterType(PrimitiveType.Int16,  "", "short"),
-            new InterType(PrimitiveType.UInt16, "", "ushort"),
-            new InterType(PrimitiveType.Int32,  "", "int"),
-            new InterType(PrimitiveType.UInt32, "", "uint"),
-            new InterType(PrimitiveType.Int64,  "", "long"),
-            new InterType(PrimitiveType.UInt64, "", "ulong"),
-            new InterType(PrimitiveType.IntPtr, "", "native int"),
-            new InterType(PrimitiveType.UIntPtr, "", "unsigned native int"),
-            new InterType(PrimitiveType.Single, "", "float"),
-            new InterType(PrimitiveType.Double, "", "double"),
-            new InterType(PrimitiveType.Bool,   "", "bool"),
-            new InterType(PrimitiveType.Char,   "", "char"),
-            new InterType(PrimitiveType.Void,   "", "void")
+            new InterType(PrimitiveType.Byte,   "", "byte", "System.Byte"),
+            new InterType(PrimitiveType.SByte,  "", "sbyte", "System.SByte"),
+            new InterType(PrimitiveType.Int16,  "", "short", "System.Int16"),
+            new InterType(PrimitiveType.UInt16, "", "ushort", "System.UInt16"),
+            new InterType(PrimitiveType.Int32,  "", "int", "System.Int32"),
+            new InterType(PrimitiveType.UInt32, "", "uint", "System.UInt32"),
+            new InterType(PrimitiveType.Int64,  "", "long", "System.Int64"),
+            new InterType(PrimitiveType.UInt64, "", "ulong", "System.UInt64"),
+            new InterType(PrimitiveType.IntPtr, "", "native int", "System.IntPtr"),
+            new InterType(PrimitiveType.UIntPtr, "", "unsigned native int", "System.UIntPtr"),
+            new InterType(PrimitiveType.Single, "", "float", "System.Single"),
+            new InterType(PrimitiveType.Double, "", "double", "System.Double"),
+            new InterType(PrimitiveType.Bool,   "", "bool", "System.Boolean"),
+            new InterType(PrimitiveType.Char,   "", "char", "System.Char"),
+            new InterType(PrimitiveType.Void,   "", "void", "System.Void")
         };
 
         private PrimitiveType primitiveType;
         private string nameSpace;
         private string name;
+        private string cilBoxType;
         private InterType baseType = null;
         private InterType declType = null;
         private List<InterType> interfaces = new List<InterType>();
@@ -46,6 +47,7 @@ namespace CIL2Java
 
         public string NameSpace { get { return nameSpace; } }
         public string Name { get { return name; } }
+        public string CILBoxType { get { return cilBoxType; } }
         public string Fullname
         {
             get
@@ -243,11 +245,12 @@ namespace CIL2Java
                 this.IsDelegate = false;
         }
 
-        private InterType(PrimitiveType primitiveType, string nameSpace, string name)
+        private InterType(PrimitiveType primitiveType, string nameSpace, string name, string cilBoxType)
         {
             this.primitiveType = primitiveType;
             this.nameSpace = nameSpace;
             this.name = name;
+            this.cilBoxType = cilBoxType;
         }
 
         public override string ToString()

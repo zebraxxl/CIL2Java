@@ -10,6 +10,7 @@ namespace CIL2Java
         CantLoadInputAssembly,
         CantWriteJavaClassFile,
         UnknownNode,
+        UnknownPrimitiveType,
 
         InputUnknown = 1000,
         InvalidInputParameterFormat,
@@ -31,7 +32,8 @@ namespace CIL2Java
             "File \"{0}\" not found",
             "Can't load input assembly from \"{0}\" (exception: {1})",
             "Can't write java class {0} file (Exception message: {1})",
-            "Unknown IL graph node: {0}"
+            "Unknown IL graph node: {0}",
+            "Unknown primitive type {0}. Unable it to box. Boxing as Integer",
         };
 
         private static string[] WarringsStrings = {

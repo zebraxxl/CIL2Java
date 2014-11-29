@@ -11,7 +11,8 @@ namespace CIL2Java
             Any,
             Primitive,
             Reference,
-            ByRef
+            ByRef,
+            Boxed
         }
 
         private ExpectType GetExpectType(InterParameter param)
@@ -49,24 +50,9 @@ namespace CIL2Java
 
             if (expected == ExpectType.None)
                 codeGenerator.AddPop(JavaHelpers.InterTypeToJavaPrimitive(type), tag);
-            else if (expected == ExpectType.Primitive)
-            {
-                if (!type.IsPrimitive)
-                {
-                    //TODO: Unbox???
-                }
-            }
-            else if (expected == ExpectType.Reference)
-            {
-                if (type.IsPrimitive)
-                {
-                    //TODO: Box???
-                }
-            }
-            else if (expected == ExpectType.ByRef)
-            {
 
-            }
+            if ((expected == ExpectType.Boxed) && (type.IsPrimitive))
+                BoxType(type, tag);
         }
     }
 }

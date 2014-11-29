@@ -43,5 +43,10 @@ namespace CIL2Java
                 //TODO: CompileStobj
             }
         }
+
+        private void CompileBox(ILExpression e, ExpectType expect)
+        {
+            CompileExpression(e.Arguments[0], ExpectType.Boxed);
+        }
     }
 }

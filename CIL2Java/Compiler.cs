@@ -53,6 +53,12 @@ namespace CIL2Java
                 if ((type.IsFromJava) || (type.IsArray) || (type.IsByRef))
                     continue;
 
+                if (type.IsPrimitive)
+                {
+                    CompilePrimitive(type);
+                    continue;
+                }
+
                 Java.Class javaClass = ComplileType(type);
                 WriteClass(javaClass);
             }
