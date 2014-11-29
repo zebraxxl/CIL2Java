@@ -44,6 +44,22 @@ namespace CIL2Java
             }
         }
 
+        private void CompileLdobj(ILExpression e, ExpectType expect)
+        {
+            InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+
+            if ((operand.IsPrimitive) && (e.Arguments[0].Code == ILCode.Ldloc) &&
+                (((ILVariable)e.Arguments[0].Operand).Name == "this"))
+            {
+                //Special treatment. Value for primitive types
+                codeGenerator
+                    .Add(Java.OpCodes.aload_0, null, e)
+                    .Add(Java.OpCodes.getfield, new Java.Constants.FieldRef(
+                        namesController.TypeNameToJava(operand.CILBoxType), "value",
+                        namesController.GetFieldDescriptor(operand)), e);
+            }
+        }
+
         private void CompileBox(ILExpression e, ExpectType expect)
         {
             CompileExpression(e.Arguments[0], ExpectType.Boxed);

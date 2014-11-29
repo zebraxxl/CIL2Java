@@ -52,6 +52,8 @@
     <Compile Include="java\lang\CharSequence.cs" />
     <Compile Include="java\lang\Class.cs" />
     <Compile Include="java\lang\Comparable.cs" />
+    <Compile Include="java\lang\Integer.cs" />
+    <Compile Include="java\lang\Number.cs" />
     <Compile Include="java\lang\Object.cs" />
     <Compile Include="java\lang\reflect\AccessibleObject.cs" />
     <Compile Include="java\lang\reflect\AnnotatedElement.cs" />

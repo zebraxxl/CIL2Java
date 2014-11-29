@@ -65,7 +65,7 @@ namespace System
         [SecuritySafeCriticalAttribute()]
         public override string ToString()
         {
-             throw new NotImplementedException();
+            return java.lang.Integer.ToString(this.value);
         }
         
         
