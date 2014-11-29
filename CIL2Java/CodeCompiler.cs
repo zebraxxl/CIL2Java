@@ -78,11 +78,32 @@ namespace CIL2Java
                 CompileBlock((ILBlock)node);
             else if (node is ILExpression)
                 CompileExpression((ILExpression)node, expectType);
+            else if (node is ILCondition)
+                CompileCondition((ILCondition)node, expectType);
             else
                 unknownNode = true;
 
             if (unknownNode)
                 Messages.Message(MessageCode.UnknownNode, node.ToString());
+        }
+
+        private void CompileCondition(ILCondition node, ExpectType expectType)
+        {
+            CompileExpression(node.Condition, ExpectType.Primitive);
+
+            JavaInstruction branchGoto = new JavaInstruction(Java.OpCodes.ifne, null, node);
+            codeGenerator.AddInstruction(branchGoto);
+
+            CompileBlock(node.TrueBlock);
+
+            JavaInstruction trueEndGoto = new JavaInstruction(Java.OpCodes._goto, null, node);
+            codeGenerator.AddInstruction(trueEndGoto);
+
+            codeGenerator.OnNextInstruction += I => branchGoto.Operand = I;
+            
+            CompileBlock(node.FalseBlock);
+
+            codeGenerator.OnNextInstruction += I => trueEndGoto.Operand = I;
         }
 
         private void CompileExpression(ILExpression e, ExpectType expectType)
