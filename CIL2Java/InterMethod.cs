@@ -58,13 +58,25 @@ namespace CIL2Java
                     methodMapCustomAttr = methodDef.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.JavaBoxMethodMapAttribute).FirstOrDefault();
             }
 
+            declType = resolver.Resolve(methodRef.DeclaringType, genericArgs);
             if (methodMapCustomAttr != null)
-                declType = resolver.Resolve(methodMapCustomAttr.ConstructorArguments[0].Value as TypeReference, genericArgs);
-            else
-                declType = resolver.Resolve(methodRef.DeclaringType, genericArgs);
+            {
+                TypeReference realDeclType = methodMapCustomAttr.ConstructorArguments[0].Value as TypeReference;
 
-            if (methodMapCustomAttr != null)
-                name = methodMapCustomAttr.ConstructorArguments[1].Value as string;
+                MethodSignature thisMethod = new MethodSignature(methodRef);
+                if ((methodMapCustomAttr.ConstructorArguments.Count > 2) &&
+                    ((bool)methodMapCustomAttr.ConstructorArguments[2].Value))
+                    thisMethod.Parameters = new string[] { declType.Fullname }.Union(thisMethod.Parameters).ToArray();
+                thisMethod.Name = methodMapCustomAttr.ConstructorArguments[1].Value as string;
+
+                TypeDefinition realDeclTypeDef = realDeclType.Resolve();
+                MethodDefinition md = realDeclTypeDef.Methods.Where(M => new MethodSignature(M) == thisMethod).FirstOrDefault();
+                if (md == null)
+                    throw new Exception();  //TODO: mapping error
+
+                onFounded(resolver.Resolve(md, genericArgs));
+                return;
+            }
             else
                 name = methodRef.Name;
 
