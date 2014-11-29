@@ -52,7 +52,8 @@ namespace CIL2Java
             if (ilBody.Body.Count > 0)
             {
                 ILNode lastNode = ilBody.Body.Last();
-                if ((lastNode is ILExpression) && (((ILExpression)lastNode).Code != ILCode.Ret))
+                if ((lastNode is ILExpression) && (((ILExpression)lastNode).Code != ILCode.Ret) &&
+                    (((ILExpression)lastNode).Code != ILCode.Throw))
                     CompileRet(null, ExpectType.None);
             }
             else
@@ -151,6 +152,9 @@ namespace CIL2Java
                 case ILCode.Ldelem_U1: CompileLdelem(e, expectType); break;
                 case ILCode.Ldelem_U2: CompileLdelem(e, expectType); break;
                 case ILCode.Ldelem_U4: CompileLdelem(e, expectType); break;
+
+                //Exceptions
+                case ILCode.Throw: CompileThrow(e, expectType); break;
 
                 default: unknownNode = true; break;
             }
