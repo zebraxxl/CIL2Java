@@ -24,7 +24,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Debug\corlib.XML</DocumentationFile>
-    <NoWarn>1591,1573,1584,1658,1734,1571,0618,1574,0067</NoWarn>
+    <NoWarn>1591,1573,1584,1658,1734,1571,0618,1574,0067,1570</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -44,7 +44,17 @@
     <Compile Include="CIL2Java\Attributes\JavaBoxTypeMapAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\MethodMapAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\TypeMapAttribute.cs" />
-    <Compile Include="CIL2Java\Local.cs" />
+    <Compile Include="CIL2Java\Maps\Array.cs" />
+    <Compile Include="CIL2Java\Utils.cs" />
+    <Compile Include="java\lang\Boolean.cs" />
+    <Compile Include="java\lang\Byte.cs" />
+    <Compile Include="java\lang\Character.cs" />
+    <Compile Include="java\lang\Double.cs" />
+    <Compile Include="java\lang\Float.cs" />
+    <Compile Include="java\lang\Long.cs" />
+    <Compile Include="java\lang\reflect\Array.cs" />
+    <Compile Include="java\lang\Short.cs" />
+    <Compile Include="Local.cs" />
     <Compile Include="CIL2Java\Maps\Object.cs" />
     <Compile Include="CIL2Java\Maps\String.cs" />
     <Compile Include="java\io\PrintStream.cs" />

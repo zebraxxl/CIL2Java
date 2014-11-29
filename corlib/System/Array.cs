@@ -4,12 +4,14 @@ using System.Collections.ObjectModel;
 using System.Runtime.ConstrainedExecution;
 using System.Security;
 using System.Collections.Generic;
+using CIL2Java.Attributes;
 
 namespace System
 {
     /// <summary>Provides methods for creating, manipulating, searching, and sorting arrays, thereby serving as the base class for all arrays in the common language runtime.</summary><filterpriority>1</filterpriority>
     [Serializable]
     [ComVisibleAttribute(true)]
+    [TypeMap(typeof(java.lang.Object))]
     public abstract class Array : ICloneable, IList, IStructuralComparable, IStructuralEquatable
     {
     
@@ -235,9 +237,10 @@ namespace System
         
         /// <summary>Sets a value to the element at the specified position in the one-dimensional <see cref="T:System.Array" />. The index is specified as a 32-bit integer.</summary><param name="value">The new value for the specified element.</param><param name="index">A 32-bit integer that represents the position of the <see cref="T:System.Array" /> element to set.</param><exception cref="T:System.ArgumentException">The current <see cref="T:System.Array" /> does not have exactly one dimension.</exception><exception cref="T:System.InvalidCastException"><paramref name="value" /> cannot be cast to the element type of the current <see cref="T:System.Array" />.</exception><exception cref="T:System.IndexOutOfRangeException"><paramref name="index" /> is outside the range of valid indexes for the current <see cref="T:System.Array" />.</exception><filterpriority>1</filterpriority>
         [SecuritySafeCriticalAttribute()]
+        [MethodMap(typeof(CIL2Java.Maps.Array), "SetValue", true)]
         public void SetValue(object value, int index)
         {
-             throw new NotImplementedException();
+            throw new InvalidOperationException(Local.GetText("Mapped method calling not supported"));
         }
         
         

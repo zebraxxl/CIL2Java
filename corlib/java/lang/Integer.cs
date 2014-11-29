@@ -52,5 +52,22 @@ namespace java.lang
         /// represented by the argument in hexadecimal (base 16).</returns>
         [FromJava]
         public static string toHexString(int i) { return null; }
+
+        /**
+         * Returns an {@code Integer} instance representing the specified
+         * {@code int} value.  If a new {@code Integer} instance is not
+         * required, this method should generally be used in preference to
+         * the constructor {@link #Integer(int)}, as this method is likely
+         * to yield significantly better space and time performance by
+         * caching frequently requested values.
+         *
+         * This method will always cache values in the range -128 to 127,
+         * inclusive, and may cache other values outside of this range.
+         *
+         * @param  i an {@code int} value.
+         * @return an {@code Integer} instance representing {@code i}.
+         * @since  1.5
+         */
+        public static Integer valueOf(int i) { return null; }
     }
 }
