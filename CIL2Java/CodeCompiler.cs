@@ -49,8 +49,13 @@ namespace CIL2Java
             CompileNode(ilBody, ExpectType.None);
 
             //Checking for deleted last ret
-            ILNode lastNode = ilBody.Body.Last();
-            if ((lastNode is ILExpression) && (((ILExpression)lastNode).Code != ILCode.Ret))
+            if (ilBody.Body.Count > 0)
+            {
+                ILNode lastNode = ilBody.Body.Last();
+                if ((lastNode is ILExpression) && (((ILExpression)lastNode).Code != ILCode.Ret))
+                    CompileRet(null, ExpectType.None);
+            }
+            else
                 CompileRet(null, ExpectType.None);
 
             Messages.Verbose("      Linking java bytecode...");
