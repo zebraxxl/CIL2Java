@@ -64,6 +64,8 @@ namespace CIL2Java
         {
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
 
+            CompileExpression(e.Arguments[0], ExpectType.Reference);
+
             //  dup
             //  instanceof operand
             //  ifne :end
@@ -91,12 +93,12 @@ namespace CIL2Java
 
         private void CompileUnbox_Any(ILExpression e, ExpectType expect)
         {
+            CompileExpression(e.Arguments[0], ExpectType.Boxed);
+
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
             string boxType = GetBoxType(operand);
 
             Java.Constants.Class operandRef = new Java.Constants.Class(namesController.TypeNameToJava(boxType));
-
-            
 
             Java.Constants.MethodRef valueRef = new Java.Constants.MethodRef(operandRef.Value,
                 Utils.GetJavaTypeName(operand.PrimitiveType) + "Value",
