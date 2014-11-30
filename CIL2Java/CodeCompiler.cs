@@ -17,6 +17,7 @@ namespace CIL2Java
         private Java.ConstantPool constsPool;
         private Java.Attributes.Code resultCode = null;
         private Random rnd = new Random();
+        private ILBlock ilBody;
 
         public Java.Attributes.Code Result { get { return resultCode; } }
 
@@ -37,7 +38,7 @@ namespace CIL2Java
             Messages.Verbose("      Generating IL graph...");
 
             ILAstBuilder builder = new ILAstBuilder();
-            ILBlock ilBody = new ILBlock();
+            ilBody = new ILBlock();
 
             DecompilerContext context = new DecompilerContext(methodDef.Module) { CurrentType = methodDef.DeclaringType, CurrentMethod = methodDef };
 
