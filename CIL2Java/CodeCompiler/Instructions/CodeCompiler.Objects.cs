@@ -1,4 +1,5 @@
-﻿using ICSharpCode.Decompiler.ILAst;
+﻿using CIL2Java.Java.Constants;
+using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,14 @@ namespace CIL2Java
                     .Add(Java.OpCodes.getfield, new Java.Constants.FieldRef(
                         namesController.TypeNameToJava(operand.CILBoxType), "value",
                         namesController.GetFieldDescriptor(operand)), e);
+            }
+            else if (operand.IsValueType)
+            {
+                CompileExpression(e.Arguments[0], ExpectType.ByRef);
+                MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operand.Fullname),
+                    ClassNames.ValueTypeGetCopy, "()" + namesController.GetFieldDescriptor(operand));
+
+                codeGenerator.Add(Java.OpCodes.invokevirtual, getCopyRef);
             }
         }
 
