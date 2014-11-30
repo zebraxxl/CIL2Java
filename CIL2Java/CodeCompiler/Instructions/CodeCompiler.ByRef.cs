@@ -61,6 +61,19 @@ namespace CIL2Java
         {
             InterField operand = resolver.Resolve((FieldReference)e.Operand, thisMethod.FullGenericArguments);
 
+            if (operand.FieldType.IsValueType)
+            {
+                FieldRef fldRef = new FieldRef(namesController.TypeNameToJava(operand.DeclaringType.Fullname),
+                    namesController.FieldNameToJava(operand.Name), namesController.GetFieldDescriptor(operand.FieldType));
+
+                if (e.Code == ILCode.Ldflda)
+                    CompileExpression(e.Arguments[0], ExpectType.Reference);
+
+                codeGenerator.Add(e.Code == ILCode.Ldflda ? OpCodes.getfield : OpCodes.getstatic, fldRef, e);
+
+                return;
+            }
+
             string byRefTypeName = byRefController.GetFieldByRefTypeName(operand.FieldType);
 
             Java.Constants.Class constByRefType = new Java.Constants.Class(namesController.TypeNameToJava(byRefTypeName));
