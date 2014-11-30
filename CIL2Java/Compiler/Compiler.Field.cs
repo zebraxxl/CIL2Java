@@ -12,6 +12,9 @@ namespace CIL2Java
         {
             StringBuilder result = new StringBuilder();
 
+            if ((type.IsByRef) && (type.ElementType.IsValueType))
+                type = type.ElementType;
+
             if (type.IsArray)
                 result
                     .Append('[', type.ArrayRank)
