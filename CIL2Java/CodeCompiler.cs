@@ -62,9 +62,10 @@ namespace CIL2Java
 
             Messages.Verbose("      Linking java bytecode...");
             byte[] codeBytes = codeGenerator.Link(constsPool);
+            byte[] prolog = GenerateMethodProlog();
 
             resultCode = new Java.Attributes.Code();
-            resultCode.CodeBytes = codeBytes;
+            resultCode.CodeBytes = prolog.Concat(codeBytes).ToArray();
 
             Messages.Verbose("      Simulating stack to calculate MaxStack and MaxLocals...");
             StackSimulator.SimulateStack(constsPool, resultCode);
