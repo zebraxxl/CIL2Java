@@ -26,7 +26,7 @@ namespace CIL2Java
             if (arrayType == JavaArrayType.Ref)
             {
                 codeGenerator.Add(Java.OpCodes.anewarray,
-                    new Java.Constants.Class(namesController.TypeNameToJava(operand.ElementType.Fullname)), e);
+                    new Java.Constants.Class(namesController.TypeNameToJava(operand.Fullname)), e);
             }
             else
                 codeGenerator.AddNewArray(arrayType, e);
