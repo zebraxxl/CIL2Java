@@ -100,9 +100,19 @@ namespace CIL2Java
 
             Java.Constants.Class operandRef = new Java.Constants.Class(namesController.TypeNameToJava(boxType));
 
-            Java.Constants.MethodRef valueRef = new Java.Constants.MethodRef(operandRef.Value,
-                Utils.GetJavaTypeName(operand.PrimitiveType) + "Value",
-                "()" + namesController.GetFieldDescriptor(operand));
+            Java.Constants.MethodRef valueRef;
+
+            if (operand.IsValueType)
+            {
+                valueRef = new Java.Constants.MethodRef(operandRef.Value, ClassNames.ValueTypeGetCopy, "()" +
+                    namesController.GetFieldDescriptor(operand));
+            }
+            else
+            {
+                valueRef = new Java.Constants.MethodRef(operandRef.Value,
+                    Utils.GetJavaTypeName(operand.PrimitiveType) + "Value",
+                    "()" + namesController.GetFieldDescriptor(operand));
+            }
 
             codeGenerator
                 .Add(Java.OpCodes.checkcast, operandRef, e)
