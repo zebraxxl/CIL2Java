@@ -48,6 +48,9 @@ namespace CIL2Java
             foreach (InterType i in type.Interfaces)
                 currentJavaClass.Interfaces.Add(TypeNameToJava(i.Fullname));
 
+            if (type.IsValueType)
+                CompileValueType(type);
+
             currentJavaInnerClasses = new Java.Attributes.InnerClasses();
 
             if (type.DeclaringType != null)

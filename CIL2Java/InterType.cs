@@ -150,7 +150,7 @@ namespace CIL2Java
             this.IsAbstract = typeDef.IsAbstract;
             this.IsSealed = typeDef.IsSealed;
             this.IsInterface = typeDef.IsInterface;
-            this.IsValueType = typeDef.IsValueType;
+            this.IsValueType = typeDef.IsValueType && !typeDef.IsPrimitive && !typeDef.IsEnum;
             this.IsEnum = typeDef.IsEnum;
 
             this.nameSpace = typeRef.Namespace;

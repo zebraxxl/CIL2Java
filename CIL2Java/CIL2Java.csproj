@@ -75,6 +75,7 @@
     <Compile Include="Compiler\Compiler.Method.cs" />
     <Compile Include="Compiler\Compiler.Names.cs" />
     <Compile Include="Compiler\Compiler.Type.cs" />
+    <Compile Include="Compiler\Compiler.ValueType.cs" />
     <Compile Include="GenericArgument.cs" />
     <Compile Include="IByRefController.cs" />
     <Compile Include="INamesController.cs" />
