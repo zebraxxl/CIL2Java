@@ -28,7 +28,8 @@ namespace CIL2Java
                 return;
             }
 
-            if ((operand.IsConstructor) && (operand.DeclaringType.IsValueType) && (operand.Parameters.Count < e.Arguments.Count))
+            if ((operand.IsConstructor) && (operand.DeclaringType.IsValueType) && (operand.Parameters.Count < e.Arguments.Count)
+                && (!thisMethod.IsConstructor))
             {
                 // rebuild nodes from `call ctor(getVar(), [params])` to
                 // setVar(newObj([params])
