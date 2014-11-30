@@ -31,10 +31,25 @@ namespace CIL2Java
             int varIndex = GetVarIndex(operand);
             InterType operandType = resolver.Resolve(operand.Type, thisMethod.FullGenericArguments);
 
-            //TODO: GetExpectType(InterParameter);
-            CompileNode(e.Arguments[0], GetExpectType(operandType));
+            if ((operandType.IsValueType) && (e.Arguments[0].Code == ILCode.DefaultValue))
+            {
+                // In il this looks like `initobj(ldloca(var))`
+                // But ILSpy optimizing it to `stloc(var, defaultvalue())`
 
-            codeGenerator.AddLocalVarInstruction(LocalVarInstruction.Store, JavaHelpers.InterTypeToJavaPrimitive(operandType), varIndex, e);
+                MethodRef zeroFillRef = new MethodRef(namesController.TypeNameToJava(operandType.Fullname),
+                    ClassNames.ValueTypeZeroFill, "()V");
+
+                codeGenerator
+                    .AddLoad(JavaPrimitiveType.Ref, varIndex)
+                    .Add(Java.OpCodes.invokevirtual, zeroFillRef);
+            }
+            else
+            {
+                //TODO: GetExpectType(InterParameter);
+                CompileNode(e.Arguments[0], GetExpectType(operandType));
+
+                codeGenerator.AddLocalVarInstruction(LocalVarInstruction.Store, JavaHelpers.InterTypeToJavaPrimitive(operandType), varIndex, e);
+            }
         }
     }
 }
