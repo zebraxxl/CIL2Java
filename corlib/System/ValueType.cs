@@ -31,9 +31,6 @@ namespace System
         
         protected ValueType()
         {
-             throw new NotImplementedException();
         }
-        
-        
     }
 }

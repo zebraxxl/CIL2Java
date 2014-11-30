@@ -51,6 +51,14 @@ namespace CIL2Java
             for (int i = 0; i < typesToCompile.Count; i++)
                 typesToCompile[i].CheckOverloadingMethods(this, loadedModules.Where(MD=>MD.Name == "corlib.dll").FirstOrDefault());
 
+            //Special: adding default ctor for System.ValueType
+            if (typesToCompile.Where(T => T.Fullname == "System.ValueType").Count() > 0)
+            {
+                ((IResolver)this).Resolve(loadedModules.Where(M => M.Name.Contains("corlib")).FirstOrDefault()
+                    .GetType("System.ValueType").Methods.Where(M => (M.IsConstructor && M.Parameters.Count == 0))
+                    .FirstOrDefault(), null);
+            }
+
             Messages.Verbose("Start of compilation");
             foreach (InterType type in typesToCompile)
             {
