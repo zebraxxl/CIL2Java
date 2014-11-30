@@ -15,6 +15,12 @@ namespace CIL2Java
             int varIndex = GetVarIndex(operand);
             InterType operandType = resolver.Resolve(operand.Type, thisMethod.FullGenericArguments);
 
+            if (operandType.IsValueType)
+            {
+                codeGenerator.AddLoad(JavaPrimitiveType.Ref, varIndex);
+                return;
+            }
+
             string localByRefName = byRefController.GetLocalByRefTypeName(operandType);
             Java.Constants.Class localByRefNameClass =
                 new Java.Constants.Class(namesController.TypeNameToJava(localByRefName));
