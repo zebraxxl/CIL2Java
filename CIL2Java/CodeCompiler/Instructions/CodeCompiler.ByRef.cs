@@ -128,6 +128,13 @@ namespace CIL2Java
         {
             e = e.Arguments[0];
 
+            if (e.Operand is TypeReference)
+            {
+                //ValueType
+                CompileExpression(e, expectType);
+                return;
+            }
+
             InterMethod method = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
             InterType operand = method.DeclaringType;
 
