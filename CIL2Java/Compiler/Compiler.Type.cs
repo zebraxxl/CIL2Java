@@ -1,5 +1,8 @@
-﻿using System;
+﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CIL2Java
 {
@@ -79,10 +82,47 @@ namespace CIL2Java
             foreach (InterMethod method in type.Methods)
                 currentJavaClass.Methods.Add(CompileMethod(method));
 
+            bool hasStaticCtor = type.Methods.Where(M => ((M.IsConstructor) && (M.IsStatic))).Count() > 0;
+            bool needStaticCtor = type.Fields.Where(F => ((F.FieldType.IsValueType) && (F.IsStatic))).Count() > 0;
+
+            if ((needStaticCtor) && (!hasStaticCtor))
+                GenerateStaticCtor(type);
+
             if (currentJavaInnerClasses.Classes.Count > 0)
                 currentJavaClass.Attributes.Add(currentJavaInnerClasses);
 
             return currentJavaClass;
+        }
+
+        private void GenerateStaticCtor(InterType type)
+        {
+            Method ctor = new Method();
+            ctor.AccessFlags = MethodAccessFlags.Static;
+            ctor.Name = "<clinit>";
+            ctor.Descriptor = "()V";
+
+            JavaBytecodeWriter codeWriter = new JavaBytecodeWriter();
+
+            var staticValueTypeFields = type.Fields.Where(F => ((F.IsStatic) && (F.FieldType.IsValueType)));
+
+            foreach (InterField fld in staticValueTypeFields)
+            {
+                Java.Constants.Class fldTypeRef = new Java.Constants.Class(TypeNameToJava(fld.FieldType.Fullname));
+                MethodRef fldTypeInitRef = new MethodRef(fldTypeRef.Value, ClassNames.JavaConstructorMethodName, "()V");
+                FieldRef fldRef = new FieldRef(TypeNameToJava(type.Fullname), FieldNameToJava(fld.Name),
+                    GetFieldDescriptor(fld.FieldType));
+
+                codeWriter
+                    .Add(OpCodes._new, fldTypeRef)
+                    .Add(OpCodes.dup)
+                    .Add(OpCodes.invokespecial, fldTypeInitRef)
+                    .Add(OpCodes.putstatic, fldRef);
+            }
+
+            codeWriter.AddReturn(JavaPrimitiveType.Void);
+
+            ctor.Attributes.Add(codeWriter.End(currentJavaClass.ConstantPool));
+            currentJavaClass.Methods.Add(ctor);
         }
     }
 }
