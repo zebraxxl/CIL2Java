@@ -3,6 +3,7 @@ using CIL2Java.Java.Constants;
 using ICSharpCode.Decompiler.ILAst;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CIL2Java
 {
@@ -31,6 +32,28 @@ namespace CIL2Java
                     codeGenerator
                         .Add(OpCodes.aload_0)
                         .Add(OpCodes.invokespecial, superCall);
+                }
+
+                var valueTypeFields = thisMethod.DeclaringType.Fields
+                    .Where(F => ((F.FieldType.IsValueType) && (F.IsStatic == thisMethod.IsStatic)));
+                OpCodes putfield = thisMethod.IsStatic ? OpCodes.putstatic : OpCodes.putfield;
+
+                foreach (InterField fld in valueTypeFields)
+                {
+                    Java.Constants.Class fldTypeRef = new Java.Constants.Class(
+                        namesController.TypeNameToJava(fld.FieldType.Fullname));
+                    MethodRef ctorRef = new MethodRef(fldTypeRef.Value, ClassNames.JavaConstructorMethodName, "()V");
+                    FieldRef fldRef = new FieldRef(namesController.TypeNameToJava(fld.DeclaringType.Fullname),
+                        namesController.FieldNameToJava(fld.Name), namesController.GetFieldDescriptor(fld.FieldType));
+
+                    if (!thisMethod.IsStatic)
+                        codeGenerator.Add(OpCodes.aload_0);
+
+                    codeGenerator
+                        .Add(OpCodes._new, fldTypeRef)
+                        .Add(OpCodes.dup)
+                        .Add(OpCodes.invokespecial, ctorRef)
+                        .Add(putfield, fldRef);
                 }
             }
 
