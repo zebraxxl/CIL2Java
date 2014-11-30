@@ -1,4 +1,5 @@
-﻿using ICSharpCode.Decompiler.ILAst;
+﻿using CIL2Java.Java.Constants;
+using ICSharpCode.Decompiler.ILAst;
 using System;
 using System.Collections.Generic;
 
@@ -15,7 +16,13 @@ namespace CIL2Java
             //TODO: GetExpectType(InterParameter);
             codeGenerator.AddLocalVarInstruction(LocalVarInstruction.Load, JavaHelpers.InterTypeToJavaPrimitive(operandType), varIndex, e);
 
-            TranslateType(operandType, expectType, e);
+            if (operandType.IsValueType)
+            {
+                MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operandType.Fullname),
+                    ClassNames.ValueTypeGetCopy, "()" + namesController.GetFieldDescriptor(operandType));
+                codeGenerator.Add(Java.OpCodes.invokevirtual, getCopyRef, e);
+            } else
+                TranslateType(operandType, expectType, e);
         }
 
         private void CompileStloc(ILExpression e, ExpectType expectType)
