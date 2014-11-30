@@ -39,10 +39,19 @@ namespace CIL2Java
                 // the stind instruction provides a shorthand for the stobj instruction.
                 CompileStind(e, expect);
             }
-            else
+            else if (operand.IsValueType)
             {
-                //TODO: CompileStobj
+                // stobj(destPtr, src) compiling to
+                // src.CopyTo(destPtr)
+                CompileExpression(e.Arguments[1], ExpectType.Any);
+                CompileExpression(e.Arguments[0], ExpectType.ByRef);
+
+                MethodRef copyToRef = new MethodRef(namesController.TypeNameToJava(operand.Fullname),
+                    ClassNames.ValueTypeCopyTo, "(" + namesController.GetFieldDescriptor(operand) + ")V");
+
+                codeGenerator.Add(Java.OpCodes.invokevirtual, copyToRef, e);
             }
+            //TODO: CompileStobj
         }
 
         private void CompileLdobj(ILExpression e, ExpectType expect)
@@ -65,7 +74,7 @@ namespace CIL2Java
                 MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operand.Fullname),
                     ClassNames.ValueTypeGetCopy, "()" + namesController.GetFieldDescriptor(operand));
 
-                codeGenerator.Add(Java.OpCodes.invokevirtual, getCopyRef);
+                codeGenerator.Add(Java.OpCodes.invokevirtual, getCopyRef, e);
             }
         }
 
