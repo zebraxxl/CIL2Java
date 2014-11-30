@@ -47,15 +47,7 @@ namespace CIL2Java
 
                     codeGenerator.Add(Java.OpCodes.dup, null, e);
                     codeGenerator.AddIntConst(i, e);
-
-                    if (e.Arguments[i].Code != ILCode.DefaultValue)
-                        CompileExpression(e.Arguments[i], GetExpectType(element));
-                    else
-                        codeGenerator
-                            .Add(Java.OpCodes._new, operandRef, e)
-                            .Add(Java.OpCodes.dup, null, e)
-                            .Add(Java.OpCodes.invokespecial, valueTypeInitRef, e);
-
+                    CompileExpression(e.Arguments[i], GetExpectType(element));
                     codeGenerator.AddArrayStore(arrayType, e);
                 }
             }

@@ -1,4 +1,5 @@
-﻿using ICSharpCode.Decompiler.ILAst;
+﻿using CIL2Java.Java.Constants;
+using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
@@ -74,7 +75,19 @@ namespace CIL2Java
         private void CompileDefaultValue(ILExpression e, ExpectType expect)
         {
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
-            codeGenerator.AddDefaultValue(JavaHelpers.InterTypeToJavaPrimitive(operand), e);
+
+            if (operand.IsValueType)
+            {
+                Java.Constants.Class operandRef = new Java.Constants.Class(namesController.TypeNameToJava(operand.Fullname));
+                MethodRef operandCtorRef = new MethodRef(operandRef.Value, ClassNames.JavaConstructorMethodName, "()V");
+
+                codeGenerator
+                    .Add(Java.OpCodes._new, operandRef, e)
+                    .Add(Java.OpCodes.dup, null, e)
+                    .Add(Java.OpCodes.invokespecial, operandCtorRef, e);
+            }
+            else
+                codeGenerator.AddDefaultValue(JavaHelpers.InterTypeToJavaPrimitive(operand), e);
             TranslateType(operand, expect, e);
         }
     }
