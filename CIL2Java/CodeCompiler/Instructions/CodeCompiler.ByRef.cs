@@ -103,6 +103,15 @@ namespace CIL2Java
             InterType operand = resolver.Resolve(typeRef, thisMethod.FullGenericArguments);
             JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand);
 
+            if (operand.IsValueType)
+            {
+                CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
+                CompileExpression(e.Arguments[1], ExpectType.Primitive);    //index
+
+                codeGenerator.Add(OpCodes.aaload, null, e);
+                return;
+            }
+
             string arrayByRefName = byRefController.GetArrayByRefTypeName(operand);
             Java.Constants.Class arrayByRefNameClass =
                 new Java.Constants.Class(namesController.TypeNameToJava(arrayByRefName));

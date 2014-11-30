@@ -1,4 +1,5 @@
-﻿using ICSharpCode.Decompiler.ILAst;
+﻿using CIL2Java.Java.Constants;
+using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,18 @@ namespace CIL2Java
         private void CompileNewarr(ILExpression e, ExpectType expect)
         {
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+            InterType element = operand;
+            if (element.IsArray) element = element.ElementType;
+
+            Java.Constants.Class operandRef = new Java.Constants.Class(namesController.TypeNameToJava(element.Fullname));
+            MethodRef valueTypeInitRef = new MethodRef(operandRef.Value, ClassNames.JavaConstructorMethodName, "()V");
 
             JavaArrayType arrayType = JavaHelpers.InterTypeToJavaArrayType(operand);
 
             if (e.Code == ILCode.Newarr)
+            {
                 CompileExpression(e.Arguments[0], ExpectType.Primitive);
+            }
             else
             {
                 if (operand.Dimesnsions[0].LowerBound != 0)
@@ -25,8 +33,7 @@ namespace CIL2Java
 
             if (arrayType == JavaArrayType.Ref)
             {
-                codeGenerator.Add(Java.OpCodes.anewarray,
-                    new Java.Constants.Class(namesController.TypeNameToJava(operand.Fullname)), e);
+                codeGenerator.Add(Java.OpCodes.anewarray, operandRef, e);
             }
             else
                 codeGenerator.AddNewArray(arrayType, e);
@@ -35,14 +42,57 @@ namespace CIL2Java
             {
                 for (int i = 0; i < e.Arguments.Count; i++)
                 {
-                    if (e.Arguments[i].Code == ILCode.DefaultValue)
+                    if ((e.Arguments[i].Code == ILCode.DefaultValue) && (!element.IsValueType))
                         continue;
 
                     codeGenerator.Add(Java.OpCodes.dup, null, e);
                     codeGenerator.AddIntConst(i, e);
-                    CompileExpression(e.Arguments[i], GetExpectType(operand.ElementType));
+
+                    if (e.Arguments[i].Code != ILCode.DefaultValue)
+                        CompileExpression(e.Arguments[i], GetExpectType(element));
+                    else
+                        codeGenerator
+                            .Add(Java.OpCodes._new, operandRef, e)
+                            .Add(Java.OpCodes.dup, null, e)
+                            .Add(Java.OpCodes.invokespecial, valueTypeInitRef, e);
+
                     codeGenerator.AddArrayStore(arrayType, e);
                 }
+            }
+            else if (element.IsValueType)
+            {
+                int arrayTmpStore = GetNextFreeVar(JavaPrimitiveType.Ref);
+                int arrayLengthTmp = GetNextFreeVar(JavaPrimitiveType.Int);
+
+                string labelPrefix = rnd.Next().ToString();
+                string loopLabel = labelPrefix + "loop";
+                string endLabel = labelPrefix + "end";
+
+                codeGenerator
+                    .AddStore(JavaPrimitiveType.Ref, arrayTmpStore, e)
+                    .AddLoad(JavaPrimitiveType.Ref, arrayTmpStore, e)
+                    .Add(Java.OpCodes.arraylength, null, e)
+                    .AddStore(JavaPrimitiveType.Int, arrayLengthTmp, e)
+
+                    // while (arrayLengthTmp > 0) arrayTmpStore[--arrayLengthTmp] = new valType();
+                    .Label(loopLabel)
+                    .AddLoad(JavaPrimitiveType.Int, arrayLengthTmp, e)
+                    .Add(Java.OpCodes.ifle, endLabel, e)
+                    .AddIInc((ushort)arrayLengthTmp, -1, e)
+                    .AddLoad(JavaPrimitiveType.Ref, arrayTmpStore, e)
+                    .AddLoad(JavaPrimitiveType.Int, arrayLengthTmp, e)
+                    .Add(Java.OpCodes._new, operandRef, e)
+                    .Add(Java.OpCodes.dup, null, e)
+                    .Add(Java.OpCodes.invokespecial, valueTypeInitRef, e)
+                    .Add(Java.OpCodes.aastore, null, e)
+                    .Add(Java.OpCodes._goto, loopLabel, e)
+                    .Label(endLabel)
+
+
+                    .AddLoad(JavaPrimitiveType.Ref, arrayTmpStore, e);
+
+                FreeVar(arrayTmpStore, JavaPrimitiveType.Ref);
+                FreeVar(arrayLengthTmp, JavaPrimitiveType.Int);
             }
         }
 
