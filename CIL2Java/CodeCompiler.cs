@@ -47,6 +47,9 @@ namespace CIL2Java
 
             FillVars(builder.Parameters);
 
+            Messages.Verbose("      Preprocess IL graph...");
+            RunPreprocessor();
+
             Messages.Verbose("      Compiling IL graph to java bytecode...");
             CompileNode(ilBody, ExpectType.None);
 
