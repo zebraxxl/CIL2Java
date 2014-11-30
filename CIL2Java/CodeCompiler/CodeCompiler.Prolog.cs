@@ -1,13 +1,16 @@
-﻿using System;
+﻿using ICSharpCode.Decompiler.ILAst;
+using System;
 using System.Collections.Generic;
 
 namespace CIL2Java
 {
     public partial class CodeCompiler
     {
+        ILExpression firstCall = null;
+
         private byte[] GenerateMethodProlog()
         {
-            JavaBytecodeWriter codeWriter = new JavaBytecodeWriter();
+            codeGenerator = new JavaBytecodeWriter();
 
             foreach (ValueTypeVar v in valueTypesVars)
             {
@@ -15,14 +18,14 @@ namespace CIL2Java
                 Java.Constants.MethodRef ctorRef = new Java.Constants.MethodRef(typeRef.Value,
                     ClassNames.JavaConstructorMethodName, "()V");
 
-                codeWriter
+                codeGenerator
                     .Add(Java.OpCodes._new, typeRef)
                     .Add(Java.OpCodes.dup)
                     .Add(Java.OpCodes.invokespecial, ctorRef)
                     .AddStore(JavaPrimitiveType.Ref, v.varIndex);
             }
 
-            return codeWriter.End(constsPool).CodeBytes;
+            return codeGenerator.End(constsPool).CodeBytes;
         }
     }
 }
