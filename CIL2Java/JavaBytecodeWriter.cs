@@ -187,10 +187,10 @@ namespace CIL2Java
                         switch (instr.Opcode)
                         {
                             case Java.OpCodes.iinc:
-                                if (operandSize == 4)
-                                    codeBytesWriter.WriteBE((uint)instr.Operand);
+                                if (instr.Operand is int)
+                                    codeBytesWriter.WriteBE((int)instr.Operand);
                                 else
-                                    codeBytesWriter.WriteBE((ushort)instr.Operand);
+                                    codeBytesWriter.WriteBE((short)instr.Operand);
                                 break;
 
                             case Java.OpCodes.tableswitch:
@@ -552,6 +552,28 @@ namespace CIL2Java
         public JavaBytecodeWriter AddIntConst(int value)
         {
             return AddIntConst(value, null);
+        }
+
+        public JavaBytecodeWriter AddIInc(ushort varIndex, short value, object tag)
+        {
+            if ((varIndex > byte.MaxValue) || (value < sbyte.MinValue) || (value > sbyte.MaxValue))
+            {
+                Add(Java.OpCodes.wide, null, tag);
+
+                int operand = (varIndex << 16) | (value & 0xffff);
+                Add(Java.OpCodes.iinc, operand, tag);
+            }
+            else
+            {
+                short operand = (short)((((byte)varIndex) << 8) | (value & 0xff));
+                Add(Java.OpCodes.iinc, operand, tag);
+            }
+            return this;
+        }
+
+        public JavaBytecodeWriter AddIInc(ushort varIndex, short value)
+        {
+            return AddIInc(varIndex, value, null);
         }
 
         public byte[] Link(Java.ConstantPool pool)
