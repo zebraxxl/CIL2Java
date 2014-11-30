@@ -1,4 +1,5 @@
-﻿using ICSharpCode.Decompiler.ILAst;
+﻿using CIL2Java.Java.Constants;
+using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,21 @@ namespace CIL2Java
             {
                 //Skip CIL2Java.Utils::Rebox in java boxing mode due optimizations
                 CompileExpression(e.Arguments[0], expect);
+                return;
+            }
+
+            if ((operand.IsConstructor) && (operand.DeclaringType.IsValueType) && (operand.Parameters.Count < e.Arguments.Count))
+            {
+                // rebuild nodes from `call ctor(getVar(), [params])` to
+                // setVar(newObj([params])
+
+                ILExpression getVar = e.Arguments[0];
+                e.Arguments.RemoveAt(0);
+                e.Code = ILCode.Newobj;
+                getVar.Code = LoadVarInvert[getVar.Code];
+                getVar.Arguments.Add(e);
+                CompileExpression(getVar, ExpectType.Any);
+
                 return;
             }
 

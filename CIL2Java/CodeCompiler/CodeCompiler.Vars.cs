@@ -24,6 +24,30 @@ namespace CIL2Java
         private int nextVarIndex = 0;
         private List<ValueTypeVar> valueTypesVars = new List<ValueTypeVar>();
 
+        //For use with `call ctor(getValueTypeVar(), [params])`
+        private Dictionary<ILCode, ILCode> LoadVarInvert = new Dictionary<ILCode, ILCode>()
+        {
+            {ILCode.Ldloc, ILCode.Stloc},
+            {ILCode.Ldloca, ILCode.Stloc},
+
+            {ILCode.Ldfld, ILCode.Stfld},
+            {ILCode.Ldsfld, ILCode.Stsfld},
+
+            {ILCode.Ldelem_Any, ILCode.Stelem_Any},
+            {ILCode.Ldelem_I, ILCode.Stelem_I},
+            {ILCode.Ldelem_I1, ILCode.Stelem_I1},
+            {ILCode.Ldelem_I2, ILCode.Stelem_I2},
+            {ILCode.Ldelem_I4, ILCode.Stelem_I4},
+            {ILCode.Ldelem_I8, ILCode.Stelem_I8},
+            {ILCode.Ldelem_R4, ILCode.Stelem_R4},
+            {ILCode.Ldelem_R8, ILCode.Stelem_R8},
+            {ILCode.Ldelem_Ref, ILCode.Stelem_Ref},
+            {ILCode.Ldelem_U1, ILCode.Stelem_I1},
+            {ILCode.Ldelem_U2, ILCode.Stelem_I2},
+            {ILCode.Ldelem_U4, ILCode.Stelem_I4},
+            {ILCode.Ldelema, ILCode.Stelem_Any},
+        };
+
         private void FillVars(List<ILVariable> vars)
         {
             if (thisMethod.HasThis)
