@@ -12,6 +12,9 @@ namespace CIL2Java
             if (Program.BoxType == BoxingType.Java)
                 return;
 
+            if (type.PrimitiveType == PrimitiveType.Void)
+                return; //Skip compiling void type. It's never will boxed
+
             JavaPrimitiveType javaType = JavaHelpers.InterTypeToJavaPrimitive(type);
 
             currentJavaClass = new Java.Class();
