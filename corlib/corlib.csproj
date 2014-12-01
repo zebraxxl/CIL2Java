@@ -42,6 +42,7 @@
     <Compile Include="CIL2Java\Attributes\JavaBoxedAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\JavaBoxMethodMapAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\JavaBoxTypeMapAttribute.cs" />
+    <Compile Include="CIL2Java\Attributes\JavaExceptionMap.cs" />
     <Compile Include="CIL2Java\Attributes\MethodMapAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\TypeMapAttribute.cs" />
     <Compile Include="CIL2Java\Maps\Array.cs" />

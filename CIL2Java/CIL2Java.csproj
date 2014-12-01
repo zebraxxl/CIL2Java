@@ -43,6 +43,7 @@
     <Compile Include="Attributes\JavaBoxTypeMapAttribute.cs" />
     <Compile Include="Attributes\FromJavaAttribute.cs" />
     <Compile Include="Attributes\JavaBoxedAttribute.cs" />
+    <Compile Include="Attributes\JavaExceptionMap.cs" />
     <Compile Include="Attributes\MethodMapAttribute.cs" />
     <Compile Include="Attributes\TypeMapAttribute.cs" />
     <Compile Include="BinaryReaderBigEndian.cs" />
