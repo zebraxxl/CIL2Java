@@ -28,10 +28,11 @@ namespace CIL2Java
         public const string CorlibUtils = "CIL2Java.Utils";
         public const string ReboxMethod = "Rebox";
 
-
         public const string ValueTypeZeroFill = "c2j__$__ZeroFill";
         public const string ValueTypeGetCopy = "c2j__$__GetCopy";
         public const string ValueTypeCopyTo = "c2j__$__CopyTo";
+
+        public const string EnumValueFieldName = "value__";
 
         public readonly static MethodRef ValueTypeCtor = new MethodRef("System/ValueType", "<init>", "()V");
 

@@ -247,6 +247,12 @@ namespace CIL2Java
             }
             else
                 this.IsDelegate = false;
+
+            if (this.IsEnum)
+            {
+                elementType = resolver.Resolve(typeDef.Fields.Where(F => F.Name == ClassNames.EnumValueFieldName).FirstOrDefault()
+                    .FieldType, genericArgs);
+            }
         }
 
         private InterType(PrimitiveType primitiveType, string nameSpace, string name, string cilBoxType)

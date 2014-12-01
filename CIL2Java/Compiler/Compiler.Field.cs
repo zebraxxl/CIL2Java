@@ -24,6 +24,8 @@ namespace CIL2Java
                     .Append('L')
                     .Append(TypeNameToJava(GetByRefTypeName(type)))
                     .Append(';');
+            else if (type.IsEnum)
+                return GetFieldDescriptor(type.ElementType);
             else if (type.IsPrimitive)
                 result.Append(JavaPrimitive2FieldChar[(int)JavaHelpers.PrimitiveTypeToJavaPrimitive(type.PrimitiveType)]);
             else

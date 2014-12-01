@@ -80,8 +80,6 @@ namespace CIL2Java
             else
                 name = methodRef.Name;
 
-            //TODO: Normal method map. We need return InterMethod of method we mapped to.
-
             genericArgs.AddRange(declType.GenericArguments);
             if (methodRef.HasGenericParameters)
             {
@@ -177,6 +175,10 @@ namespace CIL2Java
                 HasThis = methodRef.HasThis;
                 IsStatic = !methodRef.HasThis;
             }
+
+            var changedParams = parameters.Where(P => P.Type.IsEnum);
+            if (changedParams.Count() > 0)
+                name += "$" + string.Join("_", changedParams.Select(P => P.Index + P.Type.Fullname));
 
             InterMethod thisFromDecl = declType.Methods.Where(M => M.Equals(this)).FirstOrDefault();
             if (thisFromDecl != null)
