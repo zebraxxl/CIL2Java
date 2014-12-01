@@ -251,7 +251,7 @@ namespace CIL2Java
                 case JavaPrimitiveType.Short:
                 case JavaPrimitiveType.Int:
                     shortOpcode = Java.OpCodes.iload_0;
-                    longOpcode = Java.OpCodes.istore;
+                    longOpcode = Java.OpCodes.iload;
                     break;
 
                 case JavaPrimitiveType.Long:
