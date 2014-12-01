@@ -9,6 +9,9 @@ namespace CIL2Java
     {
         private void CompileMath(ILExpression e, ExpectType expect, OpCodes intOp, OpCodes longOp, OpCodes floatOp, OpCodes doubleOp)
         {
+            CompileExpression(e.Arguments[0], ExpectType.Primitive);
+            CompileExpression(e.Arguments[1], ExpectType.Primitive);
+
             InterType opType = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
             JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(opType);
 
