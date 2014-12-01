@@ -54,6 +54,9 @@ namespace CIL2Java
                 result.Attributes.Add(codeCompiler.Result);
             }
 
+            if ((method.IsStatic) && (method.IsConstructor))
+                result.AccessFlags = MethodAccessFlags.Static;
+
             return result;
         }
     }

@@ -19,7 +19,7 @@ namespace CIL2Java
             {
                 if (firstCall != null)
                     CompileExpression(firstCall, ExpectType.Any);
-                else
+                else if (!thisMethod.IsStatic)
                 {
                     string typeName = namesController.TypeNameToJava(thisMethod.DeclaringType.BaseType.Fullname);
                     if ((thisMethod.DeclaringType.IsValueType) && (thisMethod.Parameters.Count > 0))
