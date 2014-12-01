@@ -125,17 +125,29 @@ namespace CIL2Java
             //TODO: remake to use labels
             CompileExpression(node.Condition, ExpectType.Primitive);
 
-            JavaInstruction branchGoto = new JavaInstruction(Java.OpCodes.ifne, null, node);
+            JavaPrimitiveType gettedType = JavaHelpers.InterTypeToJavaPrimitive(resolver.Resolve(
+                node.Condition.InferredType, thisMethod.FullGenericArguments));
+
+            Java.OpCodes branchInstr = Java.OpCodes.ifne;
+            switch (gettedType)
+            {
+                case JavaPrimitiveType.Double: codeGenerator.Add(Java.OpCodes.d2i, null, node); break;
+                case JavaPrimitiveType.Float: codeGenerator.Add(Java.OpCodes.f2i, null, node); break;
+                case JavaPrimitiveType.Long: codeGenerator.Add(Java.OpCodes.l2i, null, node); break;
+                case JavaPrimitiveType.Ref: branchInstr = Java.OpCodes.ifnull; break;
+            }
+
+            JavaInstruction branchGoto = new JavaInstruction(branchInstr, null, node);
             codeGenerator.AddInstruction(branchGoto);
 
-            CompileBlock(node.TrueBlock);
+            CompileBlock(node.TrueBlock, expectType);
 
             JavaInstruction trueEndGoto = new JavaInstruction(Java.OpCodes._goto, null, node);
             codeGenerator.AddInstruction(trueEndGoto);
 
             codeGenerator.OnNextInstruction += I => branchGoto.Operand = I;
-            
-            CompileBlock(node.FalseBlock);
+
+            CompileBlock(node.FalseBlock, expectType);
 
             codeGenerator.OnNextInstruction += I => trueEndGoto.Operand = I;
         }
@@ -238,10 +250,15 @@ namespace CIL2Java
                 Messages.Message(MessageCode.UnknownNode, e.ToString());
         }
 
-        private void CompileBlock(ILBlock block)
+        private void CompileBlock(ILBlock block, ExpectType expect)
         {
             foreach (ILNode node in block.Body)
-                CompileNode(node, ExpectType.None);
+                CompileNode(node, expect);
+        }
+
+        private void CompileBlock(ILBlock block)
+        {
+            CompileBlock(block, ExpectType.None);
         }
     }
 }
