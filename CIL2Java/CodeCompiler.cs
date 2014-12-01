@@ -94,11 +94,30 @@ namespace CIL2Java
                 CompileCondition((ILCondition)node, expectType);
             else if (node is ILTryCatchBlock)
                 CompileTryBlock((ILTryCatchBlock)node);
+            else if (node is ILWhileLoop)
+                CompileLoop((ILWhileLoop)node);
             else
                 unknownNode = true;
 
             if (unknownNode)
                 Messages.Message(MessageCode.UnknownNode, node.ToString());
+        }
+
+        private void CompileLoop(ILWhileLoop node)
+        {
+            string labelsSufix = rnd.Next().ToString();
+
+            string loopLabel = "loop" + labelsSufix;
+            string exitLabel = "exit" + labelsSufix;
+
+            codeGenerator.Label(loopLabel);
+            CompileExpression(node.Condition, ExpectType.Primitive);
+            codeGenerator.Add(Java.OpCodes.ifeq, exitLabel, node);  //goto to `exit` if Condition == 0
+            CompileBlock(node.BodyBlock);
+
+            codeGenerator
+                .Add(Java.OpCodes._goto, loopLabel)
+                .Label(exitLabel);
         }
 
         private void CompileCondition(ILCondition node, ExpectType expectType)
