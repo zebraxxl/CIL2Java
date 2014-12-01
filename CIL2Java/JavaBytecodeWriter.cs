@@ -230,11 +230,11 @@ namespace CIL2Java
             if (varIndex < 4)
                 AddInstruction(new JavaInstruction((Java.OpCodes)(((int)shortOpcode) + varIndex), null, tag));
             else if (varIndex < byte.MaxValue)
-                AddInstruction(new JavaInstruction(longOpcode, varIndex, tag));
+                AddInstruction(new JavaInstruction(longOpcode, (byte)varIndex, tag));
             else
             {
                 AddInstruction(new JavaInstruction(Java.OpCodes.wide, null, tag));
-                AddInstruction(new JavaInstruction(longOpcode, varIndex, tag));
+                AddInstruction(new JavaInstruction(longOpcode, (ushort)varIndex, tag));
             }
         }
 
