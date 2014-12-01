@@ -31,6 +31,26 @@ namespace CIL2Java
                 .Label(labelPrefixes + "end");
         }
 
+        private void CompileLogicAnd(ILExpression e, ExpectType expect)
+        {
+            string labelsSufix = rnd.Next().ToString();
+
+            string falseLabel = "false" + labelsSufix;
+            string exitLabel = "exit" + labelsSufix;
+
+            CompileExpression(e.Arguments[0], ExpectType.Primitive);
+            codeGenerator.Add(Java.OpCodes.ifeq, falseLabel, e);
+            CompileExpression(e.Arguments[1], ExpectType.Primitive);
+
+            codeGenerator
+                .Add(Java.OpCodes.ifeq, falseLabel, e)
+                .Add(Java.OpCodes.iconst_1, null, e)
+                .Add(Java.OpCodes._goto, exitLabel, e)
+                .Label(falseLabel)
+                .Add(Java.OpCodes.iconst_0, null, e)
+                .Label(exitLabel);
+        }
+
         private void CompileFlowC(ILExpression e, Java.OpCodes IntCmp, Java.OpCodes RefCmp, Java.OpCodes OtherCmp)
         {
             CompileExpression(e.Arguments[0], ExpectType.Any);
