@@ -203,6 +203,9 @@ namespace CIL2Java
                 case ILCode.Cle: CompileCle(e, expectType); break;
                 case ILCode.Cle_Un: CompileCle_Un(e, expectType); break;
 
+                //Conv
+                case ILCode.Conv_I4: CompileConvI4(e, expectType); break;
+
                 default: unknownNode = true; break;
             }
 

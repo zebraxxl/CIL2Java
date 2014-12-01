@@ -64,6 +64,7 @@
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.ByRef.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Call.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Consts.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.Conv.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Exceptions.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Fields.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Logic.cs" />
