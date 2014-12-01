@@ -85,6 +85,8 @@ namespace CIL2Java
         {
             if (typeRef is RequiredModifierType)
                 typeRef = ((RequiredModifierType)typeRef).ElementType;
+            if (typeRef is OptionalModifierType)
+                typeRef = ((OptionalModifierType)typeRef).ElementType;
 
             InterType primitive = null;
 
