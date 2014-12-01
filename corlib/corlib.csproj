@@ -47,6 +47,7 @@
     <Compile Include="CIL2Java\Maps\Array.cs" />
     <Compile Include="CIL2Java\Utils.cs" />
     <Compile Include="java\io\PrintWriter.cs" />
+    <Compile Include="java\lang\AbstractStringBuilder.cs" />
     <Compile Include="java\lang\Appendable.cs" />
     <Compile Include="java\lang\Boolean.cs" />
     <Compile Include="java\lang\Byte.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="java\lang\reflect\Array.cs" />
     <Compile Include="java\lang\Short.cs" />
     <Compile Include="java\lang\StackTraceElement.cs" />
+    <Compile Include="java\lang\StringBuffer.cs" />
     <Compile Include="Local.cs" />
     <Compile Include="CIL2Java\Maps\Object.cs" />
     <Compile Include="CIL2Java\Maps\String.cs" />
