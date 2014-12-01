@@ -64,7 +64,7 @@ namespace CIL2Java
             else if (operand.DeclaringType.IsInterface)
                 callType = CallType.Interface;
             else if ((operand.IsConstructor) || (operand.IsPrivate) ||
-                ((operand.IsSame(thisMethod)) && (thisMethod.DeclaringType.IsSuper(operand.DeclaringType))))
+                ((operand.IsSame(thisMethod)) && (thisMethod.DeclaringType.BaseType == operand.DeclaringType)))
                 callType = CallType.Special;
 
             Java.Constant javaOperand = null;
