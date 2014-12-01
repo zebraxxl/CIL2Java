@@ -49,7 +49,9 @@ namespace CIL2Java
 
         public static JavaPrimitiveType InterTypeToJavaPrimitive(InterType type)
         {
-            if (!type.IsPrimitive)
+            if (type.IsEnum)
+                return InterTypeToJavaPrimitive(type.ElementType);
+            else if (!type.IsPrimitive)
                 return JavaPrimitiveType.Ref;
             else
                 return PrimitiveTypeToJavaPrimitive(type.PrimitiveType);
