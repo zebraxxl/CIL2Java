@@ -11,7 +11,7 @@ namespace CIL2Java
             public string TryStart;
             public string TryEnd;
             public string HandlerStart;
-            public InterType HandlerType;
+            public string HandlerType;
         }
 
         private List<ExceptionDescription> exceptions = new List<ExceptionDescription>();
@@ -73,6 +73,36 @@ namespace CIL2Java
                 {
                     string catchHandlerStartLabel = handlerStartLabel + (index++).ToString();
                     int varIndex = GetVarIndex(cblock.ExceptionVariable);
+                    InterType catchType = resolver.Resolve(cblock.ExceptionType, thisMethod.FullGenericArguments);
+
+                    Java.Constants.Class catchTypeRef = new Java.Constants.Class(namesController.TypeNameToJava(
+                        catchType.Fullname));
+
+                    foreach (string javaException in catchType.JavaExceptions)
+                    {
+                        Java.Constants.MethodRef catchTypeInitRef = new Java.Constants.MethodRef(
+                            catchTypeRef.Value, ClassNames.JavaConstructorMethodName, "(L" + namesController.TypeNameToJava(
+                            javaException) + ";)V");
+
+                        string javaExceptionLabel = catchHandlerStartLabel + javaException;
+
+                        codeGenerator
+                            .Label(javaExceptionLabel)
+                            .AddStore(JavaPrimitiveType.Ref, varIndex, block)
+                            .Add(Java.OpCodes._new, catchTypeRef, block)
+                            .Add(Java.OpCodes.dup, null, block)
+                            .AddLoad(JavaPrimitiveType.Ref, varIndex, block)
+                            .Add(Java.OpCodes.invokespecial, catchTypeInitRef, block)
+                            .Add(Java.OpCodes._goto, catchHandlerStartLabel, block);
+
+                        exceptions.Add(new ExceptionDescription()
+                            {
+                                TryStart = tryStartLabel,
+                                TryEnd = tryEndLabel,
+                                HandlerStart = javaExceptionLabel,
+                                HandlerType = javaException
+                            });
+                    }
 
                     codeGenerator
                         .Label(catchHandlerStartLabel)
@@ -87,7 +117,7 @@ namespace CIL2Java
                             TryStart = tryStartLabel,
                             TryEnd = tryEndLabel,
                             HandlerStart = catchHandlerStartLabel,
-                            HandlerType = resolver.Resolve(cblock.ExceptionType, thisMethod.FullGenericArguments)
+                            HandlerType = catchType.Fullname
                         });
                 }
 
@@ -106,7 +136,7 @@ namespace CIL2Java
 
                 if (e.HandlerType != null)
                     javaException.CatchType = constsPool.AddConstant(new Java.Constants.Class(
-                        namesController.TypeNameToJava(e.HandlerType.Fullname)));
+                        namesController.TypeNameToJava(e.HandlerType)));
                 else
                     javaException.CatchType = 0;
 

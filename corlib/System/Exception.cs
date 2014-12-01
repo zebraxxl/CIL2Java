@@ -266,7 +266,12 @@ namespace System
             innerException = (Exception)info.GetValue("InnerException", typeof(Exception));
             data = (IDictionary)info.GetValue("Data", typeof(IDictionary));
         }
-        
+
+        public Exception(java.lang.Throwable javaE)
+            : base(javaE.getMessage(), javaE.getCause())
+        {
+            HResult = Result;
+        }
         
         public virtual Exception GetBaseException()
         {

@@ -59,6 +59,21 @@ namespace CIL2Java
                     .FirstOrDefault(), null);
             }
 
+            //Special: adding ctors for Mapped exceptions
+            var exceptionsWithMapped = typesToCompile.Where(T => T.JavaExceptions.Length > 0);
+            foreach (InterType exception in exceptionsWithMapped)
+            {
+                TypeDefinition typeDef = loadedModules.Select(M => M.GetType(exception.Fullname))
+                    .Where(T => T != null).FirstOrDefault();
+                exception.JavaExceptions.ForEach(e =>
+                {
+                    var method = typeDef.Methods.Where(M => ((M.IsConstructor) && (M.Parameters.Count == 1) &&
+                        (M.Parameters[0].ParameterType.FullName == e))).FirstOrDefault();
+                    if (method != null)
+                        ((IResolver)this).Resolve(method, null);
+                });
+            }
+
             Messages.Verbose("Start of compilation");
             foreach (InterType type in typesToCompile)
             {

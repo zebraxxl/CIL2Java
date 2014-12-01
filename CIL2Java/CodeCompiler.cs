@@ -75,11 +75,11 @@ namespace CIL2Java
             resultCode = new Java.Attributes.Code();
             resultCode.CodeBytes = prolog.Concat(codeBytes).ToArray();
 
+            WriteJavaExceptionTable(prolog.Length);
+
             Messages.Verbose("      Simulating stack to calculate MaxStack and MaxLocals...");
             StackSimulator.SimulateStack(constsPool, resultCode);
             resultCode.MaxLocals = (ushort)nextVarIndex;
-
-            WriteJavaExceptionTable(prolog.Length);
         }
 
         private void CompileNode(ILNode node, ExpectType expectType)

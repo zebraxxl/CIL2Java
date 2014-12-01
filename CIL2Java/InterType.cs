@@ -43,6 +43,7 @@ namespace CIL2Java
         private InterType elementType = null;
         private int arrayRank = 0;
         private ArrayDimension[] dimensions;
+        private string[] javaExceptions = new string[0];
 
         public bool IsPrimitive { get { return primitiveType != PrimitiveType.None; } }
         public PrimitiveType PrimitiveType { get { return primitiveType; } }
@@ -87,6 +88,7 @@ namespace CIL2Java
         public bool IsByRef { get; private set; }
 
         public bool IsFromJava { get; private set; }
+        public string[] JavaExceptions { get { return javaExceptions; } }
 
         public List<InterGenericArgument> GenericArguments { get { return genericArgs; } }
 
@@ -253,6 +255,11 @@ namespace CIL2Java
                 elementType = resolver.Resolve(typeDef.Fields.Where(F => F.Name == ClassNames.EnumValueFieldName).FirstOrDefault()
                     .FieldType, genericArgs);
             }
+
+            javaExceptions = typeDef.CustomAttributes
+                .Where(CA => CA.AttributeType.FullName == ClassNames.JavaExceptionMapAttribute)
+                .Select(CA => CA.ConstructorArguments[0].Value as string)
+                .ToArray();
         }
 
         private InterType(PrimitiveType primitiveType, string nameSpace, string name, string cilBoxType)
