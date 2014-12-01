@@ -364,6 +364,13 @@ namespace CIL2Java
             return this;
         }
 
+        public int GetLabelOffset(string name)
+        {
+            if (!labels.ContainsKey(name))
+                return -1;
+            return outputCodeOffsets[outputCode[labels[name]]];
+        }
+
         public JavaBytecodeWriter AddLocalVarInstruction(LocalVarInstruction instr, JavaPrimitiveType varType, int varIndex, object tag)
         {
             if (instr == LocalVarInstruction.Load)
