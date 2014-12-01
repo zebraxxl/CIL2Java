@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CIL2Java.Attributes;
+using System.Runtime.CompilerServices;
 
 namespace java.lang
 {
@@ -169,7 +170,8 @@ namespace java.lang
          * @see     java.lang.Throwable#printStackTrace()
          */
         [FromJava]
-        public virtual Throwable fillInStackTrace() { return null; }    //TODO: mark as synchronized
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public virtual Throwable fillInStackTrace() { return null; }
 
         /**
          * Returns the cause of this throwable or {@code null} if the
@@ -192,7 +194,8 @@ namespace java.lang
          * @since 1.4
          */
         [FromJava]
-        public virtual Throwable getCause() { return null; }    //TODO: mark as synchronized
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public virtual Throwable getCause() { return null; }
 
         /**
          * Creates a localized description of this throwable.
@@ -280,7 +283,8 @@ namespace java.lang
          * @since  1.4
          */
         [FromJava]
-        public virtual Throwable initCause(Throwable cause) { return null; }    //TODO: mark as synchronized
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public virtual Throwable initCause(Throwable cause) { return null; }
 
         /**
          * Prints this throwable and its backtrace to the
@@ -552,7 +556,8 @@ namespace java.lang
          * @since 1.7
          */
         [FromJava]
-        public void addSuppressed(Throwable exception) { } //TODO: mark as synchronized
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void addSuppressed(Throwable exception) { }
 
          /**
          * Returns an array containing all of the exceptions that were
@@ -570,7 +575,8 @@ namespace java.lang
          * @since 1.7
          */
         [FromJava]
-        public Throwable[] getSuppressed() { return null; }  //TODO: mark as synchronized
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public Throwable[] getSuppressed() { return null; }
 #endif
 
     }
