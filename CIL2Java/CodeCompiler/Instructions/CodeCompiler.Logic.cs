@@ -1,4 +1,5 @@
 ﻿using ICSharpCode.Decompiler.ILAst;
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 
@@ -6,6 +7,20 @@ namespace CIL2Java
 {
     public partial class CodeCompiler
     {
+        private void TranslateToBool(TypeReference inferredType, ref Java.OpCodes cmpOp, object tag)
+        {
+            JavaPrimitiveType gettedType = JavaHelpers.InterTypeToJavaPrimitive(resolver.Resolve(
+                inferredType, thisMethod.FullGenericArguments));
+
+            switch (gettedType)
+            {
+                case JavaPrimitiveType.Double: codeGenerator.Add(Java.OpCodes.d2i, null, tag); break;
+                case JavaPrimitiveType.Float: codeGenerator.Add(Java.OpCodes.f2i, null, tag); break;
+                case JavaPrimitiveType.Long: codeGenerator.Add(Java.OpCodes.l2i, null, tag); break;
+                case JavaPrimitiveType.Ref: cmpOp = (cmpOp == Java.OpCodes.ifne ? Java.OpCodes.ifnull : Java.OpCodes.ifnonnull); break;
+            }
+        }
+
         private void CompileLogicNot(ILExpression e, ExpectType expect)
         {
             //TODO: e.Arguments may not be bool
@@ -39,12 +54,19 @@ namespace CIL2Java
             string falseLabel = "false" + labelsSufix;
             string exitLabel = "exit" + labelsSufix;
 
-            CompileExpression(e.Arguments[0], ExpectType.Primitive);
-            codeGenerator.Add(Java.OpCodes.ifeq, falseLabel, e);
-            CompileExpression(e.Arguments[1], ExpectType.Primitive);
+            Java.OpCodes branch = Java.OpCodes.ifeq;
 
+            CompileExpression(e.Arguments[0], ExpectType.Primitive);
+            TranslateToBool(e.Arguments[0].InferredType, ref branch, e);
+
+            codeGenerator.Add(branch, falseLabel, e);
+            CompileExpression(e.Arguments[1], ExpectType.Primitive);
+            TranslateToBool(e.Arguments[1].InferredType, ref branch, e);
+
+
+            branch = Java.OpCodes.ifeq;
             codeGenerator
-                .Add(Java.OpCodes.ifeq, falseLabel, e)
+                .Add(branch, falseLabel, e)
                 .Add(Java.OpCodes.iconst_1, null, e)
                 .Add(Java.OpCodes._goto, exitLabel, e)
                 .Label(falseLabel)
@@ -59,12 +81,17 @@ namespace CIL2Java
             string trueLabel = "true" + labelsSufix;
             string exitLabel = "exit" + labelsSufix;
 
+            Java.OpCodes branch = Java.OpCodes.ifne;
             CompileExpression(e.Arguments[0], ExpectType.Primitive);
-            codeGenerator.Add(Java.OpCodes.ifne, trueLabel, e);
+            TranslateToBool(e.Arguments[0].InferredType, ref branch, e);
+            codeGenerator.Add(branch, trueLabel, e);
+
+            branch = Java.OpCodes.ifne;
             CompileExpression(e.Arguments[1], ExpectType.Primitive);
+            TranslateToBool(e.Arguments[1].InferredType, ref branch, e);
             
             codeGenerator
-                .Add(Java.OpCodes.ifne, trueLabel, e)
+                .Add(branch, trueLabel, e)
                 .Add(Java.OpCodes.iconst_0, null, e)
                 .Add(Java.OpCodes._goto, exitLabel, e)
                 .Label(trueLabel)
