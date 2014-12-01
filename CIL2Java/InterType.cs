@@ -276,6 +276,8 @@ namespace CIL2Java
             {
                 if (currBaseType == type)
                     return true;
+
+                currBaseType = currBaseType.BaseType;
             }
 
             return false;
