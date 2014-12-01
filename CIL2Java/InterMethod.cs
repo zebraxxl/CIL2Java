@@ -64,9 +64,14 @@ namespace CIL2Java
                 TypeReference realDeclType = methodMapCustomAttr.ConstructorArguments[0].Value as TypeReference;
 
                 MethodSignature thisMethod = new MethodSignature(methodRef);
+                for (int i = 0; i < methodRef.Parameters.Count; i++)
+                {
+                    thisMethod.Parameters[i] = resolver.Resolve(methodRef.Parameters[i].ParameterType, genericArgs).Fullname;
+                }
+
                 if ((methodMapCustomAttr.ConstructorArguments.Count > 2) &&
                     ((bool)methodMapCustomAttr.ConstructorArguments[2].Value))
-                    thisMethod.Parameters = new string[] { declType.Fullname }.Union(thisMethod.Parameters).ToArray();
+                    thisMethod.Parameters = new string[] { declType.Fullname }.Concat(thisMethod.Parameters).ToArray();
                 thisMethod.Name = methodMapCustomAttr.ConstructorArguments[1].Value as string;
 
                 TypeDefinition realDeclTypeDef = realDeclType.Resolve();

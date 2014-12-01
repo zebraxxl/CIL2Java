@@ -62,7 +62,7 @@ namespace System
         [MethodMap(typeof(CIL2Java.Maps.Object), "GetType", true)]
         public Type GetType()
         {
-            return CIL2Java.Maps.Object.GetType(this);
+            throw new InvalidOperationException();
         }
         
         
@@ -77,7 +77,7 @@ namespace System
         [MethodMap(typeof(CIL2Java.Maps.Object), "MemberwiseClone", true)]
         protected object MemberwiseClone()
         {
-            return CIL2Java.Maps.Object.MemberwiseClone(this);
+            throw new InvalidOperationException();
         }
 
 

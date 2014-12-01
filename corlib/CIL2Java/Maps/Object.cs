@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using javaObject = java.lang.Object;
 
 namespace CIL2Java.Maps
 {
     public static class Object
     {
-        public static new bool Equals(object objA, object objB)
+        public static bool Equals(javaObject objA, javaObject objB)
         {
             if (objA == objB)
                 return true;
@@ -16,18 +17,18 @@ namespace CIL2Java.Maps
             return objA.Equals(objB);
         }
 
-        public static new bool ReferenceEquals(object objA, object objB)
+        public static bool ReferenceEquals(javaObject objA, javaObject objB)
         {
             return (objA == objB);
         }
 
-        public static Type GetType(object self)
+        public static Type GetType(javaObject self)
         {
             //TODO: Object.GetType()
             return null;
         }
 
-        public static object MemberwiseClone(object self)
+        public static object MemberwiseClone(javaObject self)
         {
             //TODO: Object.MemberwiseClone()
             return null;
