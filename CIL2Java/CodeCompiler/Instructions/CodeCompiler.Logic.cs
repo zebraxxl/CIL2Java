@@ -81,6 +81,11 @@ namespace CIL2Java
             CompileFlowC(e, Java.OpCodes.if_icmpeq, Java.OpCodes.if_acmpeq, Java.OpCodes.ifeq);
         }
 
+        private void CompileCne(ILExpression e, ExpectType expect)
+        {
+            CompileFlowC(e, Java.OpCodes.if_icmpne, Java.OpCodes.if_acmpne, Java.OpCodes.ifne);
+        }
+
         private void CompileCle(ILExpression e, ExpectType expect)
         {
             CompileFlowC(e, Java.OpCodes.if_icmple, Java.OpCodes.if_acmpeq, Java.OpCodes.ifle);
