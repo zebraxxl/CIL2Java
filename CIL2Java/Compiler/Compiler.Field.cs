@@ -56,6 +56,41 @@ namespace CIL2Java
             result.Name = FieldNameToJava(field.Name);
             result.Descriptor = GetFieldDescriptor(field.FieldType);
 
+            if (field.Constatnt != null)
+            {
+                Java.Constant constVal = null;
+
+                if (field.Constatnt is byte)
+                    constVal = new Java.Constants.Integer((byte)field.Constatnt);
+                else if (field.Constatnt is sbyte)
+                    constVal = new Java.Constants.Integer((sbyte)field.Constatnt);
+                else if (field.Constatnt is short)
+                    constVal = new Java.Constants.Integer((short)field.Constatnt);
+                else if (field.Constatnt is ushort)
+                    constVal = new Java.Constants.Integer((ushort)field.Constatnt);
+                else if (field.Constatnt is int)
+                    constVal = new Java.Constants.Integer((int)field.Constatnt);
+                else if (field.Constatnt is uint)
+                    constVal = new Java.Constants.Integer(unchecked((int)((uint)field.Constatnt)));
+                else if (field.Constatnt is char)
+                    constVal = new Java.Constants.Integer((char)field.Constatnt);
+                else if (field.Constatnt is bool)
+                    constVal = new Java.Constants.Integer((bool)field.Constatnt ? 1 : 0);
+                else if (field.Constatnt is long)
+                    constVal = new Java.Constants.Long((long)field.Constatnt);
+                else if (field.Constatnt is ulong)
+                    constVal = new Java.Constants.Long(unchecked((long)((ulong)field.Constatnt)));
+                else if (field.Constatnt is float)
+                    constVal = new Java.Constants.Float((float)field.Constatnt);
+                else if (field.Constatnt is double)
+                    constVal = new Java.Constants.Double((double)field.Constatnt);
+                else if (field.Constatnt is string)
+                    constVal = new Java.Constants.String((string)field.Constatnt);
+
+                if (constVal != null)
+                    result.Attributes.Add(new Java.Attributes.ConstantValue(constVal));
+            }
+
             return result;
         }
     }
