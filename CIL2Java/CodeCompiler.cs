@@ -243,6 +243,9 @@ namespace CIL2Java
                 //Conv
                 case ILCode.Conv_I4: CompileConvI4(e, expectType); break;
 
+                //Math
+                case ILCode.Add: CompileAdd(e, expectType); break;
+
                 default: unknownNode = true; break;
             }
 

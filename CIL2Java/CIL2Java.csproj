@@ -68,6 +68,7 @@
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Exceptions.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Fields.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Logic.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.Math.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Objects.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Vars.cs" />
     <Compile Include="Compiler.cs" />
