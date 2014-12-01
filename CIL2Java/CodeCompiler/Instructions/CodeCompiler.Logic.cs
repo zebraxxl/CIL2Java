@@ -8,6 +8,7 @@ namespace CIL2Java
     {
         private void CompileLogicNot(ILExpression e, ExpectType expect)
         {
+            //TODO: e.Arguments may not be bool
             CompileExpression(e.Arguments[0], ExpectType.Primitive);
 
             //  iconst_1
@@ -69,6 +70,17 @@ namespace CIL2Java
                 .Label(trueLabel)
                 .Add(Java.OpCodes.iconst_1, null, e)
                 .Label(exitLabel);
+        }
+
+        private void CompileTernaryOp(ILExpression e, ExpectType expect)
+        {
+            ILCondition conditionNode = new ILCondition();
+            conditionNode.Condition = e.Arguments[0];
+            conditionNode.TrueBlock = new ILBlock(e.Arguments[1]);
+            conditionNode.FalseBlock = new ILBlock(e.Arguments[2]);
+            CompileCondition(conditionNode, expect);
+
+            TranslateType(resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments), expect, e);
         }
 
         private void CompileFlowC(ILExpression e, Java.OpCodes IntCmp, Java.OpCodes RefCmp, Java.OpCodes OtherCmp)
