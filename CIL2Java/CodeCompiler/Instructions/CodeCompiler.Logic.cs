@@ -76,6 +76,11 @@ namespace CIL2Java
                 .Label(endLabel);
         }
 
+        private void CompileCeq(ILExpression e, ExpectType expect)
+        {
+            CompileFlowC(e, Java.OpCodes.if_icmpeq, Java.OpCodes.if_acmpeq, Java.OpCodes.ifeq);
+        }
+
         private void CompileCle(ILExpression e, ExpectType expect)
         {
             CompileFlowC(e, Java.OpCodes.if_icmple, Java.OpCodes.if_acmpeq, Java.OpCodes.ifle);

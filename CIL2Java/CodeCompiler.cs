@@ -198,6 +198,7 @@ namespace CIL2Java
 
                 //Logic
                 case ILCode.LogicNot: CompileLogicNot(e, expectType); break;
+                case ILCode.Ceq: CompileCeq(e, expectType); break;
                 case ILCode.Cle: CompileCle(e, expectType); break;
                 case ILCode.Cle_Un: CompileCle_Un(e, expectType); break;
 
