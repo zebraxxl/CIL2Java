@@ -55,6 +55,7 @@
     <Compile Include="CodeCompiler.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Box.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.ByRef.cs" />
+    <Compile Include="CodeCompiler\CodeCompiler.Exceptions.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.ExpectType.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Preprocessor.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Prolog.cs" />

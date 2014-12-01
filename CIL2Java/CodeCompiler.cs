@@ -60,12 +60,16 @@ namespace CIL2Java
                 if ((lastNode is ILExpression) && (((ILExpression)lastNode).Code != ILCode.Ret) &&
                     (((ILExpression)lastNode).Code != ILCode.Throw))
                     CompileRet(null, ExpectType.None);
+                else if (thisMethod.ReturnParameter.Type.PrimitiveType == PrimitiveType.Void)
+                    CompileRet(null, ExpectType.None);
             }
             else
                 CompileRet(null, ExpectType.None);
 
             Messages.Verbose("      Linking java bytecode...");
             byte[] codeBytes = codeGenerator.Link(constsPool);
+            GenerateJavaExceptionTable();
+
             byte[] prolog = GenerateMethodProlog();
 
             resultCode = new Java.Attributes.Code();
@@ -74,6 +78,8 @@ namespace CIL2Java
             Messages.Verbose("      Simulating stack to calculate MaxStack and MaxLocals...");
             StackSimulator.SimulateStack(constsPool, resultCode);
             resultCode.MaxLocals = (ushort)nextVarIndex;
+
+            WriteJavaExceptionTable(prolog.Length);
         }
 
         private void CompileNode(ILNode node, ExpectType expectType)
@@ -86,6 +92,8 @@ namespace CIL2Java
                 CompileExpression((ILExpression)node, expectType);
             else if (node is ILCondition)
                 CompileCondition((ILCondition)node, expectType);
+            else if (node is ILTryCatchBlock)
+                CompileTryBlock((ILTryCatchBlock)node);
             else
                 unknownNode = true;
 
