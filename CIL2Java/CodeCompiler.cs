@@ -192,6 +192,7 @@ namespace CIL2Java
                 case ILCode.Ldelem_U1: CompileLdelem(e, expectType); break;
                 case ILCode.Ldelem_U2: CompileLdelem(e, expectType); break;
                 case ILCode.Ldelem_U4: CompileLdelem(e, expectType); break;
+                case ILCode.Ldlen: CompileLdlen(e, expectType); break;
 
                 //Exceptions
                 case ILCode.Throw: CompileThrow(e, expectType); break;

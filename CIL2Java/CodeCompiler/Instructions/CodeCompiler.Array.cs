@@ -165,5 +165,12 @@ namespace CIL2Java
             JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand.DeclaringType);
             codeGenerator.AddArrayLoad(arrType, e);
         }
+
+        private void CompileLdlen(ILExpression e, ExpectType expect)
+        {
+            CompileExpression(e.Arguments[0], ExpectType.Reference);
+            codeGenerator.Add(Java.OpCodes.arraylength, null, e);
+            TranslateType(InterType.PrimitiveTypes[(int)PrimitiveType.Int32], expect, e);
+        }
     }
 }
