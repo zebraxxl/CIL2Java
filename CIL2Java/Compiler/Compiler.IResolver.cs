@@ -83,6 +83,9 @@ namespace CIL2Java
 
         InterType IResolver.Resolve(TypeReference typeRef, List<InterGenericArgument> genericArgs)
         {
+            if (typeRef is RequiredModifierType)
+                typeRef = ((RequiredModifierType)typeRef).ElementType;
+
             InterType primitive = null;
 
             switch (typeRef.MetadataType)

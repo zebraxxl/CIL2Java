@@ -23,6 +23,7 @@ namespace CIL2Java
         public bool IsStatic { get; private set; }
         public bool IsReadonly { get; private set; }
         public bool IsLiteral { get; private set; }
+        public bool IsVolatile { get; private set; }
 
         public object Constatnt { get { return constant; } }
         public byte[] InitialValue { get { return initialValue; } }
@@ -42,6 +43,14 @@ namespace CIL2Java
             this.IsStatic = fldDef.IsStatic;
             this.IsReadonly = fldDef.IsInitOnly;
             this.IsLiteral = fldDef.IsLiteral;
+
+            if (fldRef.FieldType is RequiredModifierType)
+            {
+                RequiredModifierType modreq = (RequiredModifierType)fldRef.FieldType;
+
+                if (modreq.ModifierType.FullName == ClassNames.IsVolatileModReq)
+                    this.IsVolatile = true;
+            }
 
             this.constant = fldDef.Constant;
             this.initialValue = fldDef.InitialValue;

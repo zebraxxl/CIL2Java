@@ -52,6 +52,8 @@ namespace CIL2Java
                 result.AccessFlags |= Java.FieldAccessFlags.Static;
             if ((field.IsReadonly) || (field.IsLiteral))
                 result.AccessFlags |= Java.FieldAccessFlags.Final;
+            if (field.IsVolatile)
+                result.AccessFlags |= Java.FieldAccessFlags.Volatile;
 
             result.Name = FieldNameToJava(field.Name);
             result.Descriptor = GetFieldDescriptor(field.FieldType);

@@ -34,6 +34,8 @@ namespace CIL2Java
 
         public const string EnumValueFieldName = "value__";
 
+        public const string IsVolatileModReq = "System.Runtime.CompilerServices.IsVolatile";
+
         public readonly static MethodRef ValueTypeCtor = new MethodRef("System/ValueType", "<init>", "()V");
 
         public static class ByRef
