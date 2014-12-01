@@ -224,6 +224,7 @@ namespace CIL2Java
                 case ILCode.Cne: CompileCne(e, expectType); break;
                 case ILCode.Cle: CompileCle(e, expectType); break;
                 case ILCode.Clt: CompileClt(e, expectType); break;
+                case ILCode.Cgt: CompileCgt(e, expectType); break;
                 case ILCode.Cle_Un: CompileCle_Un(e, expectType); break;
 
                 //Conv

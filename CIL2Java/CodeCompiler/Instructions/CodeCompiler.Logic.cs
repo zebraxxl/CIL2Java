@@ -136,6 +136,11 @@ namespace CIL2Java
             CompileFlowC(e, Java.OpCodes.if_icmplt, Java.OpCodes.if_acmpne, Java.OpCodes.iflt);
         }
 
+        private void CompileCgt(ILExpression e, ExpectType expect)
+        {
+            CompileFlowC(e, Java.OpCodes.if_icmpgt, Java.OpCodes.if_acmpne, Java.OpCodes.ifgt);
+        }
+
         private void CompileCle_Un(ILExpression e, ExpectType expect)
         {
             //TODO: unsigned numbers
