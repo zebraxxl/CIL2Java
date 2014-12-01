@@ -12,5 +12,14 @@ namespace java.lang
         {
             return null;
         }
+
+        [FromJava()]
+        public int length() { return 0; }
+
+        [FromJava()]
+        public char charAt(int index) { return '\0'; }
+
+        [FromJava()]
+        public CharSequence subSequence(int start, int end) { return null; }
     }
 }
