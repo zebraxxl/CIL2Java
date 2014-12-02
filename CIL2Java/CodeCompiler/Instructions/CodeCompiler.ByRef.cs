@@ -47,7 +47,7 @@ namespace CIL2Java
 
                 if (!operandType.IsPrimitive)
                     codeGenerator.Add(OpCodes.checkcast,
-                        new Java.Constants.Class(namesController.TypeNameToJava(operandType.Fullname)), e);
+                        new Java.Constants.Class(namesController.TypeNameToJava(operandType)), e);
 
                 codeGenerator.AddLocalVarInstruction(LocalVarInstruction.Store, JavaHelpers.InterTypeToJavaPrimitive(operandType), varIndex, e);
 
@@ -63,7 +63,7 @@ namespace CIL2Java
 
             if (operand.FieldType.IsValueType)
             {
-                FieldRef fldRef = new FieldRef(namesController.TypeNameToJava(operand.DeclaringType.Fullname),
+                FieldRef fldRef = new FieldRef(namesController.TypeNameToJava(operand.DeclaringType),
                     namesController.FieldNameToJava(operand.Name), namesController.GetFieldDescriptor(operand.FieldType));
 
                 if (e.Code == ILCode.Ldflda)
@@ -78,7 +78,7 @@ namespace CIL2Java
 
             Java.Constants.Class constByRefType = new Java.Constants.Class(namesController.TypeNameToJava(byRefTypeName));
             Java.Constants.Class constFieldDeclClass =
-                new Java.Constants.Class(namesController.TypeNameToJava(operand.DeclaringType.Fullname));
+                new Java.Constants.Class(namesController.TypeNameToJava(operand.DeclaringType));
             Java.Constants.String constFieldName = new Java.Constants.String(
                 namesController.FieldNameToJava(operand.Name));
             MethodRef constFieldByRefCtorRef = byRefController.GetFieldByRefCtorMethodRef(operand.FieldType);
@@ -134,7 +134,7 @@ namespace CIL2Java
 
             MethodRef getMethodRef = byRefController.GetByRefGetValueMethodRef(JavaPrimitiveType.Ref);
             InterType loadType = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
-            Java.Constants.Class loadedTypeRef = new Java.Constants.Class(namesController.TypeNameToJava(loadType.Fullname));
+            Java.Constants.Class loadedTypeRef = new Java.Constants.Class(namesController.TypeNameToJava(loadType));
 
             codeGenerator
                 .Add(OpCodes.invokevirtual, getMethodRef, e)

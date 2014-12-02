@@ -5,6 +5,7 @@ namespace CIL2Java
 {
     public interface INamesController
     {
+        string TypeNameToJava(InterType CILName);
         string TypeNameToJava(string CILName);
         string FieldNameToJava(string CILName);
         string MethodNameToJava(string CILName);

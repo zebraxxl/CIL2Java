@@ -75,8 +75,7 @@ namespace CIL2Java
                     int varIndex = GetVarIndex(cblock.ExceptionVariable);
                     InterType catchType = resolver.Resolve(cblock.ExceptionType, thisMethod.FullGenericArguments);
 
-                    Java.Constants.Class catchTypeRef = new Java.Constants.Class(namesController.TypeNameToJava(
-                        catchType.Fullname));
+                    Java.Constants.Class catchTypeRef = new Java.Constants.Class(namesController.TypeNameToJava(catchType));
 
                     foreach (string javaException in catchType.JavaExceptions)
                     {

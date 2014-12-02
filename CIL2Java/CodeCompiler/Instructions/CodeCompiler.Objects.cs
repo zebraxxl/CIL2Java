@@ -17,7 +17,7 @@ namespace CIL2Java
             else
             {
                 Java.Constants.Class declTypeClassRef = new Java.Constants.Class(
-                    namesController.TypeNameToJava(ctor.DeclaringType.Fullname));
+                    namesController.TypeNameToJava(ctor.DeclaringType));
 
                 codeGenerator
                     .Add(Java.OpCodes._new, declTypeClassRef, e)
@@ -46,7 +46,7 @@ namespace CIL2Java
                 CompileExpression(e.Arguments[1], ExpectType.Any);
                 CompileExpression(e.Arguments[0], ExpectType.ByRef);
 
-                MethodRef copyToRef = new MethodRef(namesController.TypeNameToJava(operand.Fullname),
+                MethodRef copyToRef = new MethodRef(namesController.TypeNameToJava(operand),
                     ClassNames.ValueTypeCopyTo, "(" + namesController.GetFieldDescriptor(operand) + ")V");
 
                 codeGenerator.Add(Java.OpCodes.invokevirtual, copyToRef, e);
@@ -71,7 +71,7 @@ namespace CIL2Java
             else if (operand.IsValueType)
             {
                 CompileExpression(e.Arguments[0], ExpectType.ByRef);
-                MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operand.Fullname),
+                MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operand),
                     ClassNames.ValueTypeGetCopy, "()" + namesController.GetFieldDescriptor(operand));
 
                 codeGenerator.Add(Java.OpCodes.invokevirtual, getCopyRef, e);

@@ -30,7 +30,7 @@ namespace CIL2Java
             {
                 InterField operand = resolver.Resolve((FieldReference)e.Operand, thisMethod.FullGenericArguments);
                 FieldRef fldRef = new Java.Constants.FieldRef(
-                    namesController.TypeNameToJava(operand.DeclaringType.Fullname),
+                    namesController.TypeNameToJava(operand.DeclaringType),
                     namesController.FieldNameToJava(operand.Name),
                     namesController.GetFieldDescriptor(operand.FieldType));
 
@@ -45,7 +45,7 @@ namespace CIL2Java
             {
                 InterField operand = resolver.Resolve((FieldReference)e.Operand, thisMethod.FullGenericArguments);
                 FieldRef fldRef = new Java.Constants.FieldRef(
-                    namesController.TypeNameToJava(operand.DeclaringType.Fullname),
+                    namesController.TypeNameToJava(operand.DeclaringType),
                     namesController.FieldNameToJava(operand.Name),
                     namesController.GetFieldDescriptor(operand.FieldType));
 

@@ -18,7 +18,7 @@ namespace CIL2Java
 
             if (operandType.IsValueType)
             {
-                MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operandType.Fullname),
+                MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operandType),
                     ClassNames.ValueTypeGetCopy, "()" + namesController.GetFieldDescriptor(operandType));
                 codeGenerator.Add(Java.OpCodes.invokevirtual, getCopyRef, e);
             } else
@@ -36,7 +36,7 @@ namespace CIL2Java
                 // In il this looks like `initobj(ldloca(var))`
                 // But ILSpy optimizing it to `stloc(var, defaultvalue())`
 
-                MethodRef zeroFillRef = new MethodRef(namesController.TypeNameToJava(operandType.Fullname),
+                MethodRef zeroFillRef = new MethodRef(namesController.TypeNameToJava(operandType),
                     ClassNames.ValueTypeZeroFill, "()V");
 
                 codeGenerator

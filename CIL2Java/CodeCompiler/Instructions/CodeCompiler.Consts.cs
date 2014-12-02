@@ -78,7 +78,7 @@ namespace CIL2Java
 
             if (operand.IsValueType)
             {
-                Java.Constants.Class operandRef = new Java.Constants.Class(namesController.TypeNameToJava(operand.Fullname));
+                Java.Constants.Class operandRef = new Java.Constants.Class(namesController.TypeNameToJava(operand));
                 MethodRef operandCtorRef = new MethodRef(operandRef.Value, ClassNames.JavaConstructorMethodName, "()V");
 
                 codeGenerator

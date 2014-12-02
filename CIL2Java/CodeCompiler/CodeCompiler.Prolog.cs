@@ -21,11 +21,11 @@ namespace CIL2Java
                     CompileExpression(firstCall, ExpectType.Any);
                 else if (!thisMethod.IsStatic)
                 {
-                    string typeName = namesController.TypeNameToJava(thisMethod.DeclaringType.BaseType.Fullname);
+                    string typeName = namesController.TypeNameToJava(thisMethod.DeclaringType.BaseType);
                     if ((thisMethod.DeclaringType.IsValueType) && (thisMethod.Parameters.Count > 0))
                     {
                         //call to this() to initialize all fields
-                        typeName = namesController.TypeNameToJava(thisMethod.DeclaringType.Fullname);
+                        typeName = namesController.TypeNameToJava(thisMethod.DeclaringType);
                     }
 
                     MethodRef superCall = new MethodRef(typeName, ClassNames.JavaConstructorMethodName, "()V");
@@ -41,9 +41,9 @@ namespace CIL2Java
                 foreach (InterField fld in valueTypeFields)
                 {
                     Java.Constants.Class fldTypeRef = new Java.Constants.Class(
-                        namesController.TypeNameToJava(fld.FieldType.Fullname));
+                        namesController.TypeNameToJava(fld.FieldType));
                     MethodRef ctorRef = new MethodRef(fldTypeRef.Value, ClassNames.JavaConstructorMethodName, "()V");
-                    FieldRef fldRef = new FieldRef(namesController.TypeNameToJava(fld.DeclaringType.Fullname),
+                    FieldRef fldRef = new FieldRef(namesController.TypeNameToJava(fld.DeclaringType),
                         namesController.FieldNameToJava(fld.Name), namesController.GetFieldDescriptor(fld.FieldType));
 
                     if (!thisMethod.IsStatic)
@@ -59,7 +59,7 @@ namespace CIL2Java
 
             foreach (ValueTypeVar v in valueTypesVars)
             {
-                Java.Constants.Class typeRef = new Java.Constants.Class(namesController.TypeNameToJava(v.varType.Fullname));
+                Java.Constants.Class typeRef = new Java.Constants.Class(namesController.TypeNameToJava(v.varType));
                 Java.Constants.MethodRef ctorRef = new Java.Constants.MethodRef(typeRef.Value,
                     ClassNames.JavaConstructorMethodName, "()V");
 

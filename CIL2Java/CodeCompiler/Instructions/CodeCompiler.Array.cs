@@ -15,7 +15,7 @@ namespace CIL2Java
             InterType element = operand;
             if (element.IsArray) element = element.ElementType;
 
-            Java.Constants.Class operandRef = new Java.Constants.Class(namesController.TypeNameToJava(element.Fullname));
+            Java.Constants.Class operandRef = new Java.Constants.Class(namesController.TypeNameToJava(element));
             MethodRef valueTypeInitRef = new MethodRef(operandRef.Value, ClassNames.JavaConstructorMethodName, "()V");
 
             JavaArrayType arrayType = JavaHelpers.InterTypeToJavaArrayType(operand);

@@ -4,7 +4,17 @@ using System.Collections.Generic;
 namespace CIL2Java
 {
     public partial class Compiler
-    {        
+    {
+        string INamesController.TypeNameToJava(InterType CILName)
+        {
+            if (CILName.IsArray)
+                return GetFieldDescriptor(CILName);
+            else if (CILName.IsByRef)
+                return TypeNameToJava(GetByRefTypeName(CILName));
+            
+            return TypeNameToJava(CILName.Fullname);
+        }
+
         string INamesController.TypeNameToJava(string CILName)
         {
             return TypeNameToJava(CILName);

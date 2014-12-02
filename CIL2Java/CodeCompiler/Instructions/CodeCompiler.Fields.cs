@@ -20,7 +20,7 @@ namespace CIL2Java
             codeGenerator.AddInstruction(new JavaInstruction(
                 e.Code == ILCode.Stsfld ? Java.OpCodes.putstatic : Java.OpCodes.putfield,
                 new Java.Constants.FieldRef(
-                    namesController.TypeNameToJava(operand.DeclaringType.Fullname),
+                    namesController.TypeNameToJava(operand.DeclaringType),
                     namesController.FieldNameToJava(operand.Name),
                     namesController.GetFieldDescriptor(operand.FieldType)),
                 e));
@@ -36,7 +36,7 @@ namespace CIL2Java
             codeGenerator.AddInstruction(new JavaInstruction(
                 e.Code == ILCode.Ldsfld ? Java.OpCodes.getstatic : Java.OpCodes.getfield,
                 new Java.Constants.FieldRef(
-                    namesController.TypeNameToJava(operand.DeclaringType.Fullname),
+                    namesController.TypeNameToJava(operand.DeclaringType),
                     namesController.FieldNameToJava(operand.Name),
                     namesController.GetFieldDescriptor(operand.FieldType)),
                 e));
