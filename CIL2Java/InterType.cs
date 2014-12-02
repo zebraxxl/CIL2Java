@@ -118,7 +118,7 @@ namespace CIL2Java
 
             if ((IsArray) || (IsByRef))
             {
-                this.elementType = resolver.Resolve(typeRef.GetElementType(), genericArgs);
+                this.elementType = resolver.Resolve(((TypeSpecification)typeRef).ElementType, genericArgs);
                 register(this);
                 return;
             }
