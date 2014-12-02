@@ -118,7 +118,7 @@ namespace CIL2Java
 
             if ((IsArray) || (IsByRef))
             {
-                this.elementType = resolver.Resolve(typeRef.GetElementType(), this.genericArgs);
+                this.elementType = resolver.Resolve(typeRef.GetElementType(), genericArgs);
                 register(this);
                 return;
             }
@@ -292,6 +292,9 @@ namespace CIL2Java
 
         public void CheckOverloadingMethods(IResolver resolver, ModuleDefinition corlib)
         {
+            if ((IsByRef) || (IsArray))
+                return;
+
             InterType firstBaseType = this.baseType;
 
             if (typeRef == null)

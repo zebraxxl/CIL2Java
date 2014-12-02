@@ -86,13 +86,13 @@ namespace CIL2Java
                 name = methodRef.Name;
 
             genericArgs.AddRange(declType.GenericArguments);
-            if (methodRef.HasGenericParameters)
+            if ((methodDef ?? methodRef).HasGenericParameters)
             {
                 StringBuilder nameBuilder = new StringBuilder(name);
                 nameBuilder.Append("__GIM<");
 
                 GenericInstanceMethod gim = methodRef as GenericInstanceMethod;
-                foreach (GenericParameter gParam in methodRef.GenericParameters)
+                foreach (GenericParameter gParam in methodDef.GenericParameters)
                 {
                     TypeReference genericArgType = gParam;
                     InterGenericArgument genericArg = new InterGenericArgument();
@@ -108,7 +108,9 @@ namespace CIL2Java
                         if (genericArgType.IsGenericParameter)
                         {
                             GenericParameter genericParam = (GenericParameter)genericArgType;
-                            genericArg = genericArgs.Where(G => ((G.Position == gParam.Position) && G.Owner == GenericArgumentOwnerType.Method)).FirstOrDefault();
+                            genericArg = genericArgs
+                                .Where(G => ((G.Position == gParam.Position) && G.Owner == Utils.CecilGenericOwnerToC2JGenericOwner(genericParam.Type)))
+                                .FirstOrDefault();
                         }
                     }
                     else
@@ -152,7 +154,7 @@ namespace CIL2Java
                 methodRef.MethodReturnType.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.JavaBoxedAttribute).Count() > 0);
 
             foreach (ParameterDefinition paramDef in methodRef.Parameters)
-                parameters.Add(new InterParameter(paramDef, this.genericArgs, resolver));
+                parameters.Add(new InterParameter(paramDef, this.FullGenericArguments, resolver));
 
             if (methodDef != null)
             {
