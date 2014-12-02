@@ -41,6 +41,7 @@ namespace CIL2Java
             ilBody = new ILBlock();
 
             DecompilerContext context = new DecompilerContext(methodDef.Module) { CurrentType = methodDef.DeclaringType, CurrentMethod = methodDef };
+            context.Settings.IntroduceIncrementAndDecrement = false;
 
             ilBody.Body = builder.Build(methodDef, true, context);
             new ILAstOptimizer().Optimize(context, ilBody);
