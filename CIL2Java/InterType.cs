@@ -106,7 +106,7 @@ namespace CIL2Java
 
             genericArgs = genericArgs ?? InterGenericArgument.EmptyGenericArgsList;
             this.primitiveType = PrimitiveType.None;
-            
+
             this.IsArray = typeRef.IsArray;
             this.IsByRef = typeRef.IsByReference;
 
@@ -131,7 +131,7 @@ namespace CIL2Java
             }
 
             TypeDefinition typeDef = typeRef.Resolve();
-            
+
             CustomAttribute typeMapCustomAttr = typeDef.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.TypeMapAttribute).FirstOrDefault();
             CustomAttribute javaBoxTypeMapCustomAttr = typeDef.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.JavaBoxTypeMapAttribute).FirstOrDefault();
 
@@ -143,7 +143,7 @@ namespace CIL2Java
                 register(resolver.Resolve(typeMapCustomAttr.ConstructorArguments[0].Value as TypeReference, genericArgs));
                 return;
             }
-            
+
             this.IsPublic = typeDef.IsPublic;
             this.IsNested = typeDef.IsNested;
             this.IsNestedPublic = typeDef.IsNestedPublic | typeDef.IsNestedFamilyAndAssembly | typeDef.IsNestedFamilyOrAssembly | typeDef.IsNestedAssembly;
@@ -179,7 +179,7 @@ namespace CIL2Java
                     {
                         GenericParameter genericParam = (GenericParameter)genericArgType;
                         genericArg = genericArgs
-                            .Where(G=>((G.Position == genericParam.Position) && (G.Owner == Utils.CecilGenericOwnerToC2JGenericOwner(genericParam.Type))))
+                            .Where(G => ((G.Position == genericParam.Position) && (G.Owner == Utils.CecilGenericOwnerToC2JGenericOwner(genericParam.Type))))
                             .FirstOrDefault();
                     }
 
@@ -189,7 +189,8 @@ namespace CIL2Java
                         {
                             Messages.Message(MessageCode.CantResolveGenericParameter, genericArgType.FullName, typeRef.FullName);
                             genericArg.Type = resolver.Resolve(ClassNames.ObjectTypeName);
-                        } else
+                        }
+                        else
                             genericArg.Type = resolver.Resolve(genericArgType, InterGenericArgument.EmptyGenericArgsList);
                     }
 
@@ -233,7 +234,7 @@ namespace CIL2Java
 
             if (!register(this))
                 return;
-            
+
             if (typeDef.BaseType != null)
                 this.baseType = resolver.Resolve(typeDef.BaseType, this.genericArgs);
 
@@ -256,10 +257,18 @@ namespace CIL2Java
                     .FieldType, genericArgs);
             }
 
-            javaExceptions = typeDef.CustomAttributes
-                .Where(CA => CA.AttributeType.FullName == ClassNames.JavaExceptionMapAttribute)
-                .Select(CA => CA.ConstructorArguments[0].Value as string)
-                .ToArray();
+            if (typeDef != null)
+            {
+                javaExceptions = typeDef.CustomAttributes
+                    .Where(CA => CA.AttributeType.FullName == ClassNames.JavaExceptionMapAttribute)
+                    .Select(CA => CA.ConstructorArguments[0].Value as string)
+                    .ToArray();
+
+                MethodDefinition staticCtor = typeDef.Methods.Where(M => ((M.IsConstructor) & (M.IsStatic))).FirstOrDefault();
+
+                if (staticCtor != null)
+                    resolver.Resolve(staticCtor, this.genericArgs);
+            }
         }
 
         private InterType(PrimitiveType primitiveType, string nameSpace, string name, string cilBoxType)
