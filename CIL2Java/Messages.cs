@@ -48,6 +48,10 @@ namespace CIL2Java
 
         public static void Message(MessageCode Code, params string[] MessageParams)
         {
+#if DEBUG
+            System.Diagnostics.Debugger.Break();
+#endif
+
             bool Warring = false;
             uint RawCode = (uint)Code;
             uint MessageIndex = (uint)Code;
