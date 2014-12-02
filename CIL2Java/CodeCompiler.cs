@@ -41,7 +41,6 @@ namespace CIL2Java
             ilBody = new ILBlock();
 
             DecompilerContext context = new DecompilerContext(methodDef.Module) { CurrentType = methodDef.DeclaringType, CurrentMethod = methodDef };
-            context.Settings.IntroduceIncrementAndDecrement = false;
 
             ilBody.Body = builder.Build(methodDef, true, context);
             new ILAstOptimizer().Optimize(context, ilBody);
@@ -237,6 +236,7 @@ namespace CIL2Java
                 case ILCode.Conv_I4: CompileConvI4(e, expectType); break;
 
                 //Math
+                case ILCode.PostIncrement: CompilePostIncrement(e, expectType); break;
                 case ILCode.Add: CompileAdd(e, expectType); break;
                 case ILCode.Mul: CompileMul(e, expectType); break;
 
