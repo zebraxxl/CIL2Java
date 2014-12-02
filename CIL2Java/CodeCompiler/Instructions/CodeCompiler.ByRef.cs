@@ -128,6 +128,19 @@ namespace CIL2Java
             codeGenerator.Add(OpCodes.invokespecial, arrayByRefInitMethodRef, e);
         }
 
+        private void CompileLdind(ILExpression e, ExpectType expect)
+        {
+            CompileExpression(e.Arguments[0], ExpectType.ByRef);
+
+            MethodRef getMethodRef = byRefController.GetByRefGetValueMethodRef(JavaPrimitiveType.Ref);
+            InterType loadType = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
+            Java.Constants.Class loadedTypeRef = new Java.Constants.Class(namesController.TypeNameToJava(loadType.Fullname));
+
+            codeGenerator
+                .Add(OpCodes.invokevirtual, getMethodRef, e)
+                .Add(OpCodes.checkcast, loadedTypeRef, e);
+        }
+
         private void CompileStind(ILExpression e, ExpectType expectType)
         {
             JavaPrimitiveType type = JavaPrimitiveType.Ref;
