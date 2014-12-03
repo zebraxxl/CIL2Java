@@ -54,6 +54,7 @@
     <Compile Include="CodeCompiler.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Box.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.ByRef.cs" />
+    <Compile Include="CodeCompiler\CodeCompiler.Delegates.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Exceptions.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.ExpectType.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Preprocessor.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Call.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Consts.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Conv.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.Delegates.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Exceptions.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Fields.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Logic.cs" />
@@ -71,6 +73,7 @@
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Objects.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Vars.cs" />
     <Compile Include="Compiler.cs" />
+    <Compile Include="Compiler\Compiler.Delegates.cs" />
     <Compile Include="Compiler\Compiler.Primitive.cs" />
     <Compile Include="Compiler\Compiler.ByRef.cs" />
     <Compile Include="Compiler\Compiler.Field.cs" />

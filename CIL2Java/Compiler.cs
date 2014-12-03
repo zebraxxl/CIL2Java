@@ -91,6 +91,7 @@ namespace CIL2Java
             }
 
             GenerateByRefTypesCode();
+            GenerateMethodPointerInterfaces();
         }
     }
 }

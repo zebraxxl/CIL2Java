@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace CIL2Java
 {
@@ -9,6 +10,15 @@ namespace CIL2Java
     {
         private string GetMethodDescriptor(InterMethod method)
         {
+            if ((Program.MethodPointersType == MethodPointerImplementation.Fast) && (method.IsConstructor) && 
+                (method.DeclaringType.IsDelegate))
+            {
+                return "(L" + TypeNameToJava(ClassNames.JavaObject) + ";L" +
+                    TypeNameToJava(((INamesController)this).GetMethodPointerInterface(
+                    method.DeclaringType.Methods.Where(M => M.Name == ClassNames.DelegateInvokeMethodName).FirstOrDefault())) +
+                    ";)V";
+            }
+
             StringBuilder result = new StringBuilder("(");
 
             foreach (InterParameter param in method.Parameters)

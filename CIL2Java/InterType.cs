@@ -100,6 +100,32 @@ namespace CIL2Java
         public int ArrayRank { get { return arrayRank; } }
         public ArrayDimension[] Dimesnsions { get { return dimensions; } }
 
+        private void Special(TypeDefinition typeDef, IResolver resolver)
+        {
+            javaExceptions = typeDef.CustomAttributes
+                    .Where(CA => CA.AttributeType.FullName == ClassNames.JavaExceptionMapAttribute)
+                    .Select(CA => CA.ConstructorArguments[0].Value as string)
+                    .ToArray();
+
+            MethodDefinition staticCtor = typeDef.Methods.Where(M => ((M.IsConstructor) & (M.IsStatic))).FirstOrDefault();
+
+            if (staticCtor != null)
+                resolver.Resolve(staticCtor, this.genericArgs);
+
+            if (IsDelegate)
+            {
+                foreach (MethodDefinition methodDef in typeDef.Methods)
+                    resolver.Resolve(methodDef, this.genericArgs);
+            }
+
+            if ((typeDef.FullName == ClassNames.DelegateTypeName) || (typeDef.FullName == ClassNames.MulticastDelegateTypeName))
+            {
+                resolver.Resolve(typeDef.Methods.Where(M => ((M.IsConstructor) && (M.Parameters.Count == 2) &&
+                    (M.Parameters[0].ParameterType.FullName == M.Parameters[1].ParameterType.FullName) &&
+                    (M.Parameters[0].ParameterType.FullName == ClassNames.ObjectTypeName))).FirstOrDefault(), this.genericArgs);
+            }
+        }
+
         public InterType(TypeReference typeRef, List<InterGenericArgument> genericArgs, IResolver resolver, Func<InterType, bool> register)
         {
             this.typeRef = typeRef;
@@ -259,15 +285,7 @@ namespace CIL2Java
 
             if (typeDef != null)
             {
-                javaExceptions = typeDef.CustomAttributes
-                    .Where(CA => CA.AttributeType.FullName == ClassNames.JavaExceptionMapAttribute)
-                    .Select(CA => CA.ConstructorArguments[0].Value as string)
-                    .ToArray();
-
-                MethodDefinition staticCtor = typeDef.Methods.Where(M => ((M.IsConstructor) & (M.IsStatic))).FirstOrDefault();
-
-                if (staticCtor != null)
-                    resolver.Resolve(staticCtor, this.genericArgs);
+                Special(typeDef, resolver);
             }
         }
 

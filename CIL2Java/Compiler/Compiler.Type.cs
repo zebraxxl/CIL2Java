@@ -8,6 +8,7 @@ namespace CIL2Java
 {
     public partial class Compiler
     {
+        InterType currentType = null;
         Java.Class currentJavaClass = null;
         Java.Attributes.InnerClasses currentJavaInnerClasses = null;
 
@@ -38,6 +39,7 @@ namespace CIL2Java
         private Java.Class ComplileType(InterType type)
         {
             Messages.Verbose("  Compiling type {0}...", type.ToString());
+            currentType = type;
             currentJavaClass = new Java.Class();
 
             currentJavaClass.AccessFlag = (Java.ClassAccessFlag)GetClassAccessFlags(type, false);
@@ -76,11 +78,18 @@ namespace CIL2Java
                 currentJavaInnerClasses.Classes.Add(innerClass);
             }
 
-            foreach (InterField field in type.Fields)
-                currentJavaClass.Fields.Add(CompileField(field));
+            if (type.IsDelegate)
+            {
+                CompileDelegate(type);
+            }
+            else
+            {
+                foreach (InterField field in type.Fields)
+                    currentJavaClass.Fields.Add(CompileField(field));
 
-            foreach (InterMethod method in type.Methods)
-                currentJavaClass.Methods.Add(CompileMethod(method));
+                foreach (InterMethod method in type.Methods)
+                    currentJavaClass.Methods.Add(CompileMethod(method));
+            }
 
             bool hasStaticCtor = type.Methods.Where(M => ((M.IsConstructor) && (M.IsStatic))).Count() > 0;
             bool needStaticCtor = type.Fields.Where(F => ((F.FieldType.IsValueType) && (F.IsStatic))).Count() > 0;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CIL2Java
 {
@@ -42,17 +43,54 @@ namespace CIL2Java
 
         string INamesController.GetAnonimousClassName()
         {
-            throw new NotImplementedException();
+            int index = 0;
+            while (currentJavaInnerClasses.Classes
+                .Where(I => I.InnerName == ClassNames.AnonimousInnerClassPrefix + index.ToString()).Count() > 0)
+                index++;
+            return currentType.Fullname + "/" + ClassNames.AnonimousInnerClassPrefix + index.ToString();
         }
 
         void INamesController.WriteAnonumousClass(Java.Class javaClass)
         {
-            throw new NotImplementedException();
+            WriteClass(javaClass);
+
+            Java.Attributes.InnerClasses.InnerClass descr = new Java.Attributes.InnerClasses.InnerClass();
+            descr.AccessFlags = Java.Attributes.InnerClasses.InnerClassAccessFlags.Private;
+            descr.InnerClassInfo = javaClass.ThisClass;
+            descr.OuterClassInfo = currentJavaClass.ThisClass;
+            descr.InnerName = javaClass.ThisClass.Substring(javaClass.ThisClass.LastIndexOf('$') + 1);
+
+            currentJavaInnerClasses.Classes.Add(descr);
         }
 
         Java.Method INamesController.GetAnonumousAccessMethod()
         {
-            throw new NotImplementedException();
+            int index = 0;
+            while (currentJavaClass.Methods.Where(M => M.Name == ClassNames.AccessMethodPrefix + index.ToString()).Count() > 0)
+                index++;
+
+            Java.Method result = new Java.Method();
+            result.Name = ClassNames.AccessMethodPrefix + index.ToString();
+
+            currentJavaClass.Methods.Add(result);
+
+            return result;
+        }
+
+        string INamesController.GetMethodPointerInterface(InterMethod method)
+        {
+            string result = ClassNames.MethodPointerPrefix + escapeTypeName(method.ReturnParameter.Type.Fullname) + "_"
+                + string.Join("_", method.Parameters.Select(P => escapeTypeName(P.Type.Fullname)).ToArray());
+
+            if (!methodPointerInterfaces.ContainsKey(result))
+                methodPointerInterfaces.Add(result, method);
+
+            return result;
+        }
+
+        private string escapeTypeName(string name)
+        {
+            return name.Replace(new char[] { '.', '/' }, '_');
         }
     }
 }

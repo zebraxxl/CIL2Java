@@ -16,5 +16,7 @@ namespace CIL2Java
         string GetAnonimousClassName();
         void WriteAnonumousClass(Java.Class javaClass);
         Java.Method GetAnonumousAccessMethod();
+
+        string GetMethodPointerInterface(InterMethod method);
     }
 }

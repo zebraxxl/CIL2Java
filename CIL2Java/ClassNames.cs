@@ -26,6 +26,16 @@ namespace CIL2Java
 
         public const string VESNamespace = "CIL2Java.VES";
 
+        public const string MethodPointerPrefix = VESNamespace + ".MethodPointers.__";
+
+        public const string DelegateInvokeMethodName = "Invoke";
+        public const string DelegateBeginInvokeMethodName = "BeginInvoke";
+        public const string DelegateEndInvokeMethodName = "EndInvoke";
+
+        public static readonly FieldRef DelegateMethodFieldFast = new FieldRef("System/Delegate", "method", "Ljava/lang/Object;");
+        public static readonly FieldRef DelegateTargetField = new FieldRef("System/Delegate", "target", "Ljava/lang/Object;");
+        public static readonly FieldRef MulticastDelegateNextField = new FieldRef("System/MulticastDelegate", "next", "LSystem/Delegate;");
+
         public const string CorlibUtils = "CIL2Java.Utils";
         public const string ReboxMethod = "Rebox";
 
@@ -36,6 +46,11 @@ namespace CIL2Java
         public const string EnumValueFieldName = "value__";
 
         public const string IsVolatileModReq = "System.Runtime.CompilerServices.IsVolatile";
+
+        public const string MethodPointerInvokeName = "invoke";
+
+        public const string AnonimousInnerClassPrefix = "C2J_anon_";
+        public const string AccessMethodPrefix = "C2J_access$";
 
         public readonly static MethodRef ValueTypeCtor = new MethodRef("System/ValueType", "<init>", "()V");
 
@@ -97,5 +112,6 @@ namespace CIL2Java
             public static readonly MethodRef setFloat = new MethodRef("java/lang/reflect/Field", "setFloat", "(Ljava/lang/Object;F)V");
             public static readonly MethodRef setDouble = new MethodRef("java/lang/reflect/Field", "setDouble", "(Ljava/lang/Object;D)V");
         }
+
     }
 }

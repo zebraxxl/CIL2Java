@@ -238,6 +238,9 @@ namespace CIL2Java
                 case ILCode.Add: CompileAdd(e, expectType); break;
                 case ILCode.Mul: CompileMul(e, expectType); break;
 
+                //Delegates
+                case ILCode.Ldftn: CompileLdftn(e, expectType); break;
+
                 default: unknownNode = true; break;
             }
 
