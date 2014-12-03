@@ -2,10 +2,14 @@ using System.Runtime.ConstrainedExecution;
 using System.Security;
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace System.Threading
 {
-    /// <summary>Provides atomic operations for variables that are shared by multiple threads. </summary><filterpriority>2</filterpriority>
+    /// <summary>
+    /// Provides atomic operations for variables that are shared by multiple threads.
+    /// </summary>
+    /// <filterpriority>2</filterpriority>
     public static class Interlocked
     {
         [ReliabilityContractAttribute(Consistency.WillNotCorruptState, Cer.Success)]
@@ -137,9 +141,15 @@ namespace System.Threading
         [ReliabilityContractAttribute(Consistency.WillNotCorruptState, Cer.Success)]
         [ComVisibleAttribute(false)]
         [SecuritySafeCriticalAttribute()]
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public static T CompareExchange<T>(ref T location1, T value, T comparand)
         {
-             throw new NotImplementedException();
+            T orig = location1;
+
+            if (((location1 == null) && (comparand == null)) || (location1.Equals(comparand)))
+                location1 = value;
+
+            return orig;
         }
         
         
