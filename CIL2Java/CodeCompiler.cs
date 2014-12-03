@@ -99,11 +99,60 @@ namespace CIL2Java
                 CompileLoop((ILWhileLoop)node);
             else if (node is ILLabel)
                 codeGenerator.Label(((ILLabel)node).Name);
+            else if (node is ILSwitch)
+                CompileSwitch((ILSwitch)node);
             else
                 unknownNode = true;
 
             if (unknownNode)
                 Messages.Message(MessageCode.UnknownNode, node.ToString());
+        }
+
+        private void CompileSwitch(ILSwitch node)
+        {
+            CompileExpression(node.Condition, ExpectType.Primitive);  //TODO: Switch on long
+
+            JavaBytecodeWriter.LookupswitchOperand operand = new JavaBytecodeWriter.LookupswitchOperand();
+
+            JavaInstruction switchInstr = new JavaInstruction(Java.OpCodes.lookupswitch, null, node);
+            codeGenerator.AddInstruction(switchInstr);
+
+            string labelsSufix = rnd.Next().ToString();
+            string defaultLabel = "default" + labelsSufix;
+            string exitLabel = "exit" + labelsSufix;
+            bool wasDefault = false;
+            List<Tuple<int, string>> pairs = new List<Tuple<int, string>>();
+
+            loopOrSwitchExitLabel.Push(exitLabel);
+            int index = 0;
+            foreach (ILSwitch.CaseBlock caseBlock in node.CaseBlocks)
+            {
+                if (caseBlock.Values == null)
+                {
+                    codeGenerator.Label(defaultLabel);
+                    wasDefault = true;
+                }
+                else
+                {
+                    string thisCaseLabel = "case" + (index++) + labelsSufix;
+                    foreach (int val in caseBlock.Values)
+                        pairs.Add(new Tuple<int, string>(val, thisCaseLabel));
+                    codeGenerator.Label(thisCaseLabel);
+                }
+
+                CompileBlock(caseBlock);
+            }
+            loopOrSwitchExitLabel.Pop();
+
+            if (!wasDefault)
+                codeGenerator.Label(defaultLabel);
+            codeGenerator.Label(exitLabel);
+
+            pairs.Sort((T1, T2) => (T1.Item1 < T2.Item1 ? -1 : T1.Item1 > T2.Item1 ? 1 : 0));
+
+            operand.DefaultLabel = defaultLabel;
+            operand.Pairs = pairs.ToArray();
+            switchInstr.Operand = operand;
         }
 
         private void CompileLoop(ILWhileLoop node)
