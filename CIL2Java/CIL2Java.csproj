@@ -71,6 +71,7 @@
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Logic.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Math.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Objects.cs" />
+    <Compile Include="CodeCompiler\Instructions\CodeCompiler.Other.cs" />
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Vars.cs" />
     <Compile Include="Compiler.cs" />
     <Compile Include="Compiler\Compiler.Delegates.cs" />

@@ -18,6 +18,7 @@ namespace CIL2Java
         private Java.Attributes.Code resultCode = null;
         private Random rnd = new Random();
         private ILBlock ilBody;
+        private Stack<string> loopOrSwitchExitLabel = new Stack<string>();
 
         public Java.Attributes.Code Result { get { return resultCode; } }
 
@@ -117,8 +118,10 @@ namespace CIL2Java
                 CompileExpression(node.Condition, ExpectType.Primitive);
                 codeGenerator.Add(Java.OpCodes.ifeq, exitLabel, node);  //goto to `exit` if Condition == 0
             }
-            
+
+            loopOrSwitchExitLabel.Push(exitLabel);
             CompileBlock(node.BodyBlock);
+            loopOrSwitchExitLabel.Pop();
 
             codeGenerator
                 .Add(Java.OpCodes._goto, loopLabel)
@@ -246,6 +249,9 @@ namespace CIL2Java
 
                 //Delegates
                 case ILCode.Ldftn: CompileLdftn(e, expectType); break;
+
+                //Other
+                case ILCode.LoopOrSwitchBreak: CompileLoopOrSwitchBreak(e, expectType); break;
 
                 default: unknownNode = true; break;
             }
