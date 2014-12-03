@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
+using System;
 using System.Collections.Generic;
 
 namespace CIL2Java
@@ -50,6 +52,20 @@ namespace CIL2Java
 
             if (expected == ExpectType.None)
                 codeGenerator.AddPop(JavaHelpers.InterTypeToJavaPrimitive(type), tag);
+
+            if ((type.IsByRef) && (expected != ExpectType.ByRef))
+            {
+                JavaPrimitiveType javaType = JavaHelpers.InterTypeToJavaPrimitive(type.ElementType);
+                MethodRef getMethodRef = byRefController.GetByRefGetValueMethodRef(javaType);
+                Java.Constants.Class loadedTypeRef = new Java.Constants.Class(namesController.TypeNameToJava(type.ElementType));
+
+                codeGenerator.Add(OpCodes.invokevirtual, getMethodRef, tag);
+
+                if (javaType == JavaPrimitiveType.Ref)
+                    codeGenerator.Add(OpCodes.checkcast, loadedTypeRef, tag);
+
+                type = type.ElementType;
+            }
 
             if ((expected == ExpectType.Boxed) && (type.IsPrimitive))
                 BoxType(type, tag);

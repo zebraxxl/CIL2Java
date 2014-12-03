@@ -3,6 +3,7 @@ using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CIL2Java
 {
@@ -52,7 +53,23 @@ namespace CIL2Java
 
             int argIndex = 0;
             if ((operand.HasThis) && (operand.Parameters.Count < e.Arguments.Count))
+            {
+                if (e.Prefixes != null)
+                {
+                    ILExpressionPrefix constrained = e.Prefixes.Where(P => P.Code == ILCode.Constrained).FirstOrDefault();
+                    if (constrained != null)
+                    {
+                        InterType thisType = resolver.Resolve((TypeReference)constrained.Operand, thisMethod.FullGenericArguments);
+
+                        if (thisType.IsPrimitive)
+                            e.Arguments[argIndex] = new ILExpression(ILCode.Box, null, e.Arguments[argIndex]);
+                        //else if (!thisType.IsValueType)
+                        //    e.Arguments[argIndex].Code = GetAddrInvert[e.Arguments[argIndex].Code];
+                    }
+                }
+
                 CompileExpression(e.Arguments[argIndex++], ExpectType.Reference);
+            }
 
             foreach (InterParameter param in operand.Parameters)
                 CompileExpression(e.Arguments[argIndex++], GetExpectType(param));

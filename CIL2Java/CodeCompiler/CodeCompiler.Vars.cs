@@ -48,6 +48,14 @@ namespace CIL2Java
             {ILCode.Ldelema, ILCode.Stelem_Any},
         };
 
+        private Dictionary<ILCode, ILCode> GetAddrInvert = new Dictionary<ILCode, ILCode>()
+        {
+            {ILCode.Ldloca, ILCode.Ldloc},
+            {ILCode.Ldflda, ILCode.Ldfld},
+            {ILCode.Ldsflda, ILCode.Ldsfld},
+            {ILCode.Ldelema, ILCode.Ldelem_Any}
+        };
+
         private void FillVars(List<ILVariable> vars)
         {
             if (thisMethod.HasThis)
