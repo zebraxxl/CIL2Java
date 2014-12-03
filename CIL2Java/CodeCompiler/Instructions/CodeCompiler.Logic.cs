@@ -23,7 +23,6 @@ namespace CIL2Java
 
         private void CompileLogicNot(ILExpression e, ExpectType expect)
         {
-            //TODO: e.Arguments may not be bool
             CompileExpression(e.Arguments[0], ExpectType.Primitive);
 
             //  push exp
@@ -38,8 +37,11 @@ namespace CIL2Java
             string zeroLabel = "zero" + labelSufixes;
             string exitLabel = "exit" + labelSufixes;
 
+            Java.OpCodes branch = Java.OpCodes.ifeq;
+            TranslateToBool(e.Arguments[0].InferredType, ref branch, e);
+
             codeGenerator
-                .Add(Java.OpCodes.ifeq, zeroLabel, e)
+                .Add(branch, zeroLabel, e)
                 .Add(Java.OpCodes.iconst_0, null, e)
                 .Add(Java.OpCodes._goto, exitLabel, e)
                 .Label(zeroLabel)
