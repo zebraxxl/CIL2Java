@@ -54,7 +54,7 @@ namespace CIL2Java
                     if (args[++i] == "java")
                         BoxType = BoxingType.Java;
                 }
-                else if (args[i] == "method_pointers")
+                else if (args[i] == "-method_pointers")
                 {
                     if (args[++i] == "standart")
                         MethodPointersType = MethodPointerImplementation.Standart;
