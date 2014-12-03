@@ -340,8 +340,11 @@ namespace CIL2Java
 
             TypeDefinition typeDef = typeRef.Resolve();
 
-            if ((firstBaseType == null) && (typeDef .BaseType != null))
+            if ((firstBaseType == null) && (typeDef.BaseType != null))
                 firstBaseType = resolver.Resolve(typeDef.BaseType, genericArgs);
+
+            if (firstBaseType != null)
+                firstBaseType.CheckOverloadingMethods(resolver, corlib);
 
             var notAddedOverloadMethods = typeDef.Methods.Where(MD =>
             {
