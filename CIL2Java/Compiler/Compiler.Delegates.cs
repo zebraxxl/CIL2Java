@@ -130,8 +130,12 @@ namespace CIL2Java
                 codeWriter
                     .Add(OpCodes.aload_0)
                     .Add(OpCodes.getfield, ClassNames.MulticastDelegateNextField)
-                    .Add(OpCodes.ifnull, "exit")
-                    .Add(OpCodes.pop)
+                    .Add(OpCodes.ifnull, "exit");
+
+                if (invokeMethod.ReturnParameter.Type.PrimitiveType != PrimitiveType.Void)
+                    codeWriter.Add(OpCodes.pop);
+
+                codeWriter
                     .Add(OpCodes.aload_0)
                     .Add(OpCodes.getfield, ClassNames.MulticastDelegateNextField)
                     .Add(OpCodes.checkcast, new Java.Constants.Class(TypeNameToJava(type.Fullname)));
