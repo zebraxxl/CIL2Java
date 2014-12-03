@@ -10,5 +10,10 @@ namespace CIL2Java
         {
             codeGenerator.Add(Java.OpCodes._goto, loopOrSwitchExitLabel.Peek(), e);
         }
+
+        private void CompileBr(ILExpression e, ExpectType expect)
+        {
+            codeGenerator.Add(Java.OpCodes._goto, ((ILLabel)e.Operand).Name , e);
+        }
     }
 }

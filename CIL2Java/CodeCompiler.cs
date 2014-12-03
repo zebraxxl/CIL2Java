@@ -254,6 +254,7 @@ namespace CIL2Java
 
                 //Other
                 case ILCode.LoopOrSwitchBreak: CompileLoopOrSwitchBreak(e, expectType); break;
+                case ILCode.Br: CompileBr(e, expectType); break;
 
                 default: unknownNode = true; break;
             }
