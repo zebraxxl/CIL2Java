@@ -2,6 +2,7 @@
 using CIL2Java.Java.Constants;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CIL2Java
 {
@@ -156,6 +157,84 @@ namespace CIL2Java
             currentJavaClass.Methods.Add(result);
         }
 
+        private void GenerateValueTypeEquals(InterType type)
+        {
+            if (type.Methods.Where(M => ((M.Name == "Equals") && (M.Parameters.Count == 1) &&
+                (M.Parameters[0].Type.Fullname == ClassNames.ObjectTypeName))).Count() > 0)
+                return;
+
+            Method result = new Method();
+            result.AccessFlags = MethodAccessFlags.Public;
+            result.Name = "equals";
+            result.Descriptor = "(L" + TypeNameToJava(ClassNames.JavaObject) + ";)Z";
+
+            Java.Constants.Class thisTypeRef = new Java.Constants.Class(TypeNameToJava(type.Fullname));
+
+            JavaBytecodeWriter codeGenerator = new JavaBytecodeWriter();
+            codeGenerator
+                .Add(OpCodes.aload_1)
+                .Add(OpCodes.instanceof, thisTypeRef)
+                .Add(OpCodes.ifeq, "false")
+                .Add(OpCodes.aload_1)
+                .Add(OpCodes.checkcast, thisTypeRef)
+                .Add(OpCodes.astore_1);
+
+            foreach (InterField fld in type.Fields)
+            {
+                FieldRef fldRef = new FieldRef(thisTypeRef.Value, FieldNameToJava(fld.Name), GetFieldDescriptor(fld.FieldType));
+
+                codeGenerator
+                    .Add(OpCodes.aload_0)
+                    .Add(OpCodes.getfield, fldRef)
+                    .Add(OpCodes.aload_1)
+                    .Add(OpCodes.getfield, fldRef);
+
+                if ((fld.FieldType.IsPrimitive) || (fld.FieldType.IsEnum))
+                {
+                    switch (JavaHelpers.InterTypeToJavaPrimitive(fld.FieldType))
+                    {
+                        case JavaPrimitiveType.Bool:
+                        case JavaPrimitiveType.Byte:
+                        case JavaPrimitiveType.Char:
+                        case JavaPrimitiveType.Int:
+                        case JavaPrimitiveType.Short:
+                            codeGenerator.Add(OpCodes.if_icmpne, "false");
+                            break;
+
+                        case JavaPrimitiveType.Long:
+                            codeGenerator.Add(OpCodes.lcmp).Add(OpCodes.ifne, "false");
+                            break;
+
+                        case JavaPrimitiveType.Float:
+                            codeGenerator.Add(OpCodes.fcmpg).Add(OpCodes.ifne, "false");
+                            break;
+
+                        case JavaPrimitiveType.Double:
+                            codeGenerator.Add(OpCodes.dcmpg).Add(OpCodes.ifne, "false");
+                            break;
+                    }
+                }
+                else if (fld.FieldType.IsValueType)
+                {
+                    MethodRef equalMethod = new MethodRef(TypeNameToJava(fld.FieldType.Fullname), result.Name, result.Descriptor);
+                    codeGenerator.Add(OpCodes.invokevirtual, equalMethod).Add(OpCodes.ifeq, false);
+                }
+                else
+                    codeGenerator.Add(OpCodes.if_acmpne, "false");
+            }
+
+            codeGenerator
+                .Add(OpCodes.iconst_1)
+                .Add(OpCodes._goto, "exit")
+                .Label("false")
+                .Add(OpCodes.iconst_0)
+                .Label("exit")
+                .Add(OpCodes.ireturn);
+
+            result.Attributes.Add(codeGenerator.End(currentJavaClass.ConstantPool));
+            currentJavaClass.Methods.Add(result);
+        }
+
         private void CompileValueType(InterType type)
         {
             Messages.Verbose("    Generating value type internal methods...");
@@ -163,6 +242,7 @@ namespace CIL2Java
             GenerateValueTypeZeroFill(type);
             GenerateValueTypeCopyTo(type);
             GenerateValueTypeGetCopy(type);
+            GenerateValueTypeEquals(type);
         }
     }
 }
