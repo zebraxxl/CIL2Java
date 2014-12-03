@@ -361,11 +361,10 @@ namespace CIL2Java
             foreach (var method in notAddedOverloadMethods)
             {
                 InterType baseType = firstBaseType;
-                MethodSignature ms = new MethodSignature(method);
 
                 while (baseType != null)
                 {
-                    if (baseType.methods.Where(im => new MethodSignature(im) == ms).Count() > 0)
+                    if (baseType.methods.Where(im => im.Name == method.Name).Count() > 0)
                         resolver.Resolve(method, genericArgs);
 
                     baseType = baseType.baseType;
