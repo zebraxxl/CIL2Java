@@ -18,7 +18,7 @@ namespace System
             Delegate result = base.CloneThis();
 
             if (next != null)
-                ((MulticastDelegate)result).next = CloneThis();
+                ((MulticastDelegate)result).next = (Delegate)next.Clone();
 
             return result;
         }
