@@ -55,8 +55,10 @@ namespace CIL2Java
                 if (!operand.IsStatic)
                     accessCodeWriter.Add(OpCodes.aload_0);
 
+                int firstParameter = operand.IsStatic ? 0 : 1;
+
                 for (int i = 0; i < operand.Parameters.Count; i++)
-                    accessCodeWriter.AddLoad(JavaHelpers.InterTypeToJavaPrimitive(operand.Parameters[i].Type), i + 1);
+                    accessCodeWriter.AddLoad(JavaHelpers.InterTypeToJavaPrimitive(operand.Parameters[i].Type), i + firstParameter);
 
                 if (operand.IsStatic)
                     accessCodeWriter.Add(OpCodes.invokestatic, invokingMethodRef);
