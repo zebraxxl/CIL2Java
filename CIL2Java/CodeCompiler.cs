@@ -181,6 +181,7 @@ namespace CIL2Java
                 case ILCode.Stind_Ref: CompileStind(e, expectType); break;
 
                 //Objects
+                case ILCode.Castclass: CompileCastclass(e, expectType); break;
                 case ILCode.Newobj: CompileNewobj(e, expectType); break;
                 case ILCode.Stobj: CompileStobj(e, expectType); break;
                 case ILCode.Ldobj: CompileLdobj(e, expectType); break;

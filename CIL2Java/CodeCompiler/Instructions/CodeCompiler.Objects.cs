@@ -8,6 +8,16 @@ namespace CIL2Java
 {
     public partial class CodeCompiler
     {
+        private void CompileCastclass(ILExpression e, ExpectType expect)
+        {
+            InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+
+            CompileExpression(e.Arguments[0], expect);
+
+            //TODO: Exceptions
+            codeGenerator.Add(Java.OpCodes.checkcast, new Java.Constants.Class(namesController.TypeNameToJava(operand)), e);
+        }
+
         private void CompileNewobj(ILExpression e, ExpectType expect)
         {
             InterMethod ctor = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
