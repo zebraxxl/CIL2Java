@@ -122,25 +122,21 @@ namespace CIL2Java
 
         private void CompileCondition(ILCondition node, ExpectType expectType)
         {
-            //TODO: remake to use labels
+            string labelsSufix = rnd.Next().ToString();
+            string falseLabel = "false" + labelsSufix;
+            string exitLabel = "exit" + labelsSufix;
+
             CompileExpression(node.Condition, ExpectType.Primitive);
 
-            Java.OpCodes branchInstr = Java.OpCodes.ifne;
+            Java.OpCodes branchInstr = Java.OpCodes.ifeq;
             TranslateToBool(node.Condition.InferredType, ref branchInstr, node);
 
-            JavaInstruction branchGoto = new JavaInstruction(branchInstr, null, node);
-            codeGenerator.AddInstruction(branchGoto);
-
+            codeGenerator.Add(branchInstr, falseLabel, node);
             CompileBlock(node.TrueBlock, expectType);
-
-            JavaInstruction trueEndGoto = new JavaInstruction(Java.OpCodes._goto, null, node);
-            codeGenerator.AddInstruction(trueEndGoto);
-
-            codeGenerator.OnNextInstruction += I => branchGoto.Operand = I;
-
+            codeGenerator.Add(Java.OpCodes._goto, exitLabel, node)
+                .Label(falseLabel);
             CompileBlock(node.FalseBlock, expectType);
-
-            codeGenerator.OnNextInstruction += I => trueEndGoto.Operand = I;
+            codeGenerator.Label(exitLabel);
         }
 
         private void CompileExpression(ILExpression e, ExpectType expectType)

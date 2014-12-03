@@ -17,7 +17,7 @@ namespace CIL2Java
                 case JavaPrimitiveType.Double: codeGenerator.Add(Java.OpCodes.d2i, null, tag); break;
                 case JavaPrimitiveType.Float: codeGenerator.Add(Java.OpCodes.f2i, null, tag); break;
                 case JavaPrimitiveType.Long: codeGenerator.Add(Java.OpCodes.l2i, null, tag); break;
-                case JavaPrimitiveType.Ref: cmpOp = (cmpOp == Java.OpCodes.ifne ? Java.OpCodes.ifnull : Java.OpCodes.ifnonnull); break;
+                case JavaPrimitiveType.Ref: cmpOp = (cmpOp == Java.OpCodes.ifne ? Java.OpCodes.ifnonnull : Java.OpCodes.ifnull); break;
             }
         }
 
@@ -26,25 +26,25 @@ namespace CIL2Java
             //TODO: e.Arguments may not be bool
             CompileExpression(e.Arguments[0], ExpectType.Primitive);
 
-            //  iconst_1
-            //  if_icmpne not_equal
-            //  iconst_1
-            //  goto end
-            //not_equal:
+            //  push exp
+            //  ifeq zero
             //  iconst_0
-            //end:
-            //
+            //  goto exit
+            //zero:
+            //  iconst_1
+            //exit
 
-            string labelPrefixes = ":" + rnd.Next().ToString();
+            string labelSufixes = rnd.Next().ToString();
+            string zeroLabel = "zero" + labelSufixes;
+            string exitLabel = "exit" + labelSufixes;
 
             codeGenerator
-                .Add(Java.OpCodes.iconst_1, null, e)
-                .Add(Java.OpCodes.if_icmpne, labelPrefixes + "not_equal", e)
-                .Add(Java.OpCodes.iconst_1, null, e)
-                .Add(Java.OpCodes._goto, labelPrefixes + "end", e)
-                .Label(labelPrefixes + "not_equal")
+                .Add(Java.OpCodes.ifeq, zeroLabel, e)
                 .Add(Java.OpCodes.iconst_0, null, e)
-                .Label(labelPrefixes + "end");
+                .Add(Java.OpCodes._goto, exitLabel, e)
+                .Label(zeroLabel)
+                .Add(Java.OpCodes.iconst_1)
+                .Label(exitLabel);
         }
 
         private void CompileLogicAnd(ILExpression e, ExpectType expect)
