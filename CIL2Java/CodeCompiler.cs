@@ -97,6 +97,8 @@ namespace CIL2Java
                 CompileTryBlock((ILTryCatchBlock)node);
             else if (node is ILWhileLoop)
                 CompileLoop((ILWhileLoop)node);
+            else if (node is ILLabel)
+                codeGenerator.Label(((ILLabel)node).Name);
             else
                 unknownNode = true;
 
