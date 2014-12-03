@@ -49,7 +49,8 @@ namespace CIL2Java
         public static void Message(MessageCode Code, params string[] MessageParams)
         {
 #if DEBUG
-            System.Diagnostics.Debugger.Break();
+            if (System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Break();
 #endif
 
             bool Warring = false;
