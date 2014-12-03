@@ -56,6 +56,12 @@ namespace CIL2Java
             public byte DimensionsOperand;
         }
 
+        public struct LookupswitchOperand
+        {
+            public string DefaultLabel;
+            public Tuple<int, string>[] Pairs;
+        }
+
         private Dictionary<JavaInstruction, int> outputCodeOffsets = new Dictionary<JavaInstruction, int>();
         private List<JavaInstruction> outputCode = new List<JavaInstruction>();
         private Dictionary<string, int> labels = new Dictionary<string, int>();
@@ -131,6 +137,20 @@ namespace CIL2Java
                 }
 
                 int size = Java.ByteCode.JavaInstructions[instr.Opcode].Size;
+                if ((size == -1) && (instr.Opcode == Java.OpCodes.lookupswitch))
+                {
+                    LookupswitchOperand op = (LookupswitchOperand)lastOperand;
+                    instr.Operand = op;
+
+                    int paddingLendth = (4 - ((offset + 1) % 4)) % 4;
+
+                    size = 1    //opcode
+                        + paddingLendth //padding
+                        + 4     //default
+                        + 4     //npairs
+                        + op.Pairs.Length * 8;   //pairs count * pairs size (8 = 4 + 4)
+                }
+
                 if (lastWide)
                 {
                     size = (size - 1) * 2 + 1;
@@ -201,8 +221,23 @@ namespace CIL2Java
                                 break;
 
                             case Java.OpCodes.tableswitch:
+                                //TODO: Java.OpCodes.tableswitch
+                                break;
+
                             case Java.OpCodes.lookupswitch:
-                            //TODO: Java.OpCodes.tableswitch, Java.OpCodes.lookupswitch
+                                LookupswitchOperand lookUpOperand = (LookupswitchOperand)instr.Operand;
+
+                                int padding = (4 - ((outputCodeOffsets[instr] + 1) % 4)) % 4;
+                                codeBytesWriter.Write(new byte[padding]);
+                                codeBytesWriter.WriteBE(outputCodeOffsets[outputCode[labels[lookUpOperand.DefaultLabel]]] - outputCodeOffsets[instr]);
+                                codeBytesWriter.WriteBE(lookUpOperand.Pairs.Length);
+
+                                for (int j = 0; j < lookUpOperand.Pairs.Length; j++)
+                                {
+                                    codeBytesWriter.WriteBE(lookUpOperand.Pairs[j].Item1);
+                                    codeBytesWriter.WriteBE(outputCodeOffsets[outputCode[labels[lookUpOperand.Pairs[j].Item2]]] - outputCodeOffsets[instr]);
+                                }
+
                                 break;
 
                             case Java.OpCodes.invokeinterface:
