@@ -5,6 +5,18 @@ using System.IO;
 
 namespace CIL2Java
 {
+    public enum BoxingType
+    {
+        Cil,
+        Java
+    }
+
+    public enum MethodPointerImplementation
+    {
+        Fast,
+        Standart
+    }
+
     public static class Program
     {
         public static ReaderParameters AssemblyReaderParams { get; private set; }
@@ -13,6 +25,7 @@ namespace CIL2Java
         public static string Out { get; private set; }
         public static bool AsX64 { get; private set; }
         public static BoxingType BoxType { get; private set; }
+        public static MethodPointerImplementation MethodPointersType { get; private set; }
         public static bool Debug { get; private set; }
 
         public static Dictionary<string, string> ReplacedAssemblies { get; private set; }
@@ -40,6 +53,11 @@ namespace CIL2Java
                 {
                     if (args[++i] == "java")
                         BoxType = BoxingType.Java;
+                }
+                else if (args[i] == "method_pointers")
+                {
+                    if (args[++i] == "standart")
+                        MethodPointersType = MethodPointerImplementation.Standart;
                 }
                 else if (args[i] == "-r")
                 {
@@ -74,6 +92,8 @@ namespace CIL2Java
                 Console.WriteLine("    -v                     - verbose output");
                 Console.WriteLine("    -no_warrings           - disable warrings output");
                 Console.WriteLine("    -box [type]            - boxing type. Types: cil (default) or java");
+                Console.WriteLine("    -method_pointers [type]- method pointer implementation type.");
+                Console.WriteLine("                             Types: fast (default) or standart");
                 Console.WriteLine("    -debug                 - add debug information");
             }
 
@@ -136,6 +156,7 @@ namespace CIL2Java
             Out = "";
             AsX64 = false;
             BoxType = BoxingType.Cil;
+            MethodPointersType = MethodPointerImplementation.Fast;
             ReplacedAssemblies = new Dictionary<string, string>();
 
             if (!ParseCommandLine(args))
