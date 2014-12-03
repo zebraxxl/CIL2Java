@@ -12,5 +12,8 @@ namespace java.lang
 
         [FromJava()]
         public static io.PrintStream @out;
+
+        [FromJava]
+        public static void arraycopy(object src, int srcPos, object dest, int destPos, int length) { }
     }
 }

@@ -11,7 +11,6 @@ namespace System
     /// <summary>Provides methods for creating, manipulating, searching, and sorting arrays, thereby serving as the base class for all arrays in the common language runtime.</summary><filterpriority>1</filterpriority>
     [Serializable]
     [ComVisibleAttribute(true)]
-    [TypeMap(typeof(java.lang.Object))]
     public abstract class Array : ICloneable, IList, IStructuralComparable, IStructuralEquatable
     {
     
@@ -66,9 +65,26 @@ namespace System
         
         
         [ReliabilityContractAttribute(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void Resize<T>(ref T array, int newSize)
+        public static void Resize<T>(ref T[] array, int newSize)
         {
-             throw new NotImplementedException();
+            if (newSize < 0)
+                throw new ArgumentOutOfRangeException("newSize");
+
+            if (array == null)
+            {
+                array = new T[newSize];
+                return;
+            }
+
+            T[] original = array;
+            int originalLength = original.Length;
+            if (originalLength == newSize)
+                return;
+
+            T[] newArray = new T[newSize];
+            if (originalLength != 0)
+                java.lang.System.arraycopy(original, 0, newArray, 0, Math.Min(newSize, originalLength));    //TODO: replace System.Math to java.lang.Math
+            array = newArray;
         }
         
         
@@ -128,12 +144,29 @@ namespace System
         }
         
         
-        /// <summary>Copies a range of elements from an <see cref="T:System.Array" /> starting at the specified source index and pastes them to another <see cref="T:System.Array" /> starting at the specified destination index. The length and the indexes are specified as 32-bit integers.</summary><param name="sourceArray">The <see cref="T:System.Array" /> that contains the data to copy.</param><param name="sourceIndex">A 32-bit integer that represents the index in the <paramref name="sourceArray" /> at which copying begins.</param><param name="destinationArray">The <see cref="T:System.Array" /> that receives the data.</param><param name="destinationIndex">A 32-bit integer that represents the index in the <paramref name="destinationArray" /> at which storing begins.</param><param name="length">A 32-bit integer that represents the number of elements to copy.</param><exception cref="T:System.ArgumentNullException"><paramref name="sourceArray" /> is null.-or-<paramref name="destinationArray" /> is null.</exception><exception cref="T:System.RankException"><paramref name="sourceArray" /> and <paramref name="destinationArray" /> have different ranks.</exception><exception cref="T:System.ArrayTypeMismatchException"><paramref name="sourceArray" /> and <paramref name="destinationArray" /> are of incompatible types.</exception><exception cref="T:System.InvalidCastException">At least one element in <paramref name="sourceArray" /> cannot be cast to the type of <paramref name="destinationArray" />.</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="sourceIndex" /> is less than the lower bound of the first dimension of <paramref name="sourceArray" />.-or-<paramref name="destinationIndex" /> is less than the lower bound of the first dimension of <paramref name="destinationArray" />.-or-<paramref name="length" /> is less than zero.</exception><exception cref="T:System.ArgumentException"><paramref name="length" /> is greater than the number of elements from <paramref name="sourceIndex" /> to the end of <paramref name="sourceArray" />.-or-<paramref name="length" /> is greater than the number of elements from <paramref name="destinationIndex" /> to the end of <paramref name="destinationArray" />.</exception><filterpriority>1</filterpriority>
+        /// <summary>
+        /// Copies a range of elements from an <see cref="T:System.Array" /> starting at the specified source
+        /// index and pastes them to another <see cref="T:System.Array" /> starting at the specified destination
+        /// index. The length and the indexes are specified as 32-bit integers.
+        /// </summary>
+        /// <param name="sourceArray">The <see cref="T:System.Array" /> that contains the data to copy.</param>
+        /// <param name="sourceIndex">A 32-bit integer that represents the index in the <paramref name="sourceArray" /> at which copying begins.</param>
+        /// <param name="destinationArray">The <see cref="T:System.Array" /> that receives the data.</param>
+        /// <param name="destinationIndex">A 32-bit integer that represents the index in the <paramref name="destinationArray" /> at which storing begins.</param>
+        /// <param name="length">A 32-bit integer that represents the number of elements to copy.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="sourceArray" /> is null.-or-<paramref name="destinationArray" /> is null.</exception>
+        /// <exception cref="T:System.RankException"><paramref name="sourceArray" /> and <paramref name="destinationArray" /> have different ranks.</exception>
+        /// <exception cref="T:System.ArrayTypeMismatchException"><paramref name="sourceArray" /> and <paramref name="destinationArray" /> are of incompatible types.</exception>
+        /// <exception cref="T:System.InvalidCastException">At least one element in <paramref name="sourceArray" /> cannot be cast to the type of <paramref name="destinationArray" />.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="sourceIndex" /> is less than the lower bound of the first dimension of <paramref name="sourceArray" />.-or-<paramref name="destinationIndex" /> is less than the lower bound of the first dimension of <paramref name="destinationArray" />.-or-<paramref name="length" /> is less than zero.</exception>
+        /// <exception cref="T:System.ArgumentException"><paramref name="length" /> is greater than the number of elements from <paramref name="sourceIndex" /> to the end of <paramref name="sourceArray" />.-or-<paramref name="length" /> is greater than the number of elements from <paramref name="destinationIndex" /> to the end of <paramref name="destinationArray" />.</exception>
+        /// <filterpriority>1</filterpriority>
         [ReliabilityContractAttribute(Consistency.MayCorruptInstance, Cer.MayFail)]
         [SecuritySafeCriticalAttribute()]
         public static void Copy(Array sourceArray, int sourceIndex, Array destinationArray, int destinationIndex, int length)
         {
-             throw new NotImplementedException();
+            //TODO: params checks
+            java.lang.System.arraycopy(sourceArray, sourceIndex, destinationArray, destinationIndex, length);
         }
         
         

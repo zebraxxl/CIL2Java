@@ -323,11 +323,17 @@ namespace System
         }
         
         
-        /// <summary>Returns the larger of two 32-bit signed integers.</summary><returns>Parameter <paramref name="val1" /> or <paramref name="val2" />, whichever is larger.</returns><param name="val1">The first of two 32-bit signed integers to compare. </param><param name="val2">The second of two 32-bit signed integers to compare. </param><filterpriority>1</filterpriority>
+        /// <summary>
+        /// Returns the larger of two 32-bit signed integers.
+        /// </summary>
+        /// <returns>Parameter <paramref name="val1" /> or <paramref name="val2" />, whichever is larger.</returns>
+        /// <param name="val1">The first of two 32-bit signed integers to compare. </param>
+        /// <param name="val2">The second of two 32-bit signed integers to compare. </param>
+        /// <filterpriority>1</filterpriority>
         [ReliabilityContractAttribute(Consistency.WillNotCorruptState, Cer.Success)]
         public static int Max(int val1, int val2)
         {
-             throw new NotImplementedException();
+            return val1 > val2 ? val1 : val2;
         }
         
         
@@ -411,11 +417,15 @@ namespace System
         }
         
         
-        /// <summary>Returns the smaller of two 32-bit signed integers.</summary><returns>Parameter <paramref name="val1" /> or <paramref name="val2" />, whichever is smaller.</returns><param name="val1">The first of two 32-bit signed integers to compare. </param><param name="val2">The second of two 32-bit signed integers to compare. </param><filterpriority>1</filterpriority>
+        /// <summary>Returns the smaller of two 32-bit signed integers.</summary>
+        /// <returns>Parameter <paramref name="val1" /> or <paramref name="val2" />, whichever is smaller.</returns>
+        /// <param name="val1">The first of two 32-bit signed integers to compare. </param>
+        /// <param name="val2">The second of two 32-bit signed integers to compare. </param>
+        /// <filterpriority>1</filterpriority>
         [ReliabilityContractAttribute(Consistency.WillNotCorruptState, Cer.Success)]
         public static int Min(int val1, int val2)
         {
-             throw new NotImplementedException();
+            return val1 < val2 ? val1 : val2;
         }
         
         
