@@ -115,6 +115,7 @@ namespace CIL2Java.Java
         private static Func<int, Java.ConstantPool, int> InvokeStaticStack = new Func<int, Java.ConstantPool, int>((I, P) => GetMethodParamsCount(I, P));
         private static Func<int, Java.ConstantPool, int> InvokeInterfaceStack = new Func<int, Java.ConstantPool, int>((I, P) => ((I >> 16) & 0xff) + 1);
         private static Func<int, Java.ConstantPool, int> InvokePushStack = new Func<int, Java.ConstantPool, int>((I, P) => GetMethodReturnSize(P[(ushort)I]));
+        private static Func<int, Java.ConstantPool, int> InvokeInterfacePushStack = new Func<int, Java.ConstantPool, int>((I, P) => GetMethodReturnSize(P[(ushort)(I & 0xffff)]));
 
         private static Func<int, Java.ConstantPool, int> PushField = new Func<int, Java.ConstantPool, int>(GetFieldSize);
         private static Func<int, Java.ConstantPool, int> PopFieldStatic = new Func<int, Java.ConstantPool, int>(GetFieldSize);
@@ -358,7 +359,7 @@ namespace CIL2Java.Java
             {Java.OpCodes.invokevirtual, new JavaInstructionDescption(3, InvokePushStack, InvokeThisStack, JavaOperandType.ConstPool, JavaBranchType.Next)},
             {Java.OpCodes.invokespecial, new JavaInstructionDescption(3, InvokePushStack, InvokeThisStack, JavaOperandType.ConstPool, JavaBranchType.Next)},
             {Java.OpCodes.invokestatic, new JavaInstructionDescption(3, InvokePushStack, InvokeStaticStack, JavaOperandType.ConstPool, JavaBranchType.Next)},
-            {Java.OpCodes.invokeinterface, new JavaInstructionDescption(5, InvokePushStack, InvokeInterfaceStack, JavaOperandType.Special, JavaBranchType.Next)},
+            {Java.OpCodes.invokeinterface, new JavaInstructionDescption(5, InvokeInterfacePushStack, InvokeInterfaceStack, JavaOperandType.Special, JavaBranchType.Next)},
             {Java.OpCodes.invokedynamic, new JavaInstructionDescption(5, null, null, JavaOperandType.Special, JavaBranchType.Next)},
 
             {Java.OpCodes._new, new JavaInstructionDescption(3, Stack1, null, JavaOperandType.ConstPool, JavaBranchType.Next)},

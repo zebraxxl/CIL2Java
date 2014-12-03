@@ -118,9 +118,16 @@ namespace CIL2Java
 
                 if (instr.Opcode == Java.OpCodes.invokeinterface)
                 {
+                    if (lastOperand is Java.Constants.MethodRef)
+                    {
+                        Java.Constants.MethodRef m = (Java.Constants.MethodRef)lastOperand;
+
+                        lastOperand = new Java.Constants.InterfaceMethodRef(m.Class, m.Name, m.Descriptor);
+                    }
+
                     byte argsCount = CalculateInterfaceCallArgsCount(((Java.Constants.InterfaceMethodRef)lastOperand).Descriptor);
                     ushort constIndex = (ushort)instr.Operand;
-                    instr.Operand = (uint)(constIndex | ((argsCount + 1) << 16));
+                    instr.Operand = (uint)(constIndex | ((argsCount + 1) << 24));
                 }
 
                 int size = Java.ByteCode.JavaInstructions[instr.Opcode].Size;
@@ -200,7 +207,9 @@ namespace CIL2Java
 
                             case Java.OpCodes.invokeinterface:
                             case Java.OpCodes.invokedynamic:
-                                codeBytesWriter.WriteBE((uint)instr.Operand);
+                                uint op = (uint)instr.Operand;
+                                codeBytesWriter.WriteBE((ushort)(op & 0xfff));
+                                codeBytesWriter.WriteBE((ushort)(op >> 16));
                                 break;
 
                             case Java.OpCodes.newarray:
