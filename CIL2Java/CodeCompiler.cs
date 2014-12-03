@@ -111,8 +111,13 @@ namespace CIL2Java
             string exitLabel = "exit" + labelsSufix;
 
             codeGenerator.Label(loopLabel);
-            CompileExpression(node.Condition, ExpectType.Primitive);
-            codeGenerator.Add(Java.OpCodes.ifeq, exitLabel, node);  //goto to `exit` if Condition == 0
+
+            if (node.Condition != null)
+            {
+                CompileExpression(node.Condition, ExpectType.Primitive);
+                codeGenerator.Add(Java.OpCodes.ifeq, exitLabel, node);  //goto to `exit` if Condition == 0
+            }
+            
             CompileBlock(node.BodyBlock);
 
             codeGenerator
