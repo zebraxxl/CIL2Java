@@ -142,11 +142,11 @@ namespace System.Threading
         [ComVisibleAttribute(false)]
         [SecuritySafeCriticalAttribute()]
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public static T CompareExchange<T>(ref T location1, T value, T comparand)
+        public static T CompareExchange<T>(ref T location1, T value, T comparand) where T : class
         {
             T orig = location1;
 
-            if (((location1 == null) && (comparand == null)) || (location1.Equals(comparand)))
+            if (location1 == comparand)
                 location1 = value;
 
             return orig;
