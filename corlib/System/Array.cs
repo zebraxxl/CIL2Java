@@ -566,7 +566,12 @@ namespace System
         
         public static int IndexOf<T>(T[] array, T value, int startIndex, int count)
         {
-             throw new NotImplementedException();
+            //TODO: normal realization
+            int endIndex = startIndex + count;
+            for (int i = startIndex; i < endIndex; i++)
+                if (array[i].Equals(value))
+                    return i;
+            return -1;
         }
         
         
