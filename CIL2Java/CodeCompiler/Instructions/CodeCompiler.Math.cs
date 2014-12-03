@@ -100,6 +100,11 @@ namespace CIL2Java
             CompileMath(e, expect, OpCodes.iadd, OpCodes.ladd, OpCodes.fadd, OpCodes.dadd);
         }
 
+        private void CompileSub(ILExpression e, ExpectType expect)
+        {
+            CompileMath(e, expect, OpCodes.isub, OpCodes.lsub, OpCodes.fsub, OpCodes.dsub);
+        }
+
         private void CompileMul(ILExpression e, ExpectType expect)
         {
             CompileMath(e, expect, OpCodes.imul, OpCodes.lmul, OpCodes.fmul, OpCodes.dmul);

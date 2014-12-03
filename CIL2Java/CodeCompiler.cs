@@ -236,6 +236,7 @@ namespace CIL2Java
                 //Math
                 case ILCode.PostIncrement: CompilePostIncrement(e, expectType); break;
                 case ILCode.Add: CompileAdd(e, expectType); break;
+                case ILCode.Sub: CompileSub(e, expectType); break;
                 case ILCode.Mul: CompileMul(e, expectType); break;
 
                 //Delegates
