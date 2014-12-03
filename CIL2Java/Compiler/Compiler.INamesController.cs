@@ -55,7 +55,7 @@ namespace CIL2Java
             WriteClass(javaClass);
 
             Java.Attributes.InnerClasses.InnerClass descr = new Java.Attributes.InnerClasses.InnerClass();
-            descr.AccessFlags = Java.Attributes.InnerClasses.InnerClassAccessFlags.Private;
+            descr.AccessFlags = Java.Attributes.InnerClasses.InnerClassAccessFlags.Public;
             descr.InnerClassInfo = javaClass.ThisClass;
             descr.OuterClassInfo = currentJavaClass.ThisClass;
             descr.InnerName = javaClass.ThisClass.Substring(javaClass.ThisClass.LastIndexOf('$') + 1);

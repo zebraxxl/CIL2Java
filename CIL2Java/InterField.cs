@@ -14,7 +14,7 @@ namespace CIL2Java
         private byte[] initialValue;
 
         public InterType DeclaringType { get { return declType; } }
-        public InterType FieldType { get { return fldType; } }
+        public InterType FieldType { get { return fldType; } internal set { fldType = value; } }
         public string Name { get { return name; } }
 
         public bool IsPublic { get; private set; }

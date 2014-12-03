@@ -29,6 +29,9 @@ namespace java.lang
     [FromJava]
     public sealed class Long : Number, Comparable
     {
+        [FromJava]
+        public static readonly Class TYPE;
+
         /**
          * Returns a {@code Long} instance representing the specified
          * {@code long} value.

@@ -18,5 +18,8 @@ namespace java.lang
 
         [FromJava]
         public Class[] getInterfaces() { return null; }
+
+        [FromJava]
+        public object newInstance() { return null; }
     }
 }

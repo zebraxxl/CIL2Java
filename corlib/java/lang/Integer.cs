@@ -7,6 +7,9 @@ namespace java.lang
     [FromJava]
     public sealed class Integer : Number, Comparable
     {
+        [FromJava]
+        public static readonly Class TYPE;
+
         /// <summary>
         /// Returns a <see cref="T:java.lang.String"/> object representing the
         /// specified integer. The argument is converted to signed decimal

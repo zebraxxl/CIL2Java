@@ -124,6 +124,12 @@ namespace CIL2Java
                     (M.Parameters[0].ParameterType.FullName == M.Parameters[1].ParameterType.FullName) &&
                     (M.Parameters[0].ParameterType.FullName == ClassNames.ObjectTypeName))).FirstOrDefault(), this.genericArgs);
             }
+
+            if ((typeDef.FullName == ClassNames.DelegateTypeName) && (Program.MethodPointersType == MethodPointerImplementation.Standart))
+            {
+                resolver.Resolve(typeDef.Methods.Where(M => M.Name == "DummyLinkMethod").FirstOrDefault(),
+                    this.genericArgs);
+            }
         }
 
         public InterType(TypeReference typeRef, List<InterGenericArgument> genericArgs, IResolver resolver, Func<InterType, bool> register)

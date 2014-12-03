@@ -32,9 +32,14 @@ namespace CIL2Java
         public const string DelegateBeginInvokeMethodName = "BeginInvoke";
         public const string DelegateEndInvokeMethodName = "EndInvoke";
 
+        public const string DelegateMethodFieldName = "method";
+
         public static readonly FieldRef DelegateMethodFieldFast = new FieldRef("System/Delegate", "method", "Ljava/lang/Object;");
         public static readonly FieldRef DelegateTargetField = new FieldRef("System/Delegate", "target", "Ljava/lang/Object;");
         public static readonly FieldRef MulticastDelegateNextField = new FieldRef("System/MulticastDelegate", "next", "LSystem/Delegate;");
+
+        public static readonly MethodRef GlobalMethodPointersAdd = new MethodRef("CIL2Java/VES/MethodPointers/Global", "AddMethodPointer", "(Ljava/lang/String;)I");
+        public static readonly MethodRef GlobalMethodPointersGet = new MethodRef("CIL2Java/VES/MethodPointers/Global", "GetMethodPointer", "(I)Ljava/lang/Object;");
 
         public const string CorlibUtils = "CIL2Java.Utils";
         public const string ReboxMethod = "Rebox";
@@ -53,6 +58,11 @@ namespace CIL2Java
         public const string AccessMethodPrefix = "C2J_access$";
 
         public readonly static MethodRef ValueTypeCtor = new MethodRef("System/ValueType", "<init>", "()V");
+
+        public readonly static MethodRef JavaIntegerBox = new MethodRef("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
+        public readonly static MethodRef JavaIntegerUnbox = new MethodRef("java/lang/Integer", "intValue", "()I");
+        public readonly static MethodRef JavaLongBox = new MethodRef("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;");
+        public readonly static MethodRef JavaLongUnbox = new MethodRef("java/lang/Long", "longValue", "()J");
 
         public static class ByRef
         {

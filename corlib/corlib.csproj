@@ -47,6 +47,7 @@
     <Compile Include="CIL2Java\Attributes\TypeMapAttribute.cs" />
     <Compile Include="CIL2Java\Maps\Array.cs" />
     <Compile Include="CIL2Java\Utils.cs" />
+    <Compile Include="CIL2Java\VES\MethodPointers\Global.cs" />
     <Compile Include="java\io\PrintWriter.cs" />
     <Compile Include="java\lang\AbstractStringBuilder.cs" />
     <Compile Include="java\lang\Appendable.cs" />

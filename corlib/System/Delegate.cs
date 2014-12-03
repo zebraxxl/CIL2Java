@@ -16,13 +16,31 @@ namespace System
         protected object target;
         protected object method;
 
+        // Method to mark CIL2Java.VES.MethodPointers.Global to compile.
+        // Must be never invoked from CIL
+        private void DummyLinkMethod()
+        {
+            CIL2Java.VES.MethodPointers.Global.AddMethodPointer(null);
+            CIL2Java.VES.MethodPointers.Global.GetMethodPointer(0);
+        }
+
         private javaClass GetPointerClass()
         {
-            return method.getClass().getInterfaces()[0];
+            javaClass pointerClass = method.getClass();
+
+            string pointerClassName = pointerClass.getName();
+
+            if (pointerClassName == "java.lang.Integer")
+                return java.lang.Integer.TYPE;
+            else if (pointerClassName == "java.lang.Long")
+                return java.lang.Long.TYPE;
+            else
+                return pointerClass.getInterfaces()[0];
         }
 
         protected virtual Delegate CloneThis()
         {
+            //In standart method pointers will be replaced
             //TODO: replace javaClass.forName with object.class
             javaClass thisClass = this.getClass();
             java.lang.reflect.Constructor ctor = thisClass.getConstructor(javaClass.forName("java.lang.Object"), GetPointerClass());

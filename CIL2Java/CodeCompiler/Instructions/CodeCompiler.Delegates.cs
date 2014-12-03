@@ -26,7 +26,11 @@ namespace CIL2Java
                     .Add(OpCodes.invokespecial, mpInitRef, e);
             }
             else
-                throw new NotImplementedException();
+            {
+                codeGenerator
+                    .Add(OpCodes.ldc, new Java.Constants.String(methodPointerClass.Replace('/', '$')))
+                    .Add(OpCodes.invokestatic, ClassNames.GlobalMethodPointersAdd);
+            }
         }
     }
 }

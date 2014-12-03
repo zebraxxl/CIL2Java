@@ -14,7 +14,7 @@ namespace CIL2Java
             string anonClassName = namesController.GetAnonimousClassName();
 
             Java.Class anonClass = new Java.Class();
-            anonClass.AccessFlag = Java.ClassAccessFlag.Super;
+            anonClass.AccessFlag = Java.ClassAccessFlag.Super | ClassAccessFlag.Public;
             anonClass.ThisClass = namesController.TypeNameToJava(anonClassName);
             anonClass.SuperClass = namesController.TypeNameToJava(ClassNames.JavaObject);
             anonClass.Interfaces.Add(namesController.TypeNameToJava(mpInterfaceName));

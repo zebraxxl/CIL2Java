@@ -8,7 +8,7 @@ namespace CIL2Java
     public struct InterParameter
     {
         public int Index { get; private set; }
-        public InterType Type { get; private set; }
+        public InterType Type { get; internal set; }
         public string Name { get; private set; }
         public bool IsBoxed { get; private set; }
         public bool IsJavaBoxed { get; private set; }

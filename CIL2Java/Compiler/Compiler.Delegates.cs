@@ -39,8 +39,6 @@ namespace CIL2Java
             result.Name = ClassNames.JavaConstructorMethodName;
 
             string methodPointerType;
-            string delegateMethodType;
-            OpCodes methodLoadOpcode;
 
             if (Program.MethodPointersType == MethodPointerImplementation.Fast)
             {
@@ -48,21 +46,32 @@ namespace CIL2Java
                     type.Methods.Where(M => M.Name == ClassNames.DelegateInvokeMethodName).FirstOrDefault());
 
                 methodPointerType = "L" + TypeNameToJava(methodPointerType) + ";";
-                delegateMethodType = "L" + TypeNameToJava(ClassNames.JavaObject) + ";";
-                methodLoadOpcode = OpCodes.aload_2;
             }
             else
-                throw new NotImplementedException();
+            {
+                methodPointerType = Program.AsX64 ? "J" : "I";
+            }
             
             result.Descriptor = "(L" + TypeNameToJava(ClassNames.JavaObject) + ";" + methodPointerType + ")V";
 
             MethodRef baseInitRef = new MethodRef(currentJavaClass.SuperClass, ClassNames.JavaConstructorMethodName,
-                "(L" + TypeNameToJava(ClassNames.JavaObject) + ";" + delegateMethodType + ")V");
+                "(L" + TypeNameToJava(ClassNames.JavaObject) + ";L" + TypeNameToJava(ClassNames.JavaObject) + ";)V");
 
-            result.Attributes.Add(new JavaBytecodeWriter()
+            JavaBytecodeWriter codeWriter = new JavaBytecodeWriter();
+            codeWriter
                 .Add(OpCodes.aload_0)
-                .Add(OpCodes.aload_1)
-                .Add(methodLoadOpcode)
+                .Add(OpCodes.aload_1);
+
+            if (Program.MethodPointersType == MethodPointerImplementation.Fast)
+                codeWriter.Add(OpCodes.aload_2);
+            else
+            {
+                codeWriter
+                    .Add(Program.AsX64 ? OpCodes.lload_2 : OpCodes.iload_2)
+                    .Add(OpCodes.invokestatic, Program.AsX64 ? ClassNames.JavaLongBox : ClassNames.JavaIntegerBox);
+            }
+
+            result.Attributes.Add(codeWriter
                 .Add(OpCodes.invokespecial, baseInitRef)
                 .Add(OpCodes._return)
                 .End(currentJavaClass.ConstantPool));
@@ -86,17 +95,26 @@ namespace CIL2Java
 
             InterMethod invokeMethod = type.Methods.Where(M => M.Name == ClassNames.DelegateInvokeMethodName).FirstOrDefault();
 
-            if (Program.MethodPointersType == MethodPointerImplementation.Fast)
+            codeWriter
+                .Add(OpCodes.aload_0)
+                .Add(OpCodes.getfield, ClassNames.DelegateMethodFieldFast); 
+
+            if (Program.MethodPointersType == MethodPointerImplementation.Standart)
             {
+                MethodRef unboxRef = Program.AsX64 ? ClassNames.JavaLongUnbox : ClassNames.JavaIntegerUnbox;
+
                 codeWriter
-                    .Add(OpCodes.aload_0)
-                    .Add(OpCodes.getfield, ClassNames.DelegateMethodFieldFast)
-                    .Add(OpCodes.checkcast, methodPointerType);
+                    .Add(OpCodes.checkcast, new Java.Constants.Class(unboxRef.Class))
+                    .Add(OpCodes.invokevirtual, unboxRef);
+
+                if (Program.AsX64)
+                    codeWriter.Add(OpCodes.l2i);
+
+                codeWriter.Add(OpCodes.invokestatic, ClassNames.GlobalMethodPointersGet);              
             }
-            else
-                throw new NotImplementedException();
 
             codeWriter
+                .Add(OpCodes.checkcast, methodPointerType)
                 .Add(OpCodes.aload_0)
                 .Add(OpCodes.getfield, ClassNames.DelegateTargetField);
 
