@@ -106,9 +106,10 @@ namespace CIL2Java
                         InterType thisType = resolver.Resolve((TypeReference)constrained.Operand, thisMethod.FullGenericArguments);
 
                         if (thisType.IsPrimitive)
+                        {
+                            e.Arguments[argIndex].Code = GetAddrInvert[e.Arguments[argIndex].Code];
                             e.Arguments[argIndex] = new ILExpression(ILCode.Box, null, e.Arguments[argIndex]);
-                        //else if (!thisType.IsValueType)
-                        //    e.Arguments[argIndex].Code = GetAddrInvert[e.Arguments[argIndex].Code];
+                        }
                     }
                 }
 
