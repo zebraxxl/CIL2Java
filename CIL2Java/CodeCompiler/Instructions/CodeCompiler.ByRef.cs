@@ -127,15 +127,19 @@ namespace CIL2Java
 
         private void CompileLdind(ILExpression e, ExpectType expect)
         {
+            InterType operand = resolver.Resolve((TypeReference)e.Arguments[0].InferredType, thisMethod.FullGenericArguments);
+
             CompileExpression(e.Arguments[0], ExpectType.ByRef);
 
-            MethodRef getMethodRef = byRefController.GetByRefGetValueMethodRef(JavaPrimitiveType.Ref);
+            MethodRef getMethodRef = byRefController.GetByRefGetValueMethodRef(JavaHelpers.InterTypeToJavaPrimitive(
+                operand.ElementType));
             InterType loadType = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
             Java.Constants.Class loadedTypeRef = new Java.Constants.Class(namesController.TypeNameToJava(loadType));
 
-            codeGenerator
-                .Add(OpCodes.invokevirtual, getMethodRef, e)
-                .Add(OpCodes.checkcast, loadedTypeRef, e);
+            codeGenerator.Add(OpCodes.invokevirtual, getMethodRef, e);
+
+            if (!operand.ElementType.IsPrimitive)
+                codeGenerator.Add(OpCodes.checkcast, loadedTypeRef, e);
         }
 
         private void CompileStind(ILExpression e, ExpectType expectType)
@@ -145,6 +149,13 @@ namespace CIL2Java
             if (e.Operand != null)
             {
                 InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+
+                if ((operand.IsPrimitive) && ((operand.PrimitiveType == PrimitiveType.Byte) ||
+                    (operand.PrimitiveType == PrimitiveType.SByte)))
+                {
+                    operand = resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments).ElementType;
+                }
+
                 type = JavaHelpers.InterTypeToJavaPrimitive(operand);
             }
 
