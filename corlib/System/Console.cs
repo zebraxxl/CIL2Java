@@ -442,7 +442,7 @@ namespace System
         /// <summary>Writes the text representation of the specified object, followed by the current line terminator, to the standard output stream.</summary><param name="value">The value to write. </param><exception cref="T:System.IO.IOException">An I/O error occurred. </exception><filterpriority>1</filterpriority>
         public static void WriteLine(object value)
         {
-             throw new NotImplementedException();
+            javaSystem.@out.println(value.ToString());
         }
         
         
@@ -603,7 +603,7 @@ namespace System
         /// <summary>Writes the text representation of the specified object to the standard output stream.</summary><param name="value">The value to write, or null. </param><exception cref="T:System.IO.IOException">An I/O error occurred. </exception><filterpriority>1</filterpriority>
         public static void Write(object value)
         {
-             throw new NotImplementedException();
+            javaSystem.@out.print(value.ToString());
         }
         
         
