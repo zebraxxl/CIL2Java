@@ -65,7 +65,7 @@ namespace CIL2Java
             if (expected == ExpectType.None)
                 codeGenerator.AddPop(JavaHelpers.InterTypeToJavaPrimitive(type), tag);
 
-            if ((type.IsByRef) && (expected != ExpectType.ByRef))
+            if ((type.IsByRef) && (expected != ExpectType.ByRef) && (!type.ElementType.IsValueType))
             {
                 JavaPrimitiveType javaType = JavaHelpers.InterTypeToJavaPrimitive(type.ElementType);
                 MethodRef getMethodRef = byRefController.GetByRefGetValueMethodRef(javaType);
