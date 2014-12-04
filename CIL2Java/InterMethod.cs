@@ -13,6 +13,7 @@ namespace CIL2Java
         private string name;
         private string newName = null;
         private List<InterGenericArgument> genericArgs = new List<InterGenericArgument>();
+        private List<InterMethod> overrides = new List<InterMethod>();
         private MethodBody body;
 
         private InterParameter thisParam;
@@ -24,6 +25,7 @@ namespace CIL2Java
         public string NewName { get { return newName ?? name; } set { newName = value; } }
         public List<InterGenericArgument> GenericArguments { get { return genericArgs; } }
         public List<InterGenericArgument> FullGenericArguments { get { return genericArgs.Union(declType.GenericArguments).ToList(); } }
+        public List<InterMethod> Overrides { get { return overrides; } }
         public MethodBody Body { get { return body; } }
 
         public InterParameter ThisParameter { get { return thisParam; } }
@@ -176,6 +178,11 @@ namespace CIL2Java
                 IsVarArg = methodDef.CallingConvention == MethodCallingConvention.VarArg;
                 HasThis = methodDef.HasThis;
                 HasBody = methodDef.HasBody;
+
+                foreach (MethodReference overridedMethod in methodDef.Overrides)
+                {
+                    overrides.Add(resolver.Resolve(overridedMethod, this.FullGenericArguments));
+                }
             }
             else
             {
