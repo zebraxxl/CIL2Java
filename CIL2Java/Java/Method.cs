@@ -31,6 +31,31 @@ namespace CIL2Java.Java
         public string Descriptor { get; set; }
         public List<Attribute> Attributes { get; set; }
 
+        private ushort CalculateParametesSlots()
+        {
+            ushort result = ((AccessFlags & MethodAccessFlags.Static) == 0) ? (ushort)1 : (ushort)0;
+            string descriptor = Descriptor;
+            int strPos = 1;
+
+            while (descriptor[strPos] != ')')
+            {
+                if ((descriptor[strPos] == 'J') || (descriptor[strPos] == 'D'))
+                    result += 2;
+                else
+                    result += 1;
+
+                while (descriptor[strPos] == '[') strPos++;
+
+                if (descriptor[strPos] == 'L')
+                    while (descriptor[strPos] != ';')
+                        strPos++;
+
+                strPos++;
+            }
+
+            return result;
+        }
+
         public Method()
         {
             Attributes = new List<Attribute>();
@@ -44,7 +69,15 @@ namespace CIL2Java.Java
 
             Writer.WriteBE((ushort)Attributes.Count);
             foreach (Attribute Attribute in Attributes)
+            {
+                if (Attribute.Name == "Code")
+                {
+                    Java.Attributes.Code CodeAttr = (Java.Attributes.Code)Attribute;
+                    CodeAttr.MaxLocals = Math.Max(CalculateParametesSlots(), CodeAttr.MaxLocals);
+                }
+
                 Attribute.Write(Writer, Pool);
+            }
         }
 
         public Method GetWithNewName(string NewName)
