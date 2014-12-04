@@ -1,4 +1,5 @@
-﻿using Mono.Cecil;
+﻿using ICSharpCode.Decompiler;
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 
@@ -117,6 +118,11 @@ namespace CIL2Java
                     return true;
             }
             return false;
+        }
+
+        public static void SetDecompillerSettings(DecompilerSettings s)
+        {
+            s.YieldReturn = false;
         }
     }
 }
