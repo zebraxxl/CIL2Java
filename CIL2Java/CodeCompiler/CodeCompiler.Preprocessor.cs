@@ -73,7 +73,10 @@ namespace CIL2Java
 
             if ((e.Code == ILCode.Ldloc) || (e.Code == ILCode.Ldloca))
             {
-                if ((!((ILVariable)e.Operand).IsParameter) && (!initializedVars.Contains((ILVariable)e.Operand)))
+                ILVariable op = (ILVariable)e.Operand;
+                InterType varType = resolver.Resolve(op.Type, thisMethod.FullGenericArguments);
+
+                if ((!varType.IsValueType) && (!op.IsParameter) && (!initializedVars.Contains(op)))
                 {
                     if (!uninitializedLocals.Contains((ILVariable)e.Operand))
                         uninitializedLocals.Add((ILVariable)e.Operand);
