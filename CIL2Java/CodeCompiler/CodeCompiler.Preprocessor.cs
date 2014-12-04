@@ -2,11 +2,14 @@
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CIL2Java
 {
     public partial class CodeCompiler
     {
+        private List<ILVariable> uninitializedLocals = new List<ILVariable>();
+
         //Find this() or super() calls in ctor to move it to begin of method
         private void PreprocessorFindAndMoveSuperOrThisCalls()
         {
@@ -59,10 +62,106 @@ namespace CIL2Java
             }
         }
 
+        #region Check and prepare uninitialized local vars
+        private void PreprocessorCheckUninitializedLocalVarsExpression(ILExpression e, List<ILVariable> initializedVars)
+        {
+            if (e.Code == ILCode.Stloc)
+            {
+                if (!initializedVars.Contains((ILVariable)e.Operand))
+                    initializedVars.Add((ILVariable)e.Operand);
+            }
+
+            if ((e.Code == ILCode.Ldloc) || (e.Code == ILCode.Ldloca))
+            {
+                if ((!((ILVariable)e.Operand).IsParameter) && (!initializedVars.Contains((ILVariable)e.Operand)))
+                {
+                    if (!uninitializedLocals.Contains((ILVariable)e.Operand))
+                        uninitializedLocals.Add((ILVariable)e.Operand);
+                }
+            }
+
+            foreach (ILExpression arg in e.Arguments)
+                PreprocessorCheckUninitializedLocalVarsExpression(arg, initializedVars);
+        }
+
+        private List<ILVariable> PreprocessorCheckUninitializedLocalVarsBranch(ILBlock branch, List<ILVariable> initializedVars)
+        {
+            List<ILVariable> result = new List<ILVariable>(initializedVars);
+
+            foreach (ILNode node in branch.Body)
+            {
+                if (node is ILExpression)
+                    PreprocessorCheckUninitializedLocalVarsExpression((ILExpression)node, result);
+                else if (node is ILBlock)
+                    result = PreprocessorCheckUninitializedLocalVarsBranch((ILBlock)node, result);
+                else if (node is ILTryCatchBlock)
+                {
+                    ILTryCatchBlock block = (ILTryCatchBlock)node;
+
+                    List<ILVariable> newResult = new List<ILVariable>(result);
+
+                    if (block.TryBlock != null) newResult = newResult.Union(PreprocessorCheckUninitializedLocalVarsBranch(block.TryBlock, result)).ToList();
+                    if (block.FaultBlock != null) newResult = newResult.Union(PreprocessorCheckUninitializedLocalVarsBranch(block.FaultBlock, result)).ToList();
+                    if (block.FinallyBlock != null) newResult = newResult.Union(PreprocessorCheckUninitializedLocalVarsBranch(block.FinallyBlock, result)).ToList();
+                    if (block.CatchBlocks != null)
+                        foreach (ILTryCatchBlock.CatchBlock c in block.CatchBlocks)
+                            newResult = newResult.Union(PreprocessorCheckUninitializedLocalVarsBranch(c, result)).ToList();
+
+                    result = newResult;
+                }
+                else if (node is ILWhileLoop)
+                {
+                    PreprocessorCheckUninitializedLocalVarsExpression(((ILWhileLoop)node).Condition, result);
+                    result = PreprocessorCheckUninitializedLocalVarsBranch(((ILWhileLoop)node).BodyBlock, result);
+                }
+                else if (node is ILCondition)
+                {
+                    ILCondition cond = (ILCondition)node;
+                    PreprocessorCheckUninitializedLocalVarsExpression(cond.Condition, result);
+
+                    List<ILVariable> fromTrue = PreprocessorCheckUninitializedLocalVarsBranch(cond.TrueBlock, result);
+                    List<ILVariable> fromFalse = PreprocessorCheckUninitializedLocalVarsBranch(cond.FalseBlock, result);
+
+                    result = fromTrue.Union(fromFalse).ToList();
+                }
+                else if (node is ILSwitch)
+                {
+                    ILSwitch sw = (ILSwitch)node;
+
+                    PreprocessorCheckUninitializedLocalVarsExpression(sw.Condition, result);
+
+                    List<ILVariable> newResult = new List<ILVariable>(result);
+                    foreach (var cas in sw.CaseBlocks)
+                        newResult = newResult.Union(PreprocessorCheckUninitializedLocalVarsBranch(cas, result)).ToList();
+                    result = newResult;
+                }
+            }
+
+            return result;
+        }
+
+        private void PreprocessorPrepareUninitializedLocalVars()
+        {
+            foreach (ILVariable v in uninitializedLocals)
+            {
+                int varIndex = GetVarIndex(v);
+                InterType varType = resolver.Resolve(v.Type, thisMethod.FullGenericArguments);
+                JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(varType);
+
+                codeGenerator
+                    .AddDefaultValue(jp)
+                    .AddStore(jp, varIndex);
+            }
+        }
+        #endregion
+
         private void RunPreprocessor()
         {
             PreprocessorFindDefaultCtorCallInValueTypeCtor();
             PreprocessorFindAndMoveSuperOrThisCalls();
+
+            PreprocessorCheckUninitializedLocalVarsBranch(ilBody, new List<ILVariable>());
+            PreprocessorPrepareUninitializedLocalVars();
         }
     }
 }
