@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace CIL2Java
 {
+    //TODO: Remove this. It works not right
     public struct MethodSignature
     {
         public string Name;
