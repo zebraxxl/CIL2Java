@@ -399,6 +399,14 @@ namespace CIL2Java
                 foreach (InterType iface in interfaces)
                     if (iface.methods.Where(im => im.Name == method.Name).Count() > 0)
                         resolver.Resolve(method, genericArgs);
+
+                foreach (MethodReference mRef in method.Overrides)
+                {
+                    InterType mRefDecl = resolver.Resolve(mRef.DeclaringType, genericArgs);
+
+                    if (mRefDecl.methods.Where(im => im.Name == mRef.Name).Count() > 0)
+                        resolver.Resolve(method, genericArgs);
+                }
             }
         }
 
