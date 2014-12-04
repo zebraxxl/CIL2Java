@@ -75,6 +75,7 @@
     <Compile Include="CodeCompiler\Instructions\CodeCompiler.Vars.cs" />
     <Compile Include="Compiler.cs" />
     <Compile Include="Compiler\Compiler.Delegates.cs" />
+    <Compile Include="Compiler\Compiler.PrecompilePass.cs" />
     <Compile Include="Compiler\Compiler.Primitive.cs" />
     <Compile Include="Compiler\Compiler.ByRef.cs" />
     <Compile Include="Compiler\Compiler.Field.cs" />
