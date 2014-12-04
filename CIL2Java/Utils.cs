@@ -70,5 +70,11 @@ namespace CIL2Java
 
             return prefix;
         }
+
+        public static bool IsUnsinged(PrimitiveType pt)
+        {
+            return ((pt == PrimitiveType.Byte) || (pt == PrimitiveType.UInt16) || (pt == PrimitiveType.UInt32) ||
+                (pt == PrimitiveType.UInt64) || (pt == PrimitiveType.UIntPtr));
+        }
     }
 }

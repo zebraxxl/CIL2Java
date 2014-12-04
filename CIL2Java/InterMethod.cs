@@ -192,7 +192,8 @@ namespace CIL2Java
                 IsStatic = !methodRef.HasThis;
             }
 
-            var changedParams = parameters.Where(P => P.Type.IsEnum);
+            var changedParams = parameters.Where(P => ((P.Type.IsEnum) ||
+                ((P.Type.IsPrimitive) && (Utils.IsUnsinged(P.Type.PrimitiveType)))));
             if (changedParams.Count() > 0)
                 name += "$" + string.Join("_", changedParams.Select(P => P.Index + P.Type.Fullname));
 
