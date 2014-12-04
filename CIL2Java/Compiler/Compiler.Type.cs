@@ -36,6 +36,33 @@ namespace CIL2Java
             return result;
         }
 
+        private void GenerateInterfaceMethodAccessor(InterMethod ifaceMethod, InterMethod typeMethod)
+        {
+            Method result = new Method();
+            result.AccessFlags = MethodAccessFlags.Public;
+            if (ifaceMethod.IsVarArg) result.AccessFlags |= MethodAccessFlags.VarArgs;
+            result.Name = MethodNameToJava(ifaceMethod.NewName);
+            result.Descriptor = GetMethodDescriptor(ifaceMethod);
+
+            JavaBytecodeWriter code = new JavaBytecodeWriter();
+            code.Add(OpCodes.aload_0);
+
+            for (int i = 0; i < ifaceMethod.Parameters.Count; i++)
+                code.AddLoad(JavaHelpers.InterTypeToJavaPrimitive(ifaceMethod.Parameters[i].Type), i + 1);
+
+            MethodRef typeMethodRef = new MethodRef(TypeNameToJava(typeMethod.DeclaringType.Fullname),
+                MethodNameToJava(typeMethod.NewName), GetMethodDescriptor(typeMethod));
+
+            if (typeMethod.IsPrivate)
+                code.Add(OpCodes.invokespecial, typeMethodRef);
+            else
+                code.Add(OpCodes.invokevirtual, typeMethodRef);
+            code.AddReturn(JavaHelpers.InterTypeToJavaPrimitive(ifaceMethod.ReturnParameter.Type));
+            result.Attributes.Add(code.End(currentJavaClass.ConstantPool));
+            
+            currentJavaClass.Methods.Add(result);
+        }
+
         private Java.Class ComplileType(InterType type)
         {
             Messages.Verbose("  Compiling type {0}...", type.ToString());
@@ -89,6 +116,26 @@ namespace CIL2Java
 
                 foreach (InterMethod method in type.Methods)
                     currentJavaClass.Methods.Add(CompileMethod(method));
+
+                foreach (InterType iface in type.Interfaces)
+                {
+                    var renamedMethods = iface.Methods.Where(I => I.NewName != I.Name);
+
+                    foreach (InterMethod renamedMethod in renamedMethods)
+                    {
+                        InterMethod overrideMethod = type.Methods.Where(M => M.Overrides.Contains(renamedMethod)).FirstOrDefault();
+                        if (overrideMethod == null)
+                            overrideMethod = type.Methods.Where(M => M.IsSame(renamedMethod)).FirstOrDefault();
+
+                        if (overrideMethod == null)
+                        {
+                            Messages.Message(MessageCode.CantFindInterfaceImplMethod, renamedMethod.ToString(), type.Fullname);
+                            continue;
+                        }
+
+                        GenerateInterfaceMethodAccessor(renamedMethod, overrideMethod);
+                    }
+                }
             }
 
             bool hasStaticCtor = type.Methods.Where(M => ((M.IsConstructor) && (M.IsStatic))).Count() > 0;

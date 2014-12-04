@@ -37,6 +37,26 @@ namespace CIL2Java
                         ((IResolver)this).Resolve(method, null);
                 });
             }
+
+            Messages.Verbose("  Checking for non standart interface methods overriding...");
+            var ifaces = typesToCompile.Where(T => T.IsInterface);
+            foreach (InterType iface in ifaces)
+            {
+                foreach (InterMethod method in iface.Methods)
+                {
+                    bool needRename = typesToCompile.Where(T =>
+                        T.Methods.Where(M =>
+                            M.Overrides.Contains(method)).Count() > 0).Count() > 0;
+
+                    if (needRename)
+                    {
+                        method.NewName = ClassNames.RenamedMethodPrefix + method.DeclaringType.Fullname + "_" + method.Name;
+
+                        Messages.Verbose("    Interface method `{0}` renamed to `{1}`.", method.ToString(), method.NewName);
+                    }
+
+                }
+            }
         }
     }
 }
