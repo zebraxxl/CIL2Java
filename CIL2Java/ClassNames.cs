@@ -65,6 +65,7 @@ namespace CIL2Java
         public readonly static MethodRef JavaLongUnbox = new MethodRef("java/lang/Long", "longValue", "()J");
 
         public const string RenamedMethodPrefix = "c2j_renamed_";
+        public const string FieldAccessorPrefix = "c2j_field_access_";
 
         public static class ByRef
         {

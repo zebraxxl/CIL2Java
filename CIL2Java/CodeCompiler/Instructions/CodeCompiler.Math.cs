@@ -29,38 +29,31 @@ namespace CIL2Java
             else if (e.Code == ILCode.Ldsflda)
             {
                 InterField operand = resolver.Resolve((FieldReference)e.Operand, thisMethod.FullGenericArguments);
-                FieldRef fldRef = new Java.Constants.FieldRef(
-                    namesController.TypeNameToJava(operand.DeclaringType),
-                    namesController.FieldNameToJava(operand.Name),
-                    namesController.GetFieldDescriptor(operand.FieldType));
 
+                CompileFieldLoad(operand, e);
                 codeGenerator
-                    .Add(OpCodes.getstatic, fldRef, e)
                     .Add(OpCodes.dup, null, e)
                     .AddIntConst(incVal, e)
-                    .Add(OpCodes.iadd, null, e)
-                    .Add(OpCodes.putstatic, fldRef, e);
+                    .Add(OpCodes.iadd, null, e);
+                CompileFieldStore(operand, e);
             }
             else if (e.Code == ILCode.Ldflda)
             {
                 InterField operand = resolver.Resolve((FieldReference)e.Operand, thisMethod.FullGenericArguments);
-                FieldRef fldRef = new Java.Constants.FieldRef(
-                    namesController.TypeNameToJava(operand.DeclaringType),
-                    namesController.FieldNameToJava(operand.Name),
-                    namesController.GetFieldDescriptor(operand.FieldType));
 
                 int tmpVar = GetNextFreeVar(JavaPrimitiveType.Int);
 
                 CompileExpression(e.Arguments[0], ExpectType.Reference);    //this
 
+                codeGenerator.Add(OpCodes.dup, null, e);
+                CompileFieldLoad(operand, e);
                 codeGenerator
-                    .Add(OpCodes.dup, null, e)
-                    .Add(OpCodes.getfield, fldRef, e)
                     .Add(OpCodes.dup, null, e)
                     .AddStore(JavaPrimitiveType.Int, tmpVar, e)
                     .AddIntConst(incVal, e)
-                    .Add(OpCodes.iadd, null, e)
-                    .Add(OpCodes.putfield, fldRef, e)
+                    .Add(OpCodes.iadd, null, e);
+                CompileFieldStore(operand, e);
+                codeGenerator
                     .AddLoad(JavaPrimitiveType.Int, tmpVar, e);
 
                 FreeVar(tmpVar, JavaPrimitiveType.Int);

@@ -121,6 +121,8 @@ namespace CIL2Java
                     CompileOverridedMethods(type, type.BaseType);
                 foreach (InterType iface in type.Interfaces)
                     CompileOverridedMethods(type, iface);
+
+                GenerateFieldAccessors(type);
             }
 
             bool hasStaticCtor = type.Methods.Where(M => ((M.IsConstructor) && (M.IsStatic))).Count() > 0;
@@ -133,6 +135,44 @@ namespace CIL2Java
                 currentJavaClass.Attributes.Add(currentJavaInnerClasses);
 
             return currentJavaClass;
+        }
+
+        private void GenerateFieldAccessors(InterType type)
+        {
+            for (int i = 0; i < type.FieldAccessors.Count; i++)
+            {
+                FieldAccessor fld = type.FieldAccessors[i];
+                string fldTypeDescr = GetFieldDescriptor(fld.Field.FieldType);
+                JavaPrimitiveType javaFldType = JavaHelpers.InterTypeToJavaPrimitive(fld.Field.FieldType);
+                FieldRef fldRef = new FieldRef(TypeNameToJava(type.Fullname), FieldNameToJava(fld.Field.Name), fldTypeDescr);
+
+                Method result = new Method();
+                result.AccessFlags = MethodAccessFlags.Public | MethodAccessFlags.Static;
+                result.Name = ClassNames.FieldAccessorPrefix + i.ToString();
+
+                JavaBytecodeWriter codeWriter = new JavaBytecodeWriter();
+                if (!fld.Field.IsStatic)
+                    codeWriter.Add(OpCodes.aload_0);
+
+                if (fld.Type == FieldAccessorType.Getter)
+                {
+                    result.Descriptor = "(" + GetFieldDescriptor(type) + ")" + fldTypeDescr;
+                    codeWriter
+                        .Add(fld.Field.IsStatic ? OpCodes.getstatic : OpCodes.getfield, fldRef)
+                        .AddReturn(javaFldType);
+                }
+                else
+                {
+                    result.Descriptor = "(" + GetFieldDescriptor(type) + fldTypeDescr + ")V";
+                    codeWriter
+                        .AddLoad(javaFldType, 1)
+                        .Add(fld.Field.IsStatic ? OpCodes.putstatic : OpCodes.putfield, fldRef)
+                        .Add(OpCodes._return);
+                }
+
+                result.Attributes.Add(codeWriter.End(currentJavaClass.ConstantPool));
+                currentJavaClass.Methods.Add(result);
+            }
         }
 
         private void CompileOverridedMethods(InterType type, InterType iface)

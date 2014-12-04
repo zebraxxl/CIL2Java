@@ -63,13 +63,10 @@ namespace CIL2Java
 
             if (operand.FieldType.IsValueType)
             {
-                FieldRef fldRef = new FieldRef(namesController.TypeNameToJava(operand.DeclaringType),
-                    namesController.FieldNameToJava(operand.Name), namesController.GetFieldDescriptor(operand.FieldType));
-
                 if (e.Code == ILCode.Ldflda)
                     CompileExpression(e.Arguments[0], ExpectType.Reference);
 
-                codeGenerator.Add(e.Code == ILCode.Ldflda ? OpCodes.getfield : OpCodes.getstatic, fldRef, e);
+                CompileFieldLoad(operand, e);
 
                 return;
             }

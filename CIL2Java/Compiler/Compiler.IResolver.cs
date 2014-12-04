@@ -10,46 +10,78 @@ namespace CIL2Java
 {
     public partial class Compiler
     {
-        private void ProcessMethodDecencies(ILNode node, List<InterGenericArgument> genericArgs)
+        private void ProcessMethodDecencies(InterMethod method, ILNode node, List<InterGenericArgument> genericArgs)
         {
             if (node is ILBlock)
             {
                 ILBlock block = node as ILBlock;
 
                 foreach (ILNode n in block.Body)
-                    ProcessMethodDecencies(n, genericArgs);
+                    ProcessMethodDecencies(method, n, genericArgs);
             }
             else if (node is ILBasicBlock)
             {
                 ILBasicBlock block = node as ILBasicBlock;
 
                 foreach (ILNode n in block.Body)
-                    ProcessMethodDecencies(n, genericArgs);
+                    ProcessMethodDecencies(method, n, genericArgs);
             }
             else if (node is ILTryCatchBlock)
             {
                 ILTryCatchBlock block = node as ILTryCatchBlock;
 
-                foreach (ILNode n in block.TryBlock.Body) ProcessMethodDecencies(n, genericArgs);
+                foreach (ILNode n in block.TryBlock.Body) ProcessMethodDecencies(method, n, genericArgs);
                 if (block.FaultBlock != null)
-                    foreach (ILNode n in block.FaultBlock.Body) ProcessMethodDecencies(n, genericArgs);
+                    foreach (ILNode n in block.FaultBlock.Body) ProcessMethodDecencies(method, n, genericArgs);
                 if (block.FinallyBlock != null)
-                    foreach (ILNode n in block.FinallyBlock.Body) ProcessMethodDecencies(n, genericArgs);
+                    foreach (ILNode n in block.FinallyBlock.Body) ProcessMethodDecencies(method, n, genericArgs);
                 foreach (var catchBlock in block.CatchBlocks)
                 {
                     ((IResolver)this).Resolve(catchBlock.ExceptionType, genericArgs);
-                    ProcessMethodDecencies(catchBlock, genericArgs);
+                    ProcessMethodDecencies(method, catchBlock, genericArgs);
                 }
             }
             else if (node is ILExpression)
             {
                 ILExpression e = node as ILExpression;
 
-                foreach (var n in e.Arguments) ProcessMethodDecencies(n, genericArgs);
+                foreach (var n in e.Arguments) ProcessMethodDecencies(method, n, genericArgs);
 
                 if (e.Operand is TypeReference) ((IResolver)this).Resolve((TypeReference)e.Operand, genericArgs);
-                if (e.Operand is FieldReference) ((IResolver)this).Resolve((FieldReference)e.Operand, genericArgs);
                 if (e.Operand is MethodReference) ((IResolver)this).Resolve((MethodReference)e.Operand, genericArgs);
+                if (e.Operand is FieldReference)
+                {
+                    InterField fld = ((IResolver)this).Resolve((FieldReference)e.Operand, genericArgs);
+                    bool needAccessor = false;
+
+                    if ((fld.IsPrivate) && (fld.DeclaringType != method.DeclaringType))
+                        needAccessor = true;
+                    else if ((fld.IsProtected) && (fld.DeclaringType != method.DeclaringType) &&
+                        (!method.DeclaringType.IsSuper(fld.DeclaringType)))
+                        needAccessor = true;
+
+                    if (needAccessor)
+                    {
+                        switch (e.Code)
+                        {
+                            case ILCode.Ldflda:
+                            case ILCode.Ldsflda:
+                                if (fld.FieldType.IsValueType)
+                                    fld.DeclaringType.AddFieldAccessor(new FieldAccessor(FieldAccessorType.Getter, fld));
+                                break;
+
+                            case ILCode.Ldfld:
+                            case ILCode.Ldsfld:
+                                fld.DeclaringType.AddFieldAccessor(new FieldAccessor(FieldAccessorType.Getter, fld));
+                                break;
+
+                            case ILCode.Stfld:
+                            case ILCode.Stsfld:
+                                fld.DeclaringType.AddFieldAccessor(new FieldAccessor(FieldAccessorType.Setter, fld));
+                                break;
+                        }
+                    }
+                }
 
                 if (e.ExpectedType != null) ((IResolver)this).Resolve(e.ExpectedType, genericArgs);
                 if (e.InferredType != null) ((IResolver)this).Resolve(e.InferredType, genericArgs);
@@ -57,27 +89,27 @@ namespace CIL2Java
             else if (node is ILWhileLoop)
             {
                 ILWhileLoop loop = node as ILWhileLoop;
-                ProcessMethodDecencies(loop.Condition, genericArgs);
-                ProcessMethodDecencies(loop.BodyBlock, genericArgs);
+                ProcessMethodDecencies(method, loop.Condition, genericArgs);
+                ProcessMethodDecencies(method, loop.BodyBlock, genericArgs);
             }
             else if (node is ILCondition)
             {
                 ILCondition cond = node as ILCondition;
-                ProcessMethodDecencies(cond.Condition, genericArgs);
-                ProcessMethodDecencies(cond.TrueBlock, genericArgs);
-                ProcessMethodDecencies(cond.FalseBlock, genericArgs);
+                ProcessMethodDecencies(method, cond.Condition, genericArgs);
+                ProcessMethodDecencies(method, cond.TrueBlock, genericArgs);
+                ProcessMethodDecencies(method, cond.FalseBlock, genericArgs);
             }
             else if (node is ILSwitch)
             {
                 ILSwitch sw = node as ILSwitch;
-                ProcessMethodDecencies(sw.Condition, genericArgs);
-                foreach (var c in sw.CaseBlocks) ProcessMethodDecencies(c, genericArgs);
+                ProcessMethodDecencies(method, sw.Condition, genericArgs);
+                foreach (var c in sw.CaseBlocks) ProcessMethodDecencies(method, c, genericArgs);
             }
             else if (node is ILFixedStatement)
             {
                 ILFixedStatement fs = node as ILFixedStatement;
-                foreach (var n in fs.Initializers) ProcessMethodDecencies(n, genericArgs);
-                ProcessMethodDecencies(fs.BodyBlock, genericArgs);
+                foreach (var n in fs.Initializers) ProcessMethodDecencies(method, n, genericArgs);
+                ProcessMethodDecencies(method, fs.BodyBlock, genericArgs);
             }
         }
 
@@ -193,7 +225,7 @@ namespace CIL2Java
 
                     ilBody.Body = builder.Build(methodDef, true, context);
                     new ILAstOptimizer().Optimize(context, ilBody);
-                    ProcessMethodDecencies(ilBody, tmp.FullGenericArguments);
+                    ProcessMethodDecencies(tmp, ilBody, tmp.FullGenericArguments);
                 }
             }
 

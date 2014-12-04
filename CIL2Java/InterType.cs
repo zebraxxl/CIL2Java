@@ -6,6 +6,29 @@ using System.Linq;
 
 namespace CIL2Java
 {
+    public enum FieldAccessorType
+    {
+        Getter,
+        Setter
+    }
+
+    public struct FieldAccessor
+    {
+        public FieldAccessorType Type;
+        public InterField Field;
+
+        public FieldAccessor(FieldAccessorType type, InterField field)
+        {
+            this.Type = type;
+            this.Field = field;
+        }
+
+        public override string ToString()
+        {
+            return (Type == FieldAccessorType.Setter ? "set " : "get ") + Field.ToString();
+        }
+    }
+
     public class InterType
     {
         public static readonly InterType[] PrimitiveTypes = new InterType[]
@@ -44,6 +67,8 @@ namespace CIL2Java
         private int arrayRank = 0;
         private ArrayDimension[] dimensions;
         private string[] javaExceptions = new string[0];
+
+        private List<FieldAccessor> fieldAccessors = new List<FieldAccessor>();
 
         public bool IsPrimitive { get { return primitiveType != PrimitiveType.None; } }
         public PrimitiveType PrimitiveType { get { return primitiveType; } }
@@ -95,6 +120,7 @@ namespace CIL2Java
         public List<InterType> NestedClasses { get { return nestedClasses; } }
         public List<InterField> Fields { get { return fields; } }
         public List<InterMethod> Methods { get { return methods; } }
+        public List<FieldAccessor> FieldAccessors { get { return fieldAccessors; } }
 
         public InterType ElementType { get { return elementType; } }
         public int ArrayRank { get { return arrayRank; } }
@@ -370,6 +396,19 @@ namespace CIL2Java
                     baseType = baseType.baseType;
                 }
             }
+        }
+
+        public string AddFieldAccessor(FieldAccessor fld)
+        {
+            int index = fieldAccessors.IndexOf(fld);
+
+            if (index < 0)
+            {
+                index = fieldAccessors.Count;
+                fieldAccessors.Add(fld);
+            }
+
+            return ClassNames.FieldAccessorPrefix + index.ToString();
         }
     }
 }
