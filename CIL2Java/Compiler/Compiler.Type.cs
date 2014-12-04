@@ -24,7 +24,7 @@ namespace CIL2Java
             if (type.IsSealed) result |= (ushort)Java.ClassAccessFlag.Final;
 
             //In java classes must be always public (except nested classes) because java hasn't internal visible (only package visible)
-            if ((!type.IsNested) && (!type.IsNestedPublic)) result |= (ushort)Java.ClassAccessFlag.Public;
+            if ((!type.IsNested) || (type.IsNestedPublic)) result |= (ushort)Java.ClassAccessFlag.Public;
 
             if (!includeNestedFlags)
                 return result;
