@@ -38,7 +38,7 @@ namespace CIL2Java
                 codeWriter.AddLoad(JavaHelpers.InterTypeToJavaPrimitive(operand.Parameters[i].Type), i + 2);
 
             MethodRef invokingMethodRef = new MethodRef(namesController.TypeNameToJava(operand.DeclaringType),
-                    namesController.MethodNameToJava(operand.Name), namesController.GetMethodDescriptor(operand)); ;
+                    namesController.MethodNameToJava(operand.NewName), namesController.GetMethodDescriptor(operand)); ;
 
             if (!operand.IsPublic)
             {

@@ -89,12 +89,12 @@ namespace CIL2Java
             if (callType == CallType.Interface)
                 javaOperand = new Java.Constants.InterfaceMethodRef(
                     namesController.TypeNameToJava(operand.DeclaringType),
-                    namesController.MethodNameToJava(operand.Name),
+                    namesController.MethodNameToJava(operand.NewName),
                     namesController.GetMethodDescriptor(operand));
             else
                 javaOperand = new Java.Constants.MethodRef(
                     namesController.TypeNameToJava(operand.DeclaringType),
-                    namesController.MethodNameToJava(operand.Name),
+                    namesController.MethodNameToJava(operand.NewName),
                     namesController.GetMethodDescriptor(operand));
 
             switch (callType)

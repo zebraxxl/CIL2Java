@@ -54,7 +54,7 @@ namespace CIL2Java
             if (method.IsVarArg)
                 result.AccessFlags |= MethodAccessFlags.VarArgs;
 
-            result.Name = MethodNameToJava(method.Name);
+            result.Name = MethodNameToJava(method.NewName);
             result.Descriptor = GetMethodDescriptor(method);
 
             if (method.HasBody)

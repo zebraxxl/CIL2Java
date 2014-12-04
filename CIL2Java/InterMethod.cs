@@ -11,6 +11,7 @@ namespace CIL2Java
     {
         private InterType declType;
         private string name;
+        private string newName = null;
         private List<InterGenericArgument> genericArgs = new List<InterGenericArgument>();
         private MethodBody body;
 
@@ -20,6 +21,7 @@ namespace CIL2Java
 
         public InterType DeclaringType { get { return declType; } }
         public string Name { get { return name; } }
+        public string NewName { get { return newName ?? name; } set { newName = value; } }
         public List<InterGenericArgument> GenericArguments { get { return genericArgs; } }
         public List<InterGenericArgument> FullGenericArguments { get { return genericArgs.Union(declType.GenericArguments).ToList(); } }
         public MethodBody Body { get { return body; } }
