@@ -291,6 +291,7 @@ namespace CIL2Java
 
                 //Conv
                 case ILCode.Conv_I4: CompileConvI4(e, expectType); break;
+                case ILCode.Conv_U1: CompileConvU1(e, expectType); break;
 
                 //Math
                 case ILCode.PostIncrement: CompilePostIncrement(e, expectType); break;
