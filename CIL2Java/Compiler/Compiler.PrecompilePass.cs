@@ -38,11 +38,10 @@ namespace CIL2Java
                 });
             }
 
-            Messages.Verbose("  Checking for non standart interface methods overriding...");
-            var ifaces = typesToCompile.Where(T => T.IsInterface);
-            foreach (InterType iface in ifaces)
+            Messages.Verbose("  Checking for non standart overriding...");
+            foreach (InterType type in typesToCompile)
             {
-                foreach (InterMethod method in iface.Methods)
+                foreach (InterMethod method in type.Methods)
                 {
                     bool needRename = typesToCompile.Where(T =>
                         T.Methods.Where(M =>
@@ -52,7 +51,7 @@ namespace CIL2Java
                     {
                         method.NewName = ClassNames.RenamedMethodPrefix + method.DeclaringType.Fullname + "_" + method.Name;
 
-                        Messages.Verbose("    Interface method `{0}` renamed to `{1}`.", method.ToString(), method.NewName);
+                        Messages.Verbose("    Type method `{0}` renamed to `{1}`.", method.ToString(), method.NewName);
                     }
 
                 }

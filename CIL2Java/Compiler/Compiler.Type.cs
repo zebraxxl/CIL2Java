@@ -117,25 +117,10 @@ namespace CIL2Java
                 foreach (InterMethod method in type.Methods)
                     currentJavaClass.Methods.Add(CompileMethod(method));
 
+                if (type.BaseType != null)
+                    CompileOverridedMethods(type, type.BaseType);
                 foreach (InterType iface in type.Interfaces)
-                {
-                    var renamedMethods = iface.Methods.Where(I => I.NewName != I.Name);
-
-                    foreach (InterMethod renamedMethod in renamedMethods)
-                    {
-                        InterMethod overrideMethod = type.Methods.Where(M => M.Overrides.Contains(renamedMethod)).FirstOrDefault();
-                        if (overrideMethod == null)
-                            overrideMethod = type.Methods.Where(M => M.IsSame(renamedMethod)).FirstOrDefault();
-
-                        if (overrideMethod == null)
-                        {
-                            Messages.Message(MessageCode.CantFindInterfaceImplMethod, renamedMethod.ToString(), type.Fullname);
-                            continue;
-                        }
-
-                        GenerateInterfaceMethodAccessor(renamedMethod, overrideMethod);
-                    }
-                }
+                    CompileOverridedMethods(type, iface);
             }
 
             bool hasStaticCtor = type.Methods.Where(M => ((M.IsConstructor) && (M.IsStatic))).Count() > 0;
@@ -148,6 +133,26 @@ namespace CIL2Java
                 currentJavaClass.Attributes.Add(currentJavaInnerClasses);
 
             return currentJavaClass;
+        }
+
+        private void CompileOverridedMethods(InterType type, InterType iface)
+        {
+            var renamedMethods = iface.Methods.Where(I => I.NewName != I.Name);
+
+            foreach (InterMethod renamedMethod in renamedMethods)
+            {
+                InterMethod overrideMethod = type.Methods.Where(M => M.Overrides.Contains(renamedMethod)).FirstOrDefault();
+                if (overrideMethod == null)
+                    overrideMethod = type.Methods.Where(M => M.IsSame(renamedMethod)).FirstOrDefault();
+
+                if (overrideMethod == null)
+                {
+                    Messages.Message(MessageCode.CantFindInterfaceImplMethod, renamedMethod.ToString(), type.Fullname);
+                    continue;
+                }
+
+                GenerateInterfaceMethodAccessor(renamedMethod, overrideMethod);
+            }
         }
 
         private void GenerateStaticCtor(InterType type)
