@@ -74,6 +74,15 @@ namespace CIL2Java
             foreach (InterParameter param in operand.Parameters)
                 CompileExpression(e.Arguments[argIndex++], GetExpectType(param));
 
+            if (operand.DeclaringType.Fullname == ClassNames.Intrinsics.ClassName)
+            {
+                if (operand.Name == ClassNames.Intrinsics.monitorenter)
+                    codeGenerator.Add(Java.OpCodes.monitorenter, null, e);
+                if (operand.Name == ClassNames.Intrinsics.monitorexit)
+                    codeGenerator.Add(Java.OpCodes.monitorexit, null, e);
+                return;
+            }
+
             CallType callType = CallType.Virtual;
 
             if (operand.IsStatic)

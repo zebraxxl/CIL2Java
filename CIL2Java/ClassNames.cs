@@ -67,6 +67,8 @@ namespace CIL2Java
         public const string RenamedMethodPrefix = "c2j_renamed_";
         public const string FieldAccessorPrefix = "c2j_field_access_";
 
+        public const string MonitorEnterFullName = "System.Void System.Threading.Monitor::Enter(System.Object,System.Boolean&)";
+
         public static class ByRef
         {
             public const string TypeBase = "ByRef";
@@ -126,5 +128,12 @@ namespace CIL2Java
             public static readonly MethodRef setDouble = new MethodRef("java/lang/reflect/Field", "setDouble", "(Ljava/lang/Object;D)V");
         }
 
+        public static class Intrinsics
+        {
+            public const string ClassName = "CIL2Java.Intrinsics";
+
+            public const string monitorenter = "monitorenter";
+            public const string monitorexit = "monitorexit";
+        }
     }
 }

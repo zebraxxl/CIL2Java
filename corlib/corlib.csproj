@@ -45,6 +45,7 @@
     <Compile Include="CIL2Java\Attributes\JavaExceptionMap.cs" />
     <Compile Include="CIL2Java\Attributes\MethodMapAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\TypeMapAttribute.cs" />
+    <Compile Include="CIL2Java\Intrinsics.cs" />
     <Compile Include="CIL2Java\Maps\Array.cs" />
     <Compile Include="CIL2Java\Utils.cs" />
     <Compile Include="CIL2Java\VES\MethodPointers\Global.cs" />
