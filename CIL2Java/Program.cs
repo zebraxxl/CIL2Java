@@ -26,6 +26,8 @@ namespace CIL2Java
         public static bool AsX64 { get; private set; }
         public static BoxingType BoxType { get; private set; }
         public static MethodPointerImplementation MethodPointersType { get; private set; }
+        public static bool Unsigned { get; private set; }
+        public static bool OverflowCheck { get; private set; }
         public static bool Debug { get; private set; }
 
         public static Dictionary<string, string> ReplacedAssemblies { get; private set; }
@@ -49,6 +51,10 @@ namespace CIL2Java
                     AsX64 = true;
                 else if (args[i] == "-debug")
                     Debug = true;
+                else if (args[i] == "-unsigned")
+                    Unsigned = true;
+                else if (args[i] == "-overflow_check")
+                    OverflowCheck = true;
                 else if (args[i] == "-box")
                 {
                     if (args[++i] == "java")
@@ -94,6 +100,8 @@ namespace CIL2Java
                 Console.WriteLine("    -box [type]            - boxing type. Types: cil (default) or java");
                 Console.WriteLine("    -method_pointers [type]- method pointer implementation type.");
                 Console.WriteLine("                             Types: fast (default) or standart");
+                Console.WriteLine("    -unsigned              - compile with unsigned types support");
+                Console.WriteLine("    -overflow_check        - compile with overlow checks (*ovf instructions)");
                 Console.WriteLine("    -debug                 - add debug information");
             }
 
