@@ -374,7 +374,7 @@ namespace CIL2Java
 
             var notAddedOverloadMethods = typeDef.Methods.Where(MD =>
             {
-                if ((!MD.IsVirtual) || (MD.IsNewSlot))
+                if (!MD.IsVirtual)
                     return false;
 
                 MethodSignature ms = new MethodSignature(MD);
@@ -395,6 +395,10 @@ namespace CIL2Java
 
                     baseType = baseType.baseType;
                 }
+
+                foreach (InterType iface in interfaces)
+                    if (iface.methods.Where(im => im.Name == method.Name).Count() > 0)
+                        resolver.Resolve(method, genericArgs);
             }
         }
 
