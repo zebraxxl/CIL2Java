@@ -281,6 +281,7 @@ namespace CIL2Java
                 case ILCode.LogicAnd: CompileLogicAnd(e, expectType); break;
                 case ILCode.LogicOr: CompileLogicOr(e, expectType); break;
                 case ILCode.TernaryOp: CompileTernaryOp(e, expectType); break;
+                case ILCode.NullCoalescing: CompileNullCoalescing(e, expectType); break;
                 case ILCode.Ceq: CompileCeq(e, expectType); break;
                 case ILCode.Cne: CompileCne(e, expectType); break;
                 case ILCode.Cle: CompileCle(e, expectType); break;

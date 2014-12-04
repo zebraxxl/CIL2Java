@@ -112,6 +112,21 @@ namespace CIL2Java
             TranslateType(resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments), expect, e);
         }
 
+        private void CompileNullCoalescing(ILExpression e, ExpectType expect)
+        {
+            //TODO: check for non ref types
+            string exitLabel = "exit" + rnd.Next().ToString();
+
+            CompileExpression(e.Arguments[0], expect);
+
+            codeGenerator
+                .Add(Java.OpCodes.dup, null, e)
+                .Add(Java.OpCodes.ifnonnull, exitLabel, e)
+                .Add(Java.OpCodes.pop);
+            CompileExpression(e.Arguments[1], expect);
+            codeGenerator.Label(exitLabel);
+        }
+
         private void CompileFlowC(ILExpression e, Java.OpCodes IntCmp, Java.OpCodes RefCmp, Java.OpCodes OtherCmp)
         {
             CompileExpression(e.Arguments[0], ExpectType.Any);
