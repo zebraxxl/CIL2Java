@@ -19,9 +19,21 @@ namespace CIL2Java
 
         private static string TypeNameToJava(string CILName)
         {
-            int startOfGenericArgs = CILName.IndexOf('<');
-            if (startOfGenericArgs > 0)
-                CILName = CILName.Substring(0, startOfGenericArgs) + CILName.Substring(startOfGenericArgs).Replace(new char[] { '.', '/' }, '_');
+            int pos = 0;
+            while (pos < CILName.Length)
+            {
+                int startOfGenerics = CILName.IndexOf('<', pos);
+                if (startOfGenerics < 0) break;
+
+                int endOfGenerrics = CILName.IndexOf('>', startOfGenerics);
+                if (endOfGenerrics < 0) endOfGenerrics = CILName.Length;
+
+                CILName = CILName.Substring(0, startOfGenerics) +
+                    CILName.Substring(startOfGenerics, endOfGenerrics - startOfGenerics).Replace(new char[] { '.', '/' }, '_') +
+                    CILName.Substring(endOfGenerrics);
+
+                pos = endOfGenerrics;
+            }
 
             return CILName.Replace(InvalidJavaChars, '_').Replace('/', '$').Replace('.', '/');
         }
