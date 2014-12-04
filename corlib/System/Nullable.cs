@@ -7,14 +7,14 @@ namespace System
     public static class Nullable
     {
         [ComVisibleAttribute(true)]
-        public static int Compare<T>(Nullable<T> n1, Nullable<T> n2)
+        public static int Compare<T>(Nullable<T> n1, Nullable<T> n2) where T : struct
         {
              throw new NotImplementedException();
         }
         
         
         [ComVisibleAttribute(true)]
-        public static bool Equals<T>(Nullable<T> n1, Nullable<T> n2)
+        public static bool Equals<T>(Nullable<T> n1, Nullable<T> n2) where T : struct
         {
              throw new NotImplementedException();
         }
