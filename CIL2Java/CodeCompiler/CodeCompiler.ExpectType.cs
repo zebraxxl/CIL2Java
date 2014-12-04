@@ -47,6 +47,18 @@ namespace CIL2Java
 
         private void TranslateType(InterType type, ExpectType expected, object tag)
         {
+            if ((Program.Unsigned) && (type.IsPrimitive) && (type.PrimitiveType.IsUnsigned()))
+            {
+                if ((type.PrimitiveType == PrimitiveType.Byte) || (type.PrimitiveType == PrimitiveType.UInt16))
+                {
+                    if (type.PrimitiveType == PrimitiveType.Byte)
+                        codeGenerator.AddIntConst(0xff, tag);
+                    else
+                        codeGenerator.AddIntConst(0xffff, tag);
+                    codeGenerator.Add(Java.OpCodes.iand, null, tag);
+                }
+            }
+
             if (expected == ExpectType.Any)
                 return;
 

@@ -71,10 +71,52 @@ namespace CIL2Java
             return prefix;
         }
 
-        public static bool IsUnsinged(PrimitiveType pt)
+        public static bool IsUnsigned(this PrimitiveType pt)
         {
             return ((pt == PrimitiveType.Byte) || (pt == PrimitiveType.UInt16) || (pt == PrimitiveType.UInt32) ||
                 (pt == PrimitiveType.UInt64) || (pt == PrimitiveType.UIntPtr));
+        }
+
+        public static bool IsConv(this ICSharpCode.Decompiler.ILAst.ILCode il)
+        {
+            switch (il)
+            {
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_I:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_I1:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_I2:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_I4:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_I8:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_I:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_I_Un:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_I1:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_I1_Un:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_I2:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_I2_Un:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_I4:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_I4_Un:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_I8:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_I8_Un:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_U:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_U_Un:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_U1:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_U1_Un:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_U2:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_U2_Un:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_U4:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_U4_Un:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_U8:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_Ovf_U8_Un:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_R_Un:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_R4:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_R8:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_U:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_U1:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_U2:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_U4:
+                case ICSharpCode.Decompiler.ILAst.ILCode.Conv_U8:
+                    return true;
+            }
+            return false;
         }
     }
 }

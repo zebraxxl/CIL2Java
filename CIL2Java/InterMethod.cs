@@ -193,7 +193,7 @@ namespace CIL2Java
             }
 
             var changedParams = parameters.Where(P => ((P.Type.IsEnum) ||
-                ((P.Type.IsPrimitive) && (Utils.IsUnsinged(P.Type.PrimitiveType)))));
+                ((P.Type.IsPrimitive) && (Utils.IsUnsigned(P.Type.PrimitiveType)))));
             if (changedParams.Count() > 0)
                 name += "$" + string.Join("_", changedParams.Select(P => P.Index + P.Type.Fullname));
 
