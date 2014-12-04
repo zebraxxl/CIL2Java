@@ -67,8 +67,6 @@ namespace CIL2Java
         public const string RenamedMethodPrefix = "c2j_renamed_";
         public const string FieldAccessorPrefix = "c2j_field_access_";
 
-        public const string MonitorEnterFullName = "System.Void System.Threading.Monitor::Enter(System.Object,System.Boolean&)";
-
         public static class ByRef
         {
             public const string TypeBase = "ByRef";
@@ -134,6 +132,14 @@ namespace CIL2Java
 
             public const string monitorenter = "monitorenter";
             public const string monitorexit = "monitorexit";
+        }
+
+        public static class SystemThreadingMonitor
+        {
+            public const string ClassName = "System.Threading.Monitor";
+
+            public const string Enter = "Enter";
+            public const string Exit = "Exit";
         }
     }
 }

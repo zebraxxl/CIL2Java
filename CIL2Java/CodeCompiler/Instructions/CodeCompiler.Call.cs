@@ -17,9 +17,53 @@ namespace CIL2Java
             Virtual
         }
 
+        private void CompileMonitorEnter(ILExpression e)
+        {
+            CompileExpression(e.Arguments[0], ExpectType.Reference);
+            codeGenerator.Add(Java.OpCodes.monitorenter, null, e);
+
+            if (e.Arguments.Count > 1)
+            {
+                ILExpression flagArg = e.Arguments[1];
+
+                if (flagArg.Code == ILCode.Ldloca)
+                    CompileExpression(new ILExpression(ILCode.Stloc, flagArg.Operand, new ILExpression(ILCode.Ldc_I4, 1)), ExpectType.None);
+                else if (flagArg.Code == ILCode.Ldsflda)
+                    CompileExpression(new ILExpression(ILCode.Stsfld, flagArg.Operand, new ILExpression(ILCode.Ldc_I4, 1)), ExpectType.None);
+                else if (flagArg.Code == ILCode.Ldflda)
+                    CompileExpression(new ILExpression(ILCode.Stfld, flagArg.Operand, flagArg.Arguments[0], new ILExpression(ILCode.Ldc_I4, 1)), ExpectType.None);
+                else
+                {
+                    CompileExpression(new ILExpression(ILCode.Stind_Ref, flagArg.InferredType.GetElementType(),
+                        flagArg), ExpectType.None);
+                }
+            }
+        }
+
+        private void CompileMonitorExit(ILExpression e)
+        {
+            CompileExpression(e.Arguments[0], ExpectType.Reference);
+            codeGenerator.Add(Java.OpCodes.monitorexit);
+        }
+
         private void CompileCall(ILExpression e, ExpectType expect)
         {
             InterMethod operand = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
+
+            if (operand.DeclaringType.Fullname == ClassNames.SystemThreadingMonitor.ClassName)
+            {
+                if (operand.Name == ClassNames.SystemThreadingMonitor.Enter)
+                {
+                    CompileMonitorEnter(e);
+                    return;
+                }
+
+                if (operand.Name == ClassNames.SystemThreadingMonitor.Exit)
+                {
+                    CompileMonitorExit(e);
+                    return;
+                }
+            }
 
             if ((Program.BoxType == BoxingType.Java) && (operand.DeclaringType.Fullname == ClassNames.CorlibUtils) &&
                 (operand.Name == ClassNames.ReboxMethod))
