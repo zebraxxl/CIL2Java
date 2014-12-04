@@ -59,10 +59,12 @@
     <Compile Include="java\lang\Float.cs" />
     <Compile Include="java\lang\Long.cs" />
     <Compile Include="java\lang\reflect\Array.cs" />
+    <Compile Include="java\lang\Runnable.cs" />
     <Compile Include="java\lang\Short.cs" />
     <Compile Include="java\lang\StackTraceElement.cs" />
     <Compile Include="java\lang\StringBuffer.cs" />
     <Compile Include="java\lang\StringBuilder.cs" />
+    <Compile Include="java\lang\Thread.cs" />
     <Compile Include="Local.cs" />
     <Compile Include="CIL2Java\Maps\Object.cs" />
     <Compile Include="CIL2Java\Maps\String.cs" />

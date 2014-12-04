@@ -2,10 +2,15 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Collections;
 using System.Runtime.ConstrainedExecution;
+using javaThread = java.lang.Thread;
 
 namespace System
 {
-    /// <summary>Provides information about, and means to manipulate, the current environment and platform. This class cannot be inherited.</summary><filterpriority>1</filterpriority>
+    /// <summary>
+    /// Provides information about, and means to manipulate, the current environment and platform. 
+    /// This class cannot be inherited.
+    /// </summary>
+    /// <filterpriority>1</filterpriority>
     [ComVisibleAttribute(true)]
     public static class Environment
     {
@@ -185,10 +190,11 @@ namespace System
             get { throw new NotImplementedException(); }
         }
     
-        /// <summary>Gets a unique identifier for the current managed thread.</summary><returns>An integer that represents a unique identifier for this managed thread.</returns>
+        /// <summary>Gets a unique identifier for the current managed thread.</summary>
+        /// <returns>An integer that represents a unique identifier for this managed thread.</returns>
         public static int CurrentManagedThreadId
         {
-            get { throw new NotImplementedException(); }
+            get { return (int)javaThread.currentThread().getId(); }
         }
     
     
