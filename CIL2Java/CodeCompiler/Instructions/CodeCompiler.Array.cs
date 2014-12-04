@@ -98,6 +98,8 @@ namespace CIL2Java
             CompileExpression(e.Arguments[1], ExpectType.Primitive);    //index
             CompileExpression(e.Arguments[2], GetExpectType(operand));  //value
 
+            //TODO: Add dup
+
             codeGenerator.AddArrayStore(arrType, e);
         }
 
@@ -155,6 +157,9 @@ namespace CIL2Java
             CompileExpression(e.Arguments.Last(), GetExpectType(operand.DeclaringType.ElementType));
 
             JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand.DeclaringType);
+
+            //TODO: Add dup
+
             codeGenerator.AddArrayStore(arrType, e);
         }
 

@@ -153,6 +153,8 @@ namespace CIL2Java
 
             Java.Constants.MethodRef setMethodRef = byRefController.GetByRefSetValueMethodRef(type);
 
+            //TODO: dup
+
             codeGenerator.Add(OpCodes.invokevirtual, setMethodRef, e);
         }
 

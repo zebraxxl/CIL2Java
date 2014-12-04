@@ -48,6 +48,15 @@ namespace CIL2Java
                 //TODO: GetExpectType(InterParameter);
                 CompileNode(e.Arguments[0], GetExpectType(operandType));
 
+                if ((expectType != ExpectType.None) && (e.ExpectedType != null))
+                {
+                    if ((operandType.IsPrimitive) && ((operandType.PrimitiveType == PrimitiveType.UInt64) ||
+                        (operandType.PrimitiveType == PrimitiveType.Int64) || (operandType.PrimitiveType == PrimitiveType.Double)))
+                        codeGenerator.Add(Java.OpCodes.dup2);
+                    else
+                        codeGenerator.Add(Java.OpCodes.dup);
+                }
+
                 codeGenerator.AddLocalVarInstruction(LocalVarInstruction.Store, JavaHelpers.InterTypeToJavaPrimitive(operandType), varIndex, e);
             }
         }

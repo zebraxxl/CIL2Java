@@ -84,6 +84,8 @@ namespace CIL2Java
 
             CompileFieldLoad(operand, e);
 
+            //TODO: dup
+
             TranslateType(operand.FieldType, expectType, e);
         }
     }
