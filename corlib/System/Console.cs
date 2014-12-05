@@ -372,7 +372,7 @@ namespace System
         /// <summary>Writes the specified Unicode character, followed by the current line terminator, value to the standard output stream.</summary><param name="value">The value to write. </param><exception cref="T:System.IO.IOException">An I/O error occurred. </exception><filterpriority>1</filterpriority>
         public static void WriteLine(char value)
         {
-             throw new NotImplementedException();
+            javaSystem.@out.println(value);
         }
         
         
@@ -533,7 +533,7 @@ namespace System
         /// <summary>Writes the specified Unicode character value to the standard output stream.</summary><param name="value">The value to write. </param><exception cref="T:System.IO.IOException">An I/O error occurred. </exception><filterpriority>1</filterpriority>
         public static void Write(char value)
         {
-             throw new NotImplementedException();
+            javaSystem.@out.print(value);
         }
         
         
