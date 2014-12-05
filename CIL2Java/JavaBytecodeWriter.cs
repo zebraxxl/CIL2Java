@@ -605,6 +605,21 @@ namespace CIL2Java
             return AddIntConst(value, null);
         }
 
+        public JavaBytecodeWriter AddLongConst(long p, object tag)
+        {
+            if (p == 0)
+                return Add(Java.OpCodes.lconst_0, null, tag);
+            else if (p == 1)
+                return Add(Java.OpCodes.lconst_1, null, tag);
+            else
+                return Add(Java.OpCodes.ldc2_w, new Java.Constants.Long(p), tag);
+        }
+
+        public JavaBytecodeWriter AddLongConst(long p)
+        {
+            return AddLongConst(p, null);
+        }
+
         public JavaBytecodeWriter AddIInc(ushort varIndex, short value, object tag)
         {
             if ((varIndex > byte.MaxValue) || (value < sbyte.MinValue) || (value > sbyte.MaxValue))
