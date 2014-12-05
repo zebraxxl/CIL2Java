@@ -15,5 +15,8 @@ namespace java.lang
 
         [FromJava]
         public void run() { }
+
+        [FromJava]
+        public void setDaemon(bool on) { }
     }
 }

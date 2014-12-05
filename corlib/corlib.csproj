@@ -51,6 +51,7 @@
     <Compile Include="CIL2Java\Maps\Array.cs" />
     <Compile Include="CIL2Java\Utils.cs" />
     <Compile Include="CIL2Java\VES\MethodPointers\Global.cs" />
+    <Compile Include="CIL2Java\VES\ThreadPools.cs" />
     <Compile Include="java\io\PrintWriter.cs" />
     <Compile Include="java\lang\AbstractStringBuilder.cs" />
     <Compile Include="java\lang\Appendable.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="java\util\concurrent\Executors.cs" />
     <Compile Include="java\util\concurrent\ExecutorService.cs" />
     <Compile Include="java\util\concurrent\Future.cs" />
+    <Compile Include="java\util\concurrent\ThreadFactory.cs" />
     <Compile Include="java\util\concurrent\TimeUnit.cs" />
     <Compile Include="java\util\List.cs" />
     <Compile Include="java\util\ListIterator.cs" />

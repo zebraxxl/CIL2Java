@@ -8,6 +8,12 @@ namespace java.util.concurrent
     public class Executors
     {
         [FromJava]
+        public static ThreadFactory defaultThreadFactory() { return null; }
+
+        [FromJava]
         public static ExecutorService newCachedThreadPool() { return null; }
+
+        [FromJava]
+        public static ExecutorService newCachedThreadPool(ThreadFactory threadFactory) { return null; }
     }
 }
