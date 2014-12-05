@@ -5,6 +5,7 @@ using System.Security;
 using CIL2Java;
 using java.util.concurrent;
 using CIL2Java.VES;
+using CIL2Java.Attributes;
 
 namespace System.Runtime.Remoting.Messaging
 {
@@ -12,30 +13,13 @@ namespace System.Runtime.Remoting.Messaging
     [ComVisibleAttribute(true)]
     public class AsyncResult : IAsyncResult, IMessageSink
     {
-        private class DummyDelegateRunner : CIL2Java.DelegateRunner
-        {
-            public override void run()
-            {
-            }
-        }
-        // Method to mark all needed parts to compile.
-        // Must be never invoked from CIL
-        private void DummyLinkMethod()
-        {
-            new DummyDelegateRunner();
-            ((CIL2Java.DelegateRunner)null).OnEnd(null);
-            ((CIL2Java.DelegateRunner)null).AsyncResult = null;
-            AsyncResult a = new AsyncResult(null, null, null, null);
-            a.EndInvoke();
-            ((ThreadFactory)null).newThread(null);
-        }
-
         private DelegateRunner runner;
         private object asyncDelegate;
         private AsyncCallback callback;
         private object param;
         private Future task;
 
+        [AlwaysCompile]
         public AsyncResult(DelegateRunner runner, object asyncDelegate, AsyncCallback callback, object param)
         {
             this.runner = runner;
@@ -49,9 +33,9 @@ namespace System.Runtime.Remoting.Messaging
             this.CompletedSynchronously = this.task.isDone();
         }
 
+        [AlwaysCompile]
         public CIL2Java.DelegateRunner EndInvoke()
         {
-
             task.get();
             EndInvokeCalled = true;
             return runner;

@@ -1,4 +1,5 @@
-﻿using java.util.concurrent;
+﻿using CIL2Java.Attributes;
+using java.util.concurrent;
 using System;
 using System.Collections.Generic;
 
@@ -15,7 +16,7 @@ namespace CIL2Java.VES
                 defaultThreadFactory = Executors.defaultThreadFactory();
             }
 
-            //TODO: always compile attribute
+            [AlwaysCompile]
             public java.lang.Thread newThread(java.lang.Runnable r)
             {
                 java.lang.Thread result = defaultThreadFactory.newThread(r);

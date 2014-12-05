@@ -16,14 +16,6 @@ namespace System
         protected object target;
         protected object method;
 
-        // Method to mark CIL2Java.VES.MethodPointers.Global to compile.
-        // Must be never invoked from CIL
-        private void DummyLinkMethod()
-        {
-            CIL2Java.VES.MethodPointers.Global.AddMethodPointer(null);
-            CIL2Java.VES.MethodPointers.Global.GetMethodPointer(0);
-        }
-
         private javaClass GetPointerClass()
         {
             javaClass pointerClass = method.getClass();

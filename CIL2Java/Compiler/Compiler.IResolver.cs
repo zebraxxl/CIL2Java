@@ -176,7 +176,6 @@ namespace CIL2Java
 
         InterType IResolver.Resolve(string fullname)
         {
-            //TOOD: This method don't work
             foreach (ModuleDefinition m in loadedModules)
             {
                 TypeDefinition typeDef = m.GetType(fullname);

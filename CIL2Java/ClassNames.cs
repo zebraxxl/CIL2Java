@@ -24,6 +24,7 @@ namespace CIL2Java
         public const string MethodMapAttribute = "CIL2Java.Attributes.MethodMapAttribute";
         public const string JavaExceptionMapAttribute = "CIL2Java.Attributes.JavaExceptionMapAttribute";
         public const string InterfacesMapAttribute = "CIL2Java.Attributes.InterfacesMapAttribute";
+        public const string AlwaysCompileAttribute = "CIL2Java.Attributes.AlwaysCompileAttribute";
 
         public const string InterfacesMapGetAdapterMethodName = "GetAdapter";
 
@@ -74,8 +75,6 @@ namespace CIL2Java
 
         public const string RenamedMethodPrefix = "c2j_renamed_";
         public const string FieldAccessorPrefix = "c2j_field_access_";
-
-        public const string DummyLinkMethodName = "DummyLinkMethod";
 
         public static class ByRef
         {
@@ -176,6 +175,11 @@ namespace CIL2Java
             public static readonly MethodRef CtorMethodRef = new MethodRef("CIL2Java/DelegateRunner", "<init>", "()V");
             public static readonly FieldRef OnEndedFieldRef = new FieldRef("CIL2Java/DelegateRunner", "OnEnd", "LSystem/AsyncCallback;");
             public static readonly FieldRef AsyncResultFieldResult = new FieldRef("CIL2Java/DelegateRunner", "AsyncResult", "LSystem/IAsyncResult;");
+        }
+
+        public static class CIL2JavaVESMethodPointersGlobal
+        {
+            public const string ClassNames = "CIL2Java.VES.MethodPointers.Global";
         }
     }
 }

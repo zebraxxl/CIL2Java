@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyResolver.cs" />
+    <Compile Include="Attributes\AlwaysCompileAttribute.cs" />
     <Compile Include="Attributes\BoxedAttribute.cs" />
     <Compile Include="Attributes\InterfacesMapAttribute.cs" />
     <Compile Include="Attributes\JavaBoxMethodMapAttribute.cs" />
@@ -86,7 +87,6 @@
     <Compile Include="Compiler\Compiler.Method.cs" />
     <Compile Include="Compiler\Compiler.Names.cs" />
     <Compile Include="Compiler\Compiler.Type.cs" />
-    <Compile Include="Compiler\Compiler.Utils.cs" />
     <Compile Include="Compiler\Compiler.ValueType.cs" />
     <Compile Include="GenericArgument.cs" />
     <Compile Include="IByRefController.cs" />

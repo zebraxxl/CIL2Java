@@ -24,7 +24,9 @@ namespace CIL2Java
         {
             Messages.Verbose("Precompile pass...");
 
-            DummyLink(ClassNames.SystemRuntimeRemotingMessagingAsyncResult.ClassName);
+            ((IResolver)this).Resolve(ClassNames.SystemRuntimeRemotingMessagingAsyncResult.ClassName);
+            if (Program.MethodPointersType == MethodPointerImplementation.Standart)
+                ((IResolver)this).Resolve(ClassNames.CIL2JavaVESMethodPointersGlobal.ClassNames);
 
             Messages.Verbose("  Finding and adding overloading methods...");
             for (int i = 0; i < typesToCompile.Count; i++)

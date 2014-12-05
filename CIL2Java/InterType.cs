@@ -153,11 +153,12 @@ namespace CIL2Java
                     (M.Parameters[0].ParameterType.FullName == ClassNames.ObjectTypeName))).FirstOrDefault(), this.genericArgs);
             }
 
-            if ((typeDef.FullName == ClassNames.DelegateTypeName) && (Program.MethodPointersType == MethodPointerImplementation.Standart))
-            {
-                resolver.Resolve(typeDef.Methods.Where(M => M.Name == "DummyLinkMethod").FirstOrDefault(),
-                    this.genericArgs);
-            }
+            typeDef.Fields
+                .Where(F => F.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.AlwaysCompileAttribute).Count() > 0)
+                .ForEach(F => resolver.Resolve(F, genericArgs));
+            typeDef.Methods
+                .Where(M => M.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.AlwaysCompileAttribute).Count() > 0)
+                .ForEach(M => resolver.Resolve(M, genericArgs));
         }
 
         public InterType(TypeReference typeRef, List<InterGenericArgument> genericArgs, IResolver resolver, Func<InterType, bool> register)

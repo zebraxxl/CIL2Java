@@ -37,6 +37,7 @@
     <DocumentationFile>bin\Release\corlib.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CIL2Java\Attributes\AlwaysCompileAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\BoxedAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\FromJavaAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\InterfacesMapAttribute.cs" />
