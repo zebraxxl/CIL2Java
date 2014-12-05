@@ -59,6 +59,8 @@
     <Compile Include="java\lang\Character.cs" />
     <Compile Include="java\lang\Double.cs" />
     <Compile Include="java\lang\Float.cs" />
+    <Compile Include="java\lang\Iterable.cs" />
+    <Compile Include="java\lang\Iterator.cs" />
     <Compile Include="java\lang\Long.cs" />
     <Compile Include="java\lang\reflect\Array.cs" />
     <Compile Include="java\lang\Runnable.cs" />
@@ -67,6 +69,15 @@
     <Compile Include="java\lang\StringBuffer.cs" />
     <Compile Include="java\lang\StringBuilder.cs" />
     <Compile Include="java\lang\Thread.cs" />
+    <Compile Include="java\util\Collection.cs" />
+    <Compile Include="java\util\concurrent\Callable.cs" />
+    <Compile Include="java\util\concurrent\Executor.cs" />
+    <Compile Include="java\util\concurrent\Executors.cs" />
+    <Compile Include="java\util\concurrent\ExecutorService.cs" />
+    <Compile Include="java\util\concurrent\Future.cs" />
+    <Compile Include="java\util\concurrent\TimeUnit.cs" />
+    <Compile Include="java\util\List.cs" />
+    <Compile Include="java\util\ListIterator.cs" />
     <Compile Include="Local.cs" />
     <Compile Include="CIL2Java\Maps\Object.cs" />
     <Compile Include="CIL2Java\Maps\String.cs" />
