@@ -12,6 +12,7 @@ namespace System
     [Serializable]
     [ComVisibleAttribute(true)]
     [TypeMap(typeof(java.lang.String))]
+    [InterfacesMap(typeof(CIL2Java.Maps.String))]
     public sealed class String : IComparable, ICloneable, IConvertible, IComparable<String>, IEnumerable<Char>, IEquatable<String>
     {
         /// <summary>Represents the empty string. This field is read-only.</summary><filterpriority>1</filterpriority>
