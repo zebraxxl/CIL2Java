@@ -92,9 +92,9 @@ namespace CIL2Java
             }
             else if (BoolToBranch.ContainsKey(e.Code))
             {
-                e.Code = BoolToBranch[e.Code];
-                e.Operand = new ILLabel() { Name = onTrueLabel };
-                CompileExpression(e, ExpectType.None);
+                CompileExpression(
+                    new ILExpression(BoolToBranch[e.Code], new ILLabel() { Name = onTrueLabel }, e.Arguments.ToArray()),
+                    ExpectType.None);
             }
             else
             {
