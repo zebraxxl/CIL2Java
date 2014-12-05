@@ -245,14 +245,45 @@ namespace CIL2Java
         }
 
         #region Branch logic (B* instructions)
-        private void CompileFlowB(ILExpression e, OpCodes intBr, OpCodes refBr, OpCodes otherBr)
+        private void CompileFlowB(ILExpression e, OpCodes intBr, OpCodes refBr, OpCodes otherBr, bool unsigned = false)
         {
+            unsigned = unsigned && Program.Unsigned;
+
             InterType operandTypes = resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments);
+            JavaPrimitiveType prim = JavaHelpers.InterTypeToJavaPrimitive(operandTypes);
+
+            Action modifOp = () => { };
+
+            if (unsigned)
+            {
+                //From http://habrahabr.ru/post/225901 (author: @elw00d)
+                switch (prim)
+                {
+                    case JavaPrimitiveType.Bool:
+                    case JavaPrimitiveType.Byte:
+                        modifOp = () => codeGenerator.AddIntConst(0x80, e).Add(OpCodes.ixor, null, e);
+                        break;
+
+                    case JavaPrimitiveType.Short:
+                        modifOp = () => codeGenerator.AddIntConst(0x8000, e).Add(OpCodes.ixor, null, e);
+                        break;
+
+                    case JavaPrimitiveType.Int:
+                        modifOp = () => codeGenerator.AddIntConst((unchecked((int)0x80000000)), e).Add(OpCodes.ixor, null, e);
+                        break;
+
+                    case JavaPrimitiveType.Long:
+                        modifOp = () => codeGenerator.AddLongConst((unchecked((long)0x8000000000000000)), e).Add(OpCodes.lxor, null, e);
+                        break;
+                }
+            }
+
 
             CompileExpression(e.Arguments[0], GetExpectType(operandTypes));
-            CompileExpression(e.Arguments[1], GetExpectType(operandTypes));
+            modifOp();
 
-            JavaPrimitiveType prim = JavaHelpers.InterTypeToJavaPrimitive(operandTypes);
+            CompileExpression(e.Arguments[1], GetExpectType(operandTypes));
+            modifOp();
 
             switch (prim)
             {
@@ -312,36 +343,66 @@ namespace CIL2Java
             CompileFlowB(e, OpCodes.if_icmpne, OpCodes.if_acmpne, OpCodes.ifne);
         }
 
-        //TODO: Unordered and unsigned checks
+        //TODO: Unordered checks
         private void CompileBgeUn(ILExpression e, ExpectType expect)
         {
-            CompileFlowB(e, OpCodes.if_icmpge, OpCodes.if_acmpeq, OpCodes.ifge);
+            CompileFlowB(e, OpCodes.if_icmpge, OpCodes.if_acmpeq, OpCodes.ifge, true);
         }
 
         private void CompileBgtUn(ILExpression e, ExpectType expect)
         {
-            CompileFlowB(e, OpCodes.if_icmpgt, OpCodes.if_acmpne, OpCodes.ifgt);
+            CompileFlowB(e, OpCodes.if_icmpgt, OpCodes.if_acmpne, OpCodes.ifgt, true);
         }
 
         private void CompileBleUn(ILExpression e, ExpectType expect)
         {
-            CompileFlowB(e, OpCodes.if_icmple, OpCodes.if_acmpeq, OpCodes.ifle);
+            CompileFlowB(e, OpCodes.if_icmple, OpCodes.if_acmpeq, OpCodes.ifle, true);
         }
 
         private void CompileBltUn(ILExpression e, ExpectType expect)
         {
-            CompileFlowB(e, OpCodes.if_icmplt, OpCodes.if_acmpne, OpCodes.iflt);
+            CompileFlowB(e, OpCodes.if_icmplt, OpCodes.if_acmpne, OpCodes.iflt, true);
         }
         #endregion
 
         #region Compare logic (C* instructions)
-        private void CompileFlowC(ILExpression e, Java.OpCodes IntCmp, Java.OpCodes RefCmp, Java.OpCodes OtherCmp)
+        private void CompileFlowC(ILExpression e, Java.OpCodes IntCmp, Java.OpCodes RefCmp, Java.OpCodes OtherCmp, bool unsigned = false)
         {
-            CompileExpression(e.Arguments[0], ExpectType.Any);
-            CompileExpression(e.Arguments[1], ExpectType.Any);
+            unsigned = unsigned && Program.Unsigned;
 
             JavaPrimitiveType jpt = JavaHelpers.InterTypeToJavaPrimitive(
                 resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments));
+
+            Action modifOp = () => { };
+
+            if (unsigned)
+            {
+                //From http://habrahabr.ru/post/225901 (author: @elw00d)
+                switch (jpt)
+                {
+                    case JavaPrimitiveType.Bool:
+                    case JavaPrimitiveType.Byte:
+                        modifOp = () => codeGenerator.AddIntConst(0x80, e).Add(OpCodes.ixor, null, e);
+                        break;
+
+                    case JavaPrimitiveType.Short:
+                        modifOp = () => codeGenerator.AddIntConst(0x8000, e).Add(OpCodes.ixor, null, e);
+                        break;
+
+                    case JavaPrimitiveType.Int:
+                        modifOp = () => codeGenerator.AddIntConst((unchecked((int)0x80000000)), e).Add(OpCodes.ixor, null, e);
+                        break;
+
+                    case JavaPrimitiveType.Long:
+                        modifOp = () => codeGenerator.AddLongConst((unchecked((long)0x8000000000000000)), e).Add(OpCodes.lxor, null, e);
+                        break;
+                }
+            }
+
+            CompileExpression(e.Arguments[0], ExpectType.Any);
+            modifOp();
+            CompileExpression(e.Arguments[1], ExpectType.Any);
+            modifOp();
 
             //  if OtherCmp - dcmpg or fcmpg or lcmp
             //  *Cmp true
@@ -412,8 +473,7 @@ namespace CIL2Java
 
         private void CompileCle_Un(ILExpression e, ExpectType expect)
         {
-            //TODO: unsigned numbers
-            CompileFlowC(e, Java.OpCodes.if_icmple, Java.OpCodes.if_acmpeq, Java.OpCodes.ifle);
+            CompileFlowC(e, Java.OpCodes.if_icmple, Java.OpCodes.if_acmpeq, Java.OpCodes.ifle, true);
         }
         #endregion
     }
