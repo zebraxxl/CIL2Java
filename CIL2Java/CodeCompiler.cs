@@ -186,16 +186,25 @@ namespace CIL2Java
             string falseLabel = "false" + labelsSufix;
             string exitLabel = "exit" + labelsSufix;
 
-            CompileExpression(node.Condition, ExpectType.Primitive);
+            if (node.FalseBlock.Body.Count == 0)
+                falseLabel = exitLabel;
+            CompileCondition(new ILExpression(ILCode.LogicNot, null, node.Condition), falseLabel);
 
-            Java.OpCodes branchInstr = Java.OpCodes.ifeq;
-            TranslateToBool(node.Condition.InferredType, ref branchInstr, node);
+            //CompileExpression(node.Condition, ExpectType.Primitive);
 
-            codeGenerator.Add(branchInstr, falseLabel, node);
+            //Java.OpCodes branchInstr = Java.OpCodes.ifeq;
+            //TranslateToBool(node.Condition.InferredType, ref branchInstr, node);
+
+            //codeGenerator.Add(branchInstr, falseLabel, node);
             CompileBlock(node.TrueBlock, expectType);
-            codeGenerator.Add(Java.OpCodes._goto, exitLabel, node)
-                .Label(falseLabel);
-            CompileBlock(node.FalseBlock, expectType);
+
+            if (node.FalseBlock.Body.Count > 0)
+            {
+                codeGenerator.Add(Java.OpCodes._goto, exitLabel, node)
+                    .Label(falseLabel);
+                CompileBlock(node.FalseBlock, expectType);
+            }
+
             codeGenerator.Label(exitLabel);
         }
 
@@ -283,6 +292,19 @@ namespace CIL2Java
                 case ILCode.LogicOr: CompileLogicOr(e, expectType); break;
                 case ILCode.TernaryOp: CompileTernaryOp(e, expectType); break;
                 case ILCode.NullCoalescing: CompileNullCoalescing(e, expectType); break;
+
+                case ILCode.__Brfalse: break;   //TODO: __Brfalse
+                case ILCode.Brtrue: break;      //TODO: brtrue
+                case ILCode.__Beq: CompileBeq(e, expectType); break;
+                case ILCode.__Bge: CompileBge(e, expectType); break;
+                case ILCode.__Bgt: CompileBgt(e, expectType); break;
+                case ILCode.__Ble: CompileBle(e, expectType); break;
+                case ILCode.__Blt: CompileBlt(e, expectType); break;
+                case ILCode.__Bne_Un: CompileBneUn(e, expectType); break;
+                case ILCode.__Bge_Un: CompileBgeUn(e, expectType); break;
+                case ILCode.__Bgt_Un: CompileBgtUn(e, expectType); break;
+                case ILCode.__Ble_Un: CompileBleUn(e, expectType); break;
+                case ILCode.__Blt_Un: CompileBltUn(e, expectType); break;
                 case ILCode.Ceq: CompileCeq(e, expectType); break;
                 case ILCode.Cne: CompileCne(e, expectType); break;
                 case ILCode.Cle: CompileCle(e, expectType); break;

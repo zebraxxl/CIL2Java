@@ -1,4 +1,5 @@
-﻿using ICSharpCode.Decompiler.ILAst;
+﻿using CIL2Java.Java;
+using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,122 @@ namespace CIL2Java
 {
     public partial class CodeCompiler
     {
+        private Dictionary<ILCode, ILCode> invertLogic = new Dictionary<ILCode, ILCode>()
+        {
+            {ILCode.__Brfalse, ILCode.Brtrue},
+            {ILCode.Brtrue, ILCode.__Brfalse},
+            {ILCode.__Beq, ILCode.__Bne_Un},
+            {ILCode.__Bge, ILCode.__Blt},
+            {ILCode.__Bgt, ILCode.__Ble},
+            {ILCode.__Ble, ILCode.__Bgt},
+            {ILCode.__Blt, ILCode.__Bge},
+            {ILCode.__Bne_Un, ILCode.__Beq},
+            {ILCode.__Bge_Un, ILCode.__Blt_Un},
+            {ILCode.__Bgt_Un, ILCode.__Ble_Un},
+            {ILCode.__Ble_Un, ILCode.__Bgt_Un},
+            {ILCode.__Blt_Un, ILCode.__Bge_Un},
+            {ILCode.Ceq, ILCode.Cne},
+            {ILCode.Cgt, ILCode.Cle},
+            {ILCode.Cgt_Un, ILCode.Cle_Un},
+            {ILCode.Clt, ILCode.Cge},
+            {ILCode.Clt_Un, ILCode.Cge_Un},
+            {ILCode.Cne, ILCode.Ceq},
+            {ILCode.Cge, ILCode.Clt},
+            {ILCode.Cge_Un, ILCode.Clt_Un},
+            {ILCode.Cle, ILCode.Cgt_Un},
+            {ILCode.Cle_Un, ILCode.Cgt_Un}
+        };
+
+        private Dictionary<ILCode, ILCode> BoolToBranch = new Dictionary<ILCode, ILCode>()
+        {
+            {ILCode.Ceq, ILCode.__Beq},
+            {ILCode.Cgt, ILCode.__Bgt},
+            {ILCode.Cgt_Un, ILCode.__Bgt_Un},
+            {ILCode.Clt, ILCode.__Blt},
+            {ILCode.Clt_Un, ILCode.__Blt_Un},
+            {ILCode.Cne, ILCode.__Bne_Un},
+            {ILCode.Cge, ILCode.__Bge},
+            {ILCode.Cge_Un, ILCode.__Bge_Un},
+            {ILCode.Cle, ILCode.__Ble},
+            {ILCode.Cle_Un, ILCode.__Ble_Un}
+        };
+
+        private void CompileCondition(ILExpression e, string onTrueLabel)
+        {
+            while ((e.Code == ILCode.LogicNot) && (e.Arguments[0].Code == ILCode.LogicNot))
+                e = e.Arguments[0].Arguments[0];    //Remove duplicate not
+
+            if (e.Code == ILCode.LogicNot)
+            {
+                //Invert codtion
+                // !(a && b) = (!a) || (!b)
+                // !(a || b) = (!a) && (!b)
+                if (e.Arguments[0].Code == ILCode.LogicAnd)
+                    e = new ILExpression(ILCode.LogicOr, null,
+                            new ILExpression(ILCode.LogicNot, null, e.Arguments[0]),
+                            new ILExpression(ILCode.LogicNot, null, e.Arguments[1]));
+                else if (e.Arguments[0].Code == ILCode.LogicOr)
+                    e = new ILExpression(ILCode.LogicAnd, null,
+                            new ILExpression(ILCode.LogicNot, null, e.Arguments[0]),
+                            new ILExpression(ILCode.LogicNot, null, e.Arguments[1]));
+                else
+                {
+                    if (invertLogic.ContainsKey(e.Arguments[0].Code))
+                    {
+                        e = e.Arguments[0];
+                        e.Code = invertLogic[e.Code];
+                    }
+                }
+            }
+
+            if (e.Code == ILCode.LogicAnd)
+            {
+                string falseLabel = "false" + rnd.Next().ToString();
+                CompileCondition(new ILExpression(ILCode.LogicNot, null, e.Arguments[0]), falseLabel);
+                CompileCondition(new ILExpression(ILCode.LogicNot, null, e.Arguments[1]), falseLabel);
+                codeGenerator
+                    .Add(Java.OpCodes._goto, onTrueLabel)
+                    .Label(falseLabel);
+            }
+            else if (e.Code == ILCode.LogicOr)
+            {
+                CompileCondition(e.Arguments[0], onTrueLabel);
+                CompileCondition(e.Arguments[1], onTrueLabel);
+            }
+            else if (BoolToBranch.ContainsKey(e.Code))
+            {
+                e.Code = BoolToBranch[e.Code];
+                e.Operand = new ILLabel() { Name = onTrueLabel };
+                CompileExpression(e, ExpectType.None);
+            }
+            else
+            {
+                //bool logic
+                bool invert = false;
+                if (e.Code == ILCode.LogicNot)
+                {
+                    invert = true;
+                    e = e.Arguments[0];
+                }
+
+                JavaPrimitiveType gettedType = JavaHelpers.InterTypeToJavaPrimitive(resolver.Resolve(
+                    e.InferredType, thisMethod.FullGenericArguments));
+                CompileExpression(e, ExpectType.Any);
+
+                OpCodes branchCode = invert ? OpCodes.ifeq : OpCodes.ifne;
+
+                switch (gettedType)
+                {
+                    case JavaPrimitiveType.Double: codeGenerator.Add(Java.OpCodes.d2i, null, e); break;
+                    case JavaPrimitiveType.Float: codeGenerator.Add(Java.OpCodes.f2i, null, e); break;
+                    case JavaPrimitiveType.Long: codeGenerator.Add(Java.OpCodes.l2i, null, e); break;
+                    case JavaPrimitiveType.Ref: branchCode = invert ? OpCodes.ifnull : OpCodes.ifnonnull; break;
+                }
+
+                codeGenerator.Add(branchCode, onTrueLabel, e);
+            }
+        }
+
         private void TranslateToBool(TypeReference inferredType, ref Java.OpCodes cmpOp, object tag)
         {
             JavaPrimitiveType gettedType = JavaHelpers.InterTypeToJavaPrimitive(resolver.Resolve(
@@ -127,6 +244,97 @@ namespace CIL2Java
             codeGenerator.Label(exitLabel);
         }
 
+        #region Branch logic (B* instructions)
+        private void CompileFlowB(ILExpression e, OpCodes intBr, OpCodes refBr, OpCodes otherBr)
+        {
+            InterType operandTypes = resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments);
+
+            CompileExpression(e.Arguments[0], GetExpectType(operandTypes));
+            CompileExpression(e.Arguments[1], GetExpectType(operandTypes));
+
+            JavaPrimitiveType prim = JavaHelpers.InterTypeToJavaPrimitive(operandTypes);
+
+            switch (prim)
+            {
+                case JavaPrimitiveType.Bool:
+                case JavaPrimitiveType.Byte:
+                case JavaPrimitiveType.Char:
+                case JavaPrimitiveType.Int:
+                case JavaPrimitiveType.Short:
+                    codeGenerator.Add(intBr, ((ILLabel)e.Operand).Name, e);
+                    break;
+
+                case JavaPrimitiveType.Ref:
+                    codeGenerator.Add(refBr, ((ILLabel)e.Operand).Name, e);
+                    break;
+
+                default:
+                    switch (prim)
+                    {
+                        case JavaPrimitiveType.Long: codeGenerator.Add(OpCodes.lcmp, null, e); break;
+                        case JavaPrimitiveType.Float: codeGenerator.Add(OpCodes.fcmpg, null, e); break;
+                        case JavaPrimitiveType.Double: codeGenerator.Add(OpCodes.dcmpg, null, e); break;
+                        default: throw new Exception(); //TODO: Normal error
+                    }
+                    codeGenerator.Add(otherBr, ((ILLabel)e.Operand).Name, e);
+                    break;
+            }
+        }
+
+        private void CompileBeq(ILExpression e, ExpectType expect)
+        {
+            CompileFlowB(e, OpCodes.if_icmpeq, OpCodes.if_acmpeq, OpCodes.ifeq);
+        }
+
+        private void CompileBge(ILExpression e, ExpectType expect)
+        {
+            CompileFlowB(e, OpCodes.if_icmpge, OpCodes.if_acmpeq, OpCodes.ifge);
+        }
+
+        private void CompileBgt(ILExpression e, ExpectType expect)
+        {
+            CompileFlowB(e, OpCodes.if_icmpgt, OpCodes.if_acmpne, OpCodes.ifgt);
+        }
+
+        private void CompileBle(ILExpression e, ExpectType expect)
+        {
+            CompileFlowB(e, OpCodes.if_icmple, OpCodes.if_acmpeq, OpCodes.ifle);
+        }
+
+        private void CompileBlt(ILExpression e, ExpectType expect)
+        {
+            CompileFlowB(e, OpCodes.if_icmplt, OpCodes.if_acmpne, OpCodes.iflt);
+        }
+
+        private void CompileBneUn(ILExpression e, ExpectType expect)
+        {
+            //TODO: check for unordered
+            CompileFlowB(e, OpCodes.if_icmpne, OpCodes.if_acmpne, OpCodes.ifne);
+        }
+
+        //TODO: Unordered and unsigned checks
+        private void CompileBgeUn(ILExpression e, ExpectType expect)
+        {
+            CompileFlowB(e, OpCodes.if_icmpge, OpCodes.if_acmpeq, OpCodes.ifge);
+        }
+
+        private void CompileBgtUn(ILExpression e, ExpectType expect)
+        {
+            CompileFlowB(e, OpCodes.if_icmpgt, OpCodes.if_acmpne, OpCodes.ifgt);
+        }
+
+        private void CompileBleUn(ILExpression e, ExpectType expect)
+        {
+            CompileFlowB(e, OpCodes.if_icmple, OpCodes.if_acmpeq, OpCodes.ifle);
+        }
+
+        private void CompileBltUn(ILExpression e, ExpectType expect)
+        {
+            CompileFlowB(e, OpCodes.if_icmplt, OpCodes.if_acmpne, OpCodes.iflt);
+        }
+        #endregion
+
+        #region Compare logic (C* instructions)
         private void CompileFlowC(ILExpression e, Java.OpCodes IntCmp, Java.OpCodes RefCmp, Java.OpCodes OtherCmp)
         {
             CompileExpression(e.Arguments[0], ExpectType.Any);
@@ -207,5 +415,6 @@ namespace CIL2Java
             //TODO: unsigned numbers
             CompileFlowC(e, Java.OpCodes.if_icmple, Java.OpCodes.if_acmpeq, Java.OpCodes.ifle);
         }
+        #endregion
     }
 }
