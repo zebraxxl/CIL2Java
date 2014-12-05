@@ -32,6 +32,125 @@ namespace CIL2Java
             }
         }
 
+        private void GenerateDelegateRunner(InterType type)
+        {
+            Java.Class runner = new Java.Class();
+            runner.AccessFlag = ClassAccessFlag.Final;
+            runner.ThisClass = currentJavaClass.ThisClass + "$" + ClassNames.DelegateRunnerClassName;
+            runner.SuperClass = TypeNameToJava(ClassNames.CIL2JavaDelegateRunner.ClassName);
+
+            Java.Attributes.InnerClasses.InnerClass inner = new Java.Attributes.InnerClasses.InnerClass()
+            {
+                AccessFlags = Java.Attributes.InnerClasses.InnerClassAccessFlags.Final | Java.Attributes.InnerClasses.InnerClassAccessFlags.Private,
+                InnerClassInfo = runner.ThisClass,
+                InnerName = ClassNames.DelegateRunnerClassName,
+                OuterClassInfo = currentJavaClass.ThisClass
+            };
+
+            Java.Attributes.InnerClasses innerAttr = new Java.Attributes.InnerClasses();
+            innerAttr.Classes.Add(inner);
+            runner.Attributes.Add(innerAttr);
+            currentJavaInnerClasses.Classes.Add(inner);
+
+            InterMethod invokeMethod = type.Methods.Where(M => M.Name == ClassNames.DelegateInvokeMethodName).FirstOrDefault();
+
+            Field selfField = new Field();
+            selfField.AccessFlags = FieldAccessFlags.Private | FieldAccessFlags.Final;
+            selfField.Name = ClassNames.DelegateRunnerSelfFieldName;
+            selfField.Descriptor = GetFieldDescriptor(type);
+            runner.Fields.Add(selfField);
+            FieldRef selfFieldRef = new FieldRef(runner.ThisClass, selfField.Name, selfField.Descriptor);
+
+            JavaBytecodeWriter ctorCodeWriter = new JavaBytecodeWriter();
+            JavaBytecodeWriter runCodeWriter = new JavaBytecodeWriter();
+
+            ctorCodeWriter
+                //super()
+                .Add(OpCodes.aload_0)
+                .Add(OpCodes.invokespecial, ClassNames.CIL2JavaDelegateRunner.CtorMethodRef)
+
+                //this.self = self;
+                .Add(OpCodes.aload_0)
+                .Add(OpCodes.aload_1)
+                .Add(OpCodes.putfield, selfFieldRef);
+
+            if (invokeMethod.ReturnParameter.Type.PrimitiveType != PrimitiveType.Void)
+                runCodeWriter.Add(OpCodes.aload_0);
+
+            runCodeWriter
+                .Add(OpCodes.aload_0)
+                .Add(OpCodes.getfield, selfFieldRef);
+
+            for (int i = 0; i < invokeMethod.Parameters.Count; i++)
+            {
+                InterType paramType = invokeMethod.Parameters[i].Type;
+                JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(paramType);
+
+                Field paramField = new Field();
+                paramField.AccessFlags = FieldAccessFlags.Final | FieldAccessFlags.Private;
+                paramField.Name = ClassNames.DelegateRunnerParamFieldNamePrefix + i.ToString(); ;
+                paramField.Descriptor = GetFieldDescriptor(paramType);
+                runner.Fields.Add(paramField);
+                FieldRef paramFieldRef = new FieldRef(runner.ThisClass, paramField.Name, paramField.Descriptor);
+
+                ctorCodeWriter
+                    .Add(OpCodes.aload_0)
+                    .AddLoad(jp, i + 2)
+                    .Add(OpCodes.putfield, paramFieldRef);
+
+                runCodeWriter
+                    .Add(OpCodes.aload_0)
+                    .Add(OpCodes.getfield, paramFieldRef);
+            }
+
+            if (invokeMethod.ReturnParameter.Type.PrimitiveType != PrimitiveType.Void)
+            {
+                Field resultField = new Field();
+                resultField.AccessFlags = FieldAccessFlags.Private;
+                resultField.Name = ClassNames.DelegateRunnerResultFieldName;
+                resultField.Descriptor = GetFieldDescriptor(invokeMethod.ReturnParameter.Type);
+                runner.Fields.Add(resultField);
+                runCodeWriter.Add(OpCodes.putfield, new FieldRef(runner.ThisClass, resultField.Name, resultField.Descriptor));
+            }
+
+            runCodeWriter
+                .Add(OpCodes.invokevirtual, new MethodRef(TypeNameToJava(type.Fullname), ClassNames.DelegateInvokeMethodName,
+                    GetMethodDescriptor(invokeMethod)))
+                .Add(OpCodes.aload_0)
+                .Add(OpCodes.getfield, ClassNames.CIL2JavaDelegateRunner.OnEndedFieldRef)
+                .Add(OpCodes.dup)
+                .Add(OpCodes.ifnull, "noOnEnd")
+                .Add(OpCodes.aload_0)
+                .Add(OpCodes.getfield, ClassNames.CIL2JavaDelegateRunner.AsyncResultFieldResult)
+                .Add(OpCodes.invokevirtual, ClassNames.SystemAsyncCallback.InvokeMethodRef)
+                .Add(OpCodes._goto, "exit")
+                .Label("noOnEnd")
+                .Add(OpCodes.pop)
+                .Label("exit");
+
+            ctorCodeWriter.Add(OpCodes._return);
+            runCodeWriter.Add(OpCodes._return);
+
+            string paramsDescriptor = GetMethodDescriptor(invokeMethod);
+            paramsDescriptor = paramsDescriptor.Substring(1, paramsDescriptor.LastIndexOf(')') - 1);
+
+            Method ctorMethod = new Method();
+            ctorMethod.AccessFlags = MethodAccessFlags.Public;
+            ctorMethod.Name = ClassNames.JavaConstructorMethodName;
+            ctorMethod.Descriptor = "(" + GetFieldDescriptor(type) + paramsDescriptor + ")V";
+            ctorMethod.Attributes.Add(ctorCodeWriter.End(runner.ConstantPool));
+            runner.Methods.Add(ctorMethod);
+
+            Method runMethod = new Method();
+            runMethod.AccessFlags = MethodAccessFlags.Public;
+            runMethod.Name = ClassNames.CIL2JavaDelegateRunner.RunMethodName;
+            runMethod.Descriptor = "()V";
+            runMethod.Attributes.Add(runCodeWriter.End(runner.ConstantPool));
+            runner.Methods.Add(runMethod);
+
+            WriteClass(runner);
+        }
+
         private void CompileDelegateCtor(InterType type)
         {
             Method result = new Method();
@@ -164,14 +283,35 @@ namespace CIL2Java
             result.Name = ClassNames.DelegateBeginInvokeMethodName;
             result.Descriptor = GetMethodDescriptor(beginInvokeMethod);
 
-            Java.Attributes.Code resultCode = new JavaBytecodeWriter()
-                .Add(OpCodes._new, new Java.Constants.Class("System/NotImplementedException"))
+            string runnerName = currentJavaClass.ThisClass + "$" + ClassNames.DelegateRunnerClassName;
+
+            JavaBytecodeWriter codeWriter = new JavaBytecodeWriter();
+            codeWriter
+                .Add(OpCodes._new, new Java.Constants.Class(TypeNameToJava(ClassNames.SystemRuntimeRemotingMessagingAsyncResult.ClassName)))
                 .Add(OpCodes.dup)
-                .Add(OpCodes.invokespecial, new MethodRef("System/NotImplementedException", "<init>", "()V"))
-                .Add(OpCodes.athrow)
-                .End(currentJavaClass.ConstantPool);
-            resultCode.MaxLocals = (ushort)(100);
-            result.Attributes.Add(resultCode);
+                .Add(OpCodes._new, new Java.Constants.Class(runnerName))
+                .Add(OpCodes.dup)
+                .Add(OpCodes.aload_0);
+
+            int paramsCount = beginInvokeMethod.Parameters.Count;
+            string paramsDescriptors = "";
+            for (int i = 0; i < paramsCount - 2; i++)
+            {
+                InterType paramType = beginInvokeMethod.Parameters[i].Type;
+
+                codeWriter.AddLoad(JavaHelpers.InterTypeToJavaPrimitive(paramType), i + 1);
+                paramsDescriptors += GetFieldDescriptor(paramType);
+            }
+
+            codeWriter
+                .Add(OpCodes.invokespecial, new MethodRef(runnerName, ClassNames.JavaConstructorMethodName,
+                    "(" + GetFieldDescriptor(type) + paramsDescriptors + ")V"))
+                .Add(OpCodes.aload_0)
+                .AddLoad(JavaPrimitiveType.Ref, paramsCount - 1)
+                .AddLoad(JavaPrimitiveType.Ref, paramsCount)
+                .Add(OpCodes.invokespecial, ClassNames.SystemRuntimeRemotingMessagingAsyncResult.CtorMethodRef)
+                .Add(OpCodes.areturn);
+            result.Attributes.Add(codeWriter.End(currentJavaClass.ConstantPool));
 
             currentJavaClass.Methods.Add(result);
         }
@@ -182,23 +322,36 @@ namespace CIL2Java
 
             Method result = new Method();
             result.AccessFlags = MethodAccessFlags.Public | MethodAccessFlags.Final;
-            result.Name = ClassNames.DelegateBeginInvokeMethodName;
+            result.Name = ClassNames.DelegateEndInvokeMethodName;
             result.Descriptor = GetMethodDescriptor(endInvokeMethod);
 
-            Java.Attributes.Code resultCode = new JavaBytecodeWriter()
-                .Add(OpCodes._new, new Java.Constants.Class("System/NotImplementedException"))
-                .Add(OpCodes.dup)
-                .Add(OpCodes.invokespecial, new MethodRef("System/NotImplementedException", "<init>", "()V"))
-                .Add(OpCodes.athrow)
-                .End(currentJavaClass.ConstantPool);
-            resultCode.MaxLocals = (ushort)(100);
-            result.Attributes.Add(resultCode);
+            JavaBytecodeWriter codeWriter = new JavaBytecodeWriter();
+            codeWriter
+                .Add(OpCodes.aload_1)
+                .Add(OpCodes.checkcast, new Java.Constants.Class(TypeNameToJava(ClassNames.SystemRuntimeRemotingMessagingAsyncResult.ClassName)))
+                .Add(OpCodes.invokevirtual, ClassNames.SystemRuntimeRemotingMessagingAsyncResult.EndInvokeMethodRef);
+
+            if (endInvokeMethod.ReturnParameter.Type.PrimitiveType == PrimitiveType.Void)
+                codeWriter.Add(OpCodes.pop);
+            else
+            {
+                codeWriter
+                    .Add(OpCodes.checkcast, new Java.Constants.Class(currentJavaClass.ThisClass + "$" + ClassNames.DelegateRunnerClassName))
+                    .Add(OpCodes.getfield, new Java.Constants.FieldRef(
+                        currentJavaClass.ThisClass + "$" + ClassNames.DelegateRunnerClassName,
+                        ClassNames.DelegateRunnerResultFieldName,
+                        GetFieldDescriptor(endInvokeMethod.ReturnParameter.Type)));
+            }
+            codeWriter.AddReturn(JavaHelpers.InterTypeToJavaPrimitive(endInvokeMethod.ReturnParameter.Type));
+
+            result.Attributes.Add(codeWriter.End(currentJavaClass.ConstantPool));
 
             currentJavaClass.Methods.Add(result);
         }
 
         private void CompileDelegate(InterType type)
         {
+            GenerateDelegateRunner(type);
             CompileDelegateCtor(type);
             CompileDelegateInvoke(type);
             CompileDelegateBeginInvoke(type);

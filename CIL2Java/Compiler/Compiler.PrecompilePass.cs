@@ -24,6 +24,8 @@ namespace CIL2Java
         {
             Messages.Verbose("Precompile pass...");
 
+            DummyLink(ClassNames.SystemRuntimeRemotingMessagingAsyncResult.ClassName);
+
             Messages.Verbose("  Finding and adding overloading methods...");
             for (int i = 0; i < typesToCompile.Count; i++)
                 typesToCompile[i].CheckOverloadingMethods(this, loadedModules.Where(MD => MD.Name == "corlib.dll").FirstOrDefault());

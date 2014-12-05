@@ -9,6 +9,32 @@ namespace System.Runtime.Remoting.Messaging
     [ComVisibleAttribute(true)]
     public class AsyncResult : IAsyncResult, IMessageSink
     {
+        private class DummyDelegateRunner : CIL2Java.DelegateRunner
+        {
+            public override void run()
+            {
+            }
+        }
+        // Method to mark all needed parts to compile.
+        // Must be never invoked from CIL
+        private void DummyLinkMethod()
+        {
+            new DummyDelegateRunner();
+            ((CIL2Java.DelegateRunner)null).OnEnd(null);
+            ((CIL2Java.DelegateRunner)null).AsyncResult = null;
+            AsyncResult a = new AsyncResult(null, null, null, null);
+            a.EndInvoke();
+        }
+
+        public AsyncResult(CIL2Java.DelegateRunner runner, object asyncDelegate, AsyncCallback callback, object param)
+        {
+
+        }
+
+        public CIL2Java.DelegateRunner EndInvoke()
+        {
+            return null;
+        }
     
         /// <summary>Gets a value indicating whether the server has completed the call.</summary><returns>true after the server has completed the call; otherwise, false.</returns>
         public virtual bool IsCompleted
@@ -81,7 +107,5 @@ namespace System.Runtime.Remoting.Messaging
         {
              throw new NotImplementedException();
         }
-        
-        
     }
 }

@@ -36,6 +36,11 @@ namespace CIL2Java
         public const string DelegateEndInvokeMethodName = "EndInvoke";
 
         public const string DelegateMethodFieldName = "method";
+        public const string DelegateRunnerSelfFieldName = "self";
+        public const string DelegateRunnerParamFieldNamePrefix = "param_";
+        public const string DelegateRunnerResultFieldName = "result";
+
+        public const string DelegateRunnerClassName = "Runner";
 
         public static readonly FieldRef DelegateMethodFieldFast = new FieldRef("System/Delegate", "method", "Ljava/lang/Object;");
         public static readonly FieldRef DelegateTargetField = new FieldRef("System/Delegate", "target", "Ljava/lang/Object;");
@@ -69,6 +74,8 @@ namespace CIL2Java
 
         public const string RenamedMethodPrefix = "c2j_renamed_";
         public const string FieldAccessorPrefix = "c2j_field_access_";
+
+        public const string DummyLinkMethodName = "DummyLinkMethod";
 
         public static class ByRef
         {
@@ -137,12 +144,38 @@ namespace CIL2Java
             public const string monitorexit = "monitorexit";
         }
 
+        public static class SystemAsyncCallback
+        {
+            public const string ClassName = "System.AsyncCallback";
+
+            public static readonly MethodRef InvokeMethodRef = new MethodRef("System/AsyncCallback", "Invoke", "(LSystem/IAsyncResult;)V");
+        }
+
         public static class SystemThreadingMonitor
         {
             public const string ClassName = "System.Threading.Monitor";
 
             public const string Enter = "Enter";
             public const string Exit = "Exit";
+        }
+
+        public static class SystemRuntimeRemotingMessagingAsyncResult
+        {
+            public const string ClassName = "System.Runtime.Remoting.Messaging.AsyncResult";
+
+            public static readonly MethodRef CtorMethodRef = new MethodRef("System/Runtime/Remoting/Messaging/AsyncResult", "<init>", "(LCIL2Java/DelegateRunner;Ljava/lang/Object;LSystem/AsyncCallback;Ljava/lang/Object;)V");
+            public static readonly MethodRef EndInvokeMethodRef = new MethodRef("System/Runtime/Remoting/Messaging/AsyncResult", "EndInvoke", "()LCIL2Java/DelegateRunner;");
+        }
+
+        public static class CIL2JavaDelegateRunner
+        {
+            public const string ClassName = "CIL2Java.DelegateRunner";
+
+            public const string RunMethodName = "run";
+
+            public static readonly MethodRef CtorMethodRef = new MethodRef("CIL2Java/DelegateRunner", "<init>", "()V");
+            public static readonly FieldRef OnEndedFieldRef = new FieldRef("CIL2Java/DelegateRunner", "OnEnd", "LSystem/AsyncCallback;");
+            public static readonly FieldRef AsyncResultFieldResult = new FieldRef("CIL2Java/DelegateRunner", "AsyncResult", "LSystem/IAsyncResult;");
         }
     }
 }
