@@ -1,4 +1,6 @@
-﻿using ICSharpCode.Decompiler;
+﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
+using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
@@ -335,6 +337,22 @@ namespace CIL2Java
 
             if (unknownNode)
                 Messages.Message(MessageCode.UnknownNode, e.ToString());
+            else if ((e.InferredType != null) && (e.ExpectedType != null))
+            {
+                InterType inferred = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
+                InterType expected = resolver.Resolve(e.ExpectedType, thisMethod.FullGenericArguments);
+
+                if ((expected.IsInterface) && (inferred.Interfaces.Where(T => T.Fullname == expected.Fullname).Count() == 0) &&
+                    (inferred.InterfacesMap != null))
+                {
+                    InterType ifaceMap = inferred.InterfacesMap;
+
+                    codeGenerator.Add(OpCodes.invokestatic, new MethodRef(
+                        namesController.TypeNameToJava(ifaceMap),
+                        ClassNames.InterfacesMapGetAdapterMethodName,
+                        "(" + namesController.GetFieldDescriptor(inferred) + ")" + namesController.GetFieldDescriptor(ifaceMap)), e);
+                }
+            }
         }
 
         private void CompileBlock(ILBlock block, ExpectType expect)

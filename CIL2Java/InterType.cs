@@ -67,6 +67,7 @@ namespace CIL2Java
         private int arrayRank = 0;
         private ArrayDimension[] dimensions;
         private string[] javaExceptions = new string[0];
+        private InterType interfacesMap;
 
         private List<FieldAccessor> fieldAccessors = new List<FieldAccessor>();
 
@@ -114,6 +115,7 @@ namespace CIL2Java
 
         public bool IsFromJava { get; private set; }
         public string[] JavaExceptions { get { return javaExceptions; } }
+        public InterType InterfacesMap { get { return interfacesMap; } }
 
         public List<InterGenericArgument> GenericArguments { get { return genericArgs; } }
 
@@ -192,13 +194,27 @@ namespace CIL2Java
 
             CustomAttribute typeMapCustomAttr = typeDef.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.TypeMapAttribute).FirstOrDefault();
             CustomAttribute javaBoxTypeMapCustomAttr = typeDef.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.JavaBoxTypeMapAttribute).FirstOrDefault();
+            CustomAttribute interfacesMapCustomAttr = typeDef.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.InterfacesMapAttribute).FirstOrDefault();
 
             if ((typeMapCustomAttr == null) && (javaBoxTypeMapCustomAttr != null) && (Program.BoxType == BoxingType.Java))
                 typeMapCustomAttr = javaBoxTypeMapCustomAttr;
 
             if (typeMapCustomAttr != null)
             {
-                register(resolver.Resolve(typeMapCustomAttr.ConstructorArguments[0].Value as TypeReference, genericArgs));
+                InterType realType = resolver.Resolve(typeMapCustomAttr.ConstructorArguments[0].Value as TypeReference, genericArgs);
+                register(realType);
+
+                if ((interfacesMapCustomAttr != null) && (realType.InterfacesMap == null))
+                {
+                    TypeReference mapRef = interfacesMapCustomAttr.ConstructorArguments[0].Value as TypeReference;
+                    TypeDefinition mapDef = mapRef.Resolve();
+
+                    mapDef.Methods.Where(M => M.Name == ClassNames.InterfacesMapGetAdapterMethodName).ForEach(M =>
+                        resolver.Resolve(M, genericArgs));
+                    
+                    realType.interfacesMap = resolver.Resolve(mapRef, genericArgs);
+                }
+
                 return;
             }
 

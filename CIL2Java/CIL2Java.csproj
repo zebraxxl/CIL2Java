@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="AssemblyResolver.cs" />
     <Compile Include="Attributes\BoxedAttribute.cs" />
+    <Compile Include="Attributes\InterfacesMapAttribute.cs" />
     <Compile Include="Attributes\JavaBoxMethodMapAttribute.cs" />
     <Compile Include="Attributes\JavaBoxTypeMapAttribute.cs" />
     <Compile Include="Attributes\FromJavaAttribute.cs" />

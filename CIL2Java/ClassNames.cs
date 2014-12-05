@@ -23,6 +23,9 @@ namespace CIL2Java
         public const string TypeMapAttribute = "CIL2Java.Attributes.TypeMapAttribute";
         public const string MethodMapAttribute = "CIL2Java.Attributes.MethodMapAttribute";
         public const string JavaExceptionMapAttribute = "CIL2Java.Attributes.JavaExceptionMapAttribute";
+        public const string InterfacesMapAttribute = "CIL2Java.Attributes.InterfacesMapAttribute";
+
+        public const string InterfacesMapGetAdapterMethodName = "GetAdapter";
 
         public const string VESNamespace = "CIL2Java.VES";
 

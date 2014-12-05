@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="CIL2Java\Attributes\BoxedAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\FromJavaAttribute.cs" />
+    <Compile Include="CIL2Java\Attributes\InterfacesMapAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\JavaBoxedAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\JavaBoxMethodMapAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\JavaBoxTypeMapAttribute.cs" />
