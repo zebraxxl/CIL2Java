@@ -2,6 +2,9 @@ using System.Runtime.InteropServices;
 using System;
 using System.Threading;
 using System.Security;
+using CIL2Java;
+using java.util.concurrent;
+using CIL2Java.VES;
 
 namespace System.Runtime.Remoting.Messaging
 {
@@ -24,48 +27,59 @@ namespace System.Runtime.Remoting.Messaging
             ((CIL2Java.DelegateRunner)null).AsyncResult = null;
             AsyncResult a = new AsyncResult(null, null, null, null);
             a.EndInvoke();
+            ((ThreadFactory)null).newThread(null);
         }
 
-        public AsyncResult(CIL2Java.DelegateRunner runner, object asyncDelegate, AsyncCallback callback, object param)
-        {
+        private DelegateRunner runner;
+        private object asyncDelegate;
+        private AsyncCallback callback;
+        private object param;
+        private Future task;
 
+        public AsyncResult(DelegateRunner runner, object asyncDelegate, AsyncCallback callback, object param)
+        {
+            this.runner = runner;
+            this.asyncDelegate = asyncDelegate;
+            this.callback = callback;
+            this.param = param;
+
+            runner.AsyncResult = this;
+            runner.OnEnd = callback;
+            this.task = ThreadPools.AsyncPool.submit(runner);
+            this.CompletedSynchronously = this.task.isDone();
         }
 
         public CIL2Java.DelegateRunner EndInvoke()
         {
-            return null;
+
+            task.get();
+            EndInvokeCalled = true;
+            return runner;
         }
     
         /// <summary>Gets a value indicating whether the server has completed the call.</summary><returns>true after the server has completed the call; otherwise, false.</returns>
         public virtual bool IsCompleted
         {
-            get { throw new NotImplementedException(); }
+            get { return task.isDone(); }
         }
     
         /// <summary>Gets the delegate object on which the asynchronous call was invoked.</summary><returns>The delegate object on which the asynchronous call was invoked.</returns>
         public virtual object AsyncDelegate
         {
-            get { throw new NotImplementedException(); }
+            get { return asyncDelegate; }
         }
     
         /// <summary>Gets the object provided as the last parameter of a BeginInvoke method call.</summary><returns>The object provided as the last parameter of a BeginInvoke method call.</returns>
         public virtual object AsyncState
         {
-            get { throw new NotImplementedException(); }
+            get { return param; }
         }
     
         /// <summary>Gets a value indicating whether the BeginInvoke call completed synchronously.</summary><returns>true if the BeginInvoke call completed synchronously; otherwise, false.</returns>
-        public virtual bool CompletedSynchronously
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public virtual bool CompletedSynchronously { get; private set; }
     
         /// <summary>Gets or sets a value indicating whether EndInvoke has been called on the current <see cref="T:System.Runtime.Remoting.Messaging.AsyncResult" />.</summary><returns>true if EndInvoke has been called on the current <see cref="T:System.Runtime.Remoting.Messaging.AsyncResult" />; otherwise, false.</returns>
-        public bool EndInvokeCalled
-        {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
+        public bool EndInvokeCalled { get; set; }
     
         /// <summary>Gets a <see cref="T:System.Threading.WaitHandle" /> that encapsulates Win32 synchronization handles, and allows the implementation of various synchronization schemes.</summary><returns>A <see cref="T:System.Threading.WaitHandle" /> that encapsulates Win32 synchronization handles, and allows the implementation of various synchronization schemes.</returns>
         public virtual WaitHandle AsyncWaitHandle
