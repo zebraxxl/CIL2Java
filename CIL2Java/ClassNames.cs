@@ -144,6 +144,8 @@ namespace CIL2Java
 
             public const string monitorenter = "monitorenter";
             public const string monitorexit = "monitorexit";
+            public const string lshr = "lshr";
+            public const string lushr = "lushr";
         }
 
         public static class SystemAsyncCallback
@@ -178,6 +180,13 @@ namespace CIL2Java
             public static readonly MethodRef CtorMethodRef = new MethodRef("CIL2Java/DelegateRunner", "<init>", "()V");
             public static readonly FieldRef OnEndedFieldRef = new FieldRef("CIL2Java/DelegateRunner", "OnEnd", "LSystem/AsyncCallback;");
             public static readonly FieldRef AsyncResultFieldResult = new FieldRef("CIL2Java/DelegateRunner", "AsyncResult", "LSystem/IAsyncResult;");
+        }
+
+        public static class CIL2JavaVESInstructions
+        {
+            public const string ClassName = "CIL2Java.VES.Instructions";
+
+            public static readonly MethodRef UInt64DivideRef = new MethodRef("CIL2Java/VES/Instructions", "UIn64Divide", "(JJ)J");
         }
 
         public static class CIL2JavaVESMethodPointersGlobal

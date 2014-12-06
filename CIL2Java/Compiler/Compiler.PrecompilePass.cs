@@ -24,6 +24,7 @@ namespace CIL2Java
         {
             Messages.Verbose("Precompile pass...");
 
+            ((IResolver)this).Resolve(ClassNames.CIL2JavaVESInstructions.ClassName);
             if (typesToCompile
                 .Where(T => T.IsDelegate)
                 .Any(T => T.Methods.Where(M => M.Name == ClassNames.DelegateBeginInvokeMethodName).Count() > 0))

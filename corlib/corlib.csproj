@@ -51,6 +51,7 @@
     <Compile Include="CIL2Java\DelegateRunner.cs" />
     <Compile Include="CIL2Java\Maps\Array.cs" />
     <Compile Include="CIL2Java\Utils.cs" />
+    <Compile Include="CIL2Java\VES\Instructions.cs" />
     <Compile Include="CIL2Java\VES\MethodPointers\Global.cs" />
     <Compile Include="CIL2Java\VES\ThreadPools.cs" />
     <Compile Include="java\io\PrintWriter.cs" />
