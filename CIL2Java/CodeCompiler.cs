@@ -226,6 +226,7 @@ namespace CIL2Java
                 case ILCode.Ldc_I4: CompileLdcI4(e, expectType); break;
                 case ILCode.Ldc_I8: CompileLdcI8(e, expectType); break;
                 case ILCode.Ldc_R4: CompileLdcR4(e, expectType); break;
+                case ILCode.Ldc_R8: CompileLdcR8(e, expectType); break;
                 case ILCode.Ldnull: CompileLdnull(e, expectType); break;
                 case ILCode.DefaultValue: CompileDefaultValue(e, expectType); break;
 

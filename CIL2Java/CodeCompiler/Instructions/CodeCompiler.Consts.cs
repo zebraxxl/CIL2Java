@@ -40,6 +40,20 @@ namespace CIL2Java
             TranslateType(InterType.PrimitiveTypes[(int)PrimitiveType.Single], expect, e);
         }
 
+        private void CompileLdcR8(ILExpression e, ExpectType expect)
+        {
+            double operand = (double)e.Operand;
+
+            if (operand == 0.0)
+                codeGenerator.AddInstruction(new JavaInstruction(Java.OpCodes.dconst_0, null, e));
+            else if (operand == 1.0)
+                codeGenerator.AddInstruction(new JavaInstruction(Java.OpCodes.dconst_1, null, e));
+            else
+                codeGenerator.AddInstruction(new JavaInstruction(Java.OpCodes.ldc, new Java.Constants.Double(operand), e));
+
+            TranslateType(InterType.PrimitiveTypes[(int)PrimitiveType.Single], expect, e);
+        }
+
         private void CompileLdcI4(ILExpression e, ExpectType expect)
         {
             int operand = (int)e.Operand;
