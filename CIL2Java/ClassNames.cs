@@ -58,6 +58,9 @@ namespace CIL2Java
         public const string ValueTypeCopyTo = "c2j__$__CopyTo";
 
         public const string EnumValueFieldName = "value__";
+        public static readonly MethodRef EnumCtorRef = new MethodRef("System/Enum", "<init>", "()V");
+        public const string EnumGetBoxedMethodName = "c2j__$__GetBoxed";
+        public const string EnumGetUnboxedMethodName = "c2j__$__GetUnboxed";
 
         public const string IsVolatileModReq = "System.Runtime.CompilerServices.IsVolatile";
 

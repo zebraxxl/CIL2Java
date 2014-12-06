@@ -82,6 +82,8 @@ namespace CIL2Java
 
             if (type.IsValueType)
                 CompileValueType(type);
+            if (type.IsEnum)
+                CompileEnum(type);
 
             currentJavaInnerClasses = new Java.Attributes.InnerClasses();
 

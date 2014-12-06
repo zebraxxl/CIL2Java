@@ -159,6 +159,12 @@ namespace CIL2Java
             typeDef.Methods
                 .Where(M => M.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.AlwaysCompileAttribute).Count() > 0)
                 .ForEach(M => resolver.Resolve(M, genericArgs));
+
+            if (IsEnum)
+            {
+                foreach (var fld in typeDef.Fields)
+                    resolver.Resolve(fld, genericArgs);
+            }
         }
 
         public InterType(TypeReference typeRef, List<InterGenericArgument> genericArgs, IResolver resolver, Func<InterType, bool> register)

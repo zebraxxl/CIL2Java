@@ -144,6 +144,11 @@ namespace CIL2Java
                 valueRef = new Java.Constants.MethodRef(operandRef.Value, ClassNames.ValueTypeGetCopy, "()" +
                     namesController.GetFieldDescriptor(operand));
             }
+            else if (operand.IsEnum)
+            {
+                valueRef = new MethodRef(operandRef.Value, ClassNames.EnumGetUnboxedMethodName,
+                    "()" + namesController.GetFieldDescriptor(operand.ElementType));
+            }
             else
             {
                 valueRef = new Java.Constants.MethodRef(operandRef.Value,

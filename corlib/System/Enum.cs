@@ -1,3 +1,4 @@
+using CIL2Java.Attributes;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -7,8 +8,7 @@ namespace System
     [Serializable]
     [ComVisibleAttribute(true)]
     public abstract class Enum : ValueType, IComparable, IFormattable, IConvertible
-    {
-    
+    {    
         public static bool TryParse<TEnum>(string value, ref TEnum result)
         {
              throw new NotImplementedException();
@@ -109,7 +109,7 @@ namespace System
         
         public override string ToString()
         {
-             throw new NotImplementedException();
+            return "System.Enum::ToString not implemented";
         }
         
         
@@ -229,10 +229,9 @@ namespace System
              throw new NotImplementedException();
         }
         
-        
+        [AlwaysCompile]
         protected Enum()
         {
-             throw new NotImplementedException();
         }
 
 

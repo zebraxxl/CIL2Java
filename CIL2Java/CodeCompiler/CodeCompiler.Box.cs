@@ -55,6 +55,15 @@ namespace CIL2Java
 
         private void BoxTypeImpl(Dictionary<InterType, string> BoxTypes, InterType type, object tag)
         {
+            if (type.IsEnum)
+            {
+                codeGenerator.Add(Java.OpCodes.invokestatic, new Java.Constants.MethodRef(
+                    namesController.TypeNameToJava(type), ClassNames.EnumGetBoxedMethodName,
+                    "(" + namesController.GetFieldDescriptor(type.ElementType) + ")L" + 
+                    namesController.TypeNameToJava(type.Fullname) + ";"));
+                return;
+            }
+
             if (!BoxTypes.ContainsKey(type))
             {
                 Messages.Message(MessageCode.UnknownPrimitiveType, type.ToString());
