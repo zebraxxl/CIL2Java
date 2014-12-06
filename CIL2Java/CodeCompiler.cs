@@ -247,6 +247,7 @@ namespace CIL2Java
                 case ILCode.CallSetter: CompileCall(e, expectType); break;
                 case ILCode.CallvirtGetter: CompileCall(e, expectType); break;
                 case ILCode.CallvirtSetter: CompileCall(e, expectType); break;
+                //case ILCode.Calli: CompileCalli(e, expectType); break;    //TODO: opcode `calli`
                 case ILCode.Ret: CompileRet(e, expectType); break;
                 case ILCode.Jmp: CompileJmp(e, expectType); break;
 
@@ -303,8 +304,8 @@ namespace CIL2Java
                 case ILCode.TernaryOp: CompileTernaryOp(e, expectType); break;
                 case ILCode.NullCoalescing: CompileNullCoalescing(e, expectType); break;
 
-                case ILCode.__Brfalse: break;   //TODO: __Brfalse
-                case ILCode.Brtrue: break;      //TODO: brtrue
+                case ILCode.__Brfalse: CompileBrfalse(e, expectType); break;
+                case ILCode.Brtrue: CompileBrtrue(e, expectType); break;
                 case ILCode.__Beq: CompileBeq(e, expectType); break;
                 case ILCode.__Bge: CompileBge(e, expectType); break;
                 case ILCode.__Bgt: CompileBgt(e, expectType); break;

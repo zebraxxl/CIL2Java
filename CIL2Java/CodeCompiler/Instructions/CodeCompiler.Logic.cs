@@ -476,5 +476,27 @@ namespace CIL2Java
             CompileFlowC(e, Java.OpCodes.if_icmple, Java.OpCodes.if_acmpeq, Java.OpCodes.ifle, true);
         }
         #endregion
+
+        private void CompileBrBool(ILExpression e, ExpectType expect, bool brOnTrue)
+        {
+            JavaPrimitiveType gettedType = JavaHelpers.InterTypeToJavaPrimitive(resolver.Resolve(
+                e.InferredType, thisMethod.FullGenericArguments));
+
+            OpCodes brInstr = brOnTrue ? OpCodes.ifne : OpCodes.ifeq;
+            if (gettedType == JavaPrimitiveType.Ref)
+                brInstr = brOnTrue ? OpCodes.ifnonnull : OpCodes.ifnull;
+
+            codeGenerator.Add(brInstr, ((ILLabel)e.Operand).Name, e);
+        }
+
+        private void CompileBrtrue(ILExpression e, ExpectType expect)
+        {
+            CompileBrBool(e, expect, true);
+        }
+
+        private void CompileBrfalse(ILExpression e, ExpectType expect)
+        {
+            CompileBrBool(e, expect, false);
+        }
     }
 }
