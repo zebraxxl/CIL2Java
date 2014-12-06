@@ -62,6 +62,13 @@ namespace CIL2Java
                 CodeCompiler codeCompiler = new CodeCompiler(this, this, this, method, currentJavaClass.ConstantPool);
                 codeCompiler.Compile();
                 result.Attributes.Add(codeCompiler.Result);
+
+                if (Program.Debug)
+                {
+                    string sourceFileName = codeCompiler.SourceFile;
+                    if (sourceFileName != null)
+                        sourceFileNameCounter.Add(sourceFileName);
+                }
             }
 
             if ((method.IsStatic) && (method.IsConstructor))

@@ -11,6 +11,7 @@ namespace CIL2Java
         InterType currentType = null;
         Java.Class currentJavaClass = null;
         Java.Attributes.InnerClasses currentJavaInnerClasses = null;
+        Counter<string> sourceFileNameCounter = null;
 
         private ushort GetClassAccessFlags(InterType type, bool includeNestedFlags)
         {
@@ -65,6 +66,8 @@ namespace CIL2Java
 
         private Java.Class ComplileType(InterType type)
         {
+            sourceFileNameCounter = new Counter<string>();
+
             Messages.Verbose("  Compiling type {0}...", type.ToString());
             currentType = type;
             currentJavaClass = new Java.Class();
@@ -135,6 +138,10 @@ namespace CIL2Java
 
             if (currentJavaInnerClasses.Classes.Count > 0)
                 currentJavaClass.Attributes.Add(currentJavaInnerClasses);
+
+            if ((Program.Debug) && (sourceFileNameCounter != null) && (sourceFileNameCounter.IsStarted))
+                currentJavaClass.Attributes.Add(new Java.Attributes.SourceFile(
+                    System.IO.Path.GetFileName(sourceFileNameCounter.MostUsed)));
 
             return currentJavaClass;
         }
