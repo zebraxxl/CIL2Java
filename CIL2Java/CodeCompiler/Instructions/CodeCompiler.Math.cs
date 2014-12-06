@@ -102,5 +102,10 @@ namespace CIL2Java
         {
             CompileMath(e, expect, OpCodes.imul, OpCodes.lmul, OpCodes.fmul, OpCodes.dmul);
         }
+
+        private void CompileDiv(ILExpression e, ExpectType expect)
+        {
+            CompileMath(e, expect, OpCodes.idiv, OpCodes.ldiv, OpCodes.fdiv, OpCodes.ddiv);
+        }
     }
 }
