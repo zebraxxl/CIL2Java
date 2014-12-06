@@ -125,6 +125,10 @@ namespace CIL2Java
                     codeGenerator.Add(Java.OpCodes.monitorenter, null, e);
                 if (operand.Name == ClassNames.Intrinsics.monitorexit)
                     codeGenerator.Add(Java.OpCodes.monitorexit, null, e);
+                if (operand.Name == ClassNames.Intrinsics.lshr)
+                    codeGenerator.Add(Java.OpCodes.lshr, null, e);
+                if (operand.Name == ClassNames.Intrinsics.lushr)
+                    codeGenerator.Add(Java.OpCodes.lushr, null, e);
                 return;
             }
 

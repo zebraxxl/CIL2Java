@@ -7,5 +7,7 @@ namespace CIL2Java
     {
         public static void monitorenter(object o) { throw new InvalidOperationException("Direct call to intrinsics unsupported"); }
         public static void monitorexit(object o) { throw new InvalidOperationException("Direct call to intrinsics unsupported"); }
+        public static long lshr(long value1, int value2) { throw new InvalidOperationException("Direct call to intrinsics unsupported"); }
+        public static long lushr(long value1, int value2) { throw new InvalidOperationException("Direct call to intrinsics unsupported"); }
     }
 }
