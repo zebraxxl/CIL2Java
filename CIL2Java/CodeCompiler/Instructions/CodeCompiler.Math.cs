@@ -165,6 +165,58 @@ namespace CIL2Java
             CompileMath(e, expect, OpCodes.irem, OpCodes.lrem, OpCodes.frem, OpCodes.frem);
         }
 
+        private void CompileRemUn(ILExpression e, ExpectType expect)
+        {
+            if (!Program.Unsigned)
+            {
+                CompileMath(e, expect, OpCodes.irem, OpCodes.lrem, OpCodes.frem, OpCodes.drem);
+                return;
+            }
+
+            InterType opType = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
+            JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(opType);
+
+            if ((jp == JavaPrimitiveType.Bool) || (jp == JavaPrimitiveType.Byte) || (jp == JavaPrimitiveType.Char) ||
+                (jp == JavaPrimitiveType.Short))
+            {
+                //this types are already growed up to int
+                CompileExpression(e.Arguments[0], ExpectType.Primitive);
+                CompileExpression(e.Arguments[1], ExpectType.Primitive);
+                codeGenerator.Add(OpCodes.irem);
+            }
+            else if (jp == JavaPrimitiveType.Int)
+            {
+                //grow up int to long
+                CompileExpression(e.Arguments[0], ExpectType.Primitive);
+                codeGenerator
+                    .Add(OpCodes.i2l, null, e)
+                    .AddLongConst(0xffffffff, e)
+                    .Add(OpCodes.land, e);
+
+                CompileExpression(e.Arguments[0], ExpectType.Primitive);
+                codeGenerator
+                    .Add(OpCodes.i2l, null, e)
+                    .AddLongConst(0xffffffff, e)
+                    .Add(OpCodes.land, e);
+
+                codeGenerator
+                    .Add(OpCodes.lrem, e)
+                    .Add(OpCodes.l2i);
+            }
+            else if (jp == JavaPrimitiveType.Long)
+            {
+                //call special method from corlib
+                CompileExpression(e.Arguments[0], ExpectType.Primitive);
+                CompileExpression(e.Arguments[1], ExpectType.Primitive);
+                resolver.Resolve(ClassNames.CIL2JavaVESInstructions.ClassName);
+                codeGenerator.Add(OpCodes.invokestatic, ClassNames.CIL2JavaVESInstructions.UInt64RemainderRef);
+            }
+            else
+                throw new Exception();  //TODO: Normal error
+
+            TranslateType(opType, expect, e);
+        }
+
         private void CompileXor(ILExpression e, ExpectType expect)
         {
             CompileMath(e, expect, OpCodes.ixor, OpCodes.lxor, OpCodes.fconst_0, OpCodes.dconst_0);

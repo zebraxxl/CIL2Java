@@ -186,7 +186,8 @@ namespace CIL2Java
         {
             public const string ClassName = "CIL2Java.VES.Instructions";
 
-            public static readonly MethodRef UInt64DivideRef = new MethodRef("CIL2Java/VES/Instructions", "UIn64Divide", "(JJ)J");
+            public static readonly MethodRef UInt64DivideRef = new MethodRef("CIL2Java/VES/Instructions", "UInt64Divide", "(JJ)J");
+            public static readonly MethodRef UInt64RemainderRef = new MethodRef("CIL2Java/VES/Instructions", "UInt64Remainder", "(JJ)J");
         }
 
         public static class CIL2JavaVESMethodPointersGlobal
