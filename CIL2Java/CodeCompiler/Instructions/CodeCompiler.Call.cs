@@ -192,5 +192,69 @@ namespace CIL2Java
                 codeGenerator.AddReturn(JavaHelpers.InterTypeToJavaPrimitive(returnType), e);
             }
         }
+
+        private void CompileJmp(ILExpression e, ExpectType expect)
+        {
+            int argIndex = 0;
+            if (thisMethod.HasThis)
+            {
+                codeGenerator.Add(Java.OpCodes.aload_0, null, e);
+                argIndex++;
+            }
+
+            for (int i = 0; i < thisMethod.Parameters.Count; i++)
+            {
+                JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(thisMethod.Parameters[i].Type);
+                codeGenerator.AddLoad(jp, argIndex++);
+                if (jp.IsDoubleSlot())
+                    argIndex++;
+            }
+
+            InterMethod operand = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
+
+            CallType callType = CallType.Virtual;
+
+            if (operand.IsStatic)
+                callType = CallType.Static;
+            else if (operand.DeclaringType.IsInterface)
+                callType = CallType.Interface;
+            else if ((operand.IsConstructor) || (operand.IsPrivate) ||
+                ((operand.IsSame(thisMethod)) && (thisMethod.DeclaringType.BaseType == operand.DeclaringType)))
+                callType = CallType.Special;
+
+            Java.Constant javaOperand = null;
+
+            if (callType == CallType.Interface)
+                javaOperand = new Java.Constants.InterfaceMethodRef(
+                    namesController.TypeNameToJava(operand.DeclaringType),
+                    namesController.MethodNameToJava(operand.NewName),
+                    namesController.GetMethodDescriptor(operand));
+            else
+                javaOperand = new Java.Constants.MethodRef(
+                    namesController.TypeNameToJava(operand.DeclaringType),
+                    namesController.MethodNameToJava(operand.NewName),
+                    namesController.GetMethodDescriptor(operand));
+
+            switch (callType)
+            {
+                case CallType.Interface:
+                    codeGenerator.AddInstruction(new JavaInstruction(Java.OpCodes.invokeinterface, javaOperand, e));
+                    break;
+
+                case CallType.Special:
+                    codeGenerator.AddInstruction(new JavaInstruction(Java.OpCodes.invokespecial, javaOperand, e));
+                    break;
+
+                case CallType.Static:
+                    codeGenerator.AddInstruction(new JavaInstruction(Java.OpCodes.invokestatic, javaOperand, e));
+                    break;
+
+                case CallType.Virtual:
+                    codeGenerator.AddInstruction(new JavaInstruction(Java.OpCodes.invokevirtual, javaOperand, e));
+                    break;
+            }
+
+            codeGenerator.AddReturn(JavaHelpers.InterTypeToJavaPrimitive(thisMethod.ReturnParameter.Type));
+        }
     }
 }

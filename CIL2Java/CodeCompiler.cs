@@ -248,6 +248,7 @@ namespace CIL2Java
                 case ILCode.CallvirtGetter: CompileCall(e, expectType); break;
                 case ILCode.CallvirtSetter: CompileCall(e, expectType); break;
                 case ILCode.Ret: CompileRet(e, expectType); break;
+                case ILCode.Jmp: CompileJmp(e, expectType); break;
 
                 //ByRef
                 case ILCode.Ldloca: CompileLdloca(e, expectType); break;
