@@ -620,6 +620,22 @@ namespace CIL2Java
             return AddLongConst(p, null);
         }
 
+        public JavaBytecodeWriter AddDoubleConst(double p, object tag)
+        {
+            if (p == 0.0)
+                Add(Java.OpCodes.dconst_0, null, tag);
+            else if (p == 1.0)
+                Add(Java.OpCodes.dconst_1, null, tag);
+            else
+                Add(Java.OpCodes.ldc2_w, new Java.Constants.Double(p), tag);
+            return this;
+        }
+
+        public JavaBytecodeWriter AddDoubleConst(double p)
+        {
+            return AddDoubleConst(p, null);
+        }
+
         public JavaBytecodeWriter AddIInc(ushort varIndex, short value, object tag)
         {
             if ((varIndex > byte.MaxValue) || (value < sbyte.MinValue) || (value > sbyte.MaxValue))

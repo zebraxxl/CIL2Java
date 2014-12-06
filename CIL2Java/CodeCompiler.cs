@@ -336,6 +336,7 @@ namespace CIL2Java
                 case ILCode.Conv_U8: CompileConvIU8(e, expectType); break;
                 case ILCode.Conv_U2: CompileConvIU2(e, expectType); break;
                 case ILCode.Conv_U1: CompileConvIU1(e, expectType); break;
+                case ILCode.Conv_R_Un: CompileConvRUn(e, expectType); break;
 
                 //Math
                 case ILCode.PostIncrement: CompilePostIncrement(e, expectType); break;

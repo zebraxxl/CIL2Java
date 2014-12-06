@@ -14,7 +14,6 @@ namespace CIL2Java
 
             CompileExpression(e.Arguments[0], expect);
 
-            //TODO: Exceptions
             codeGenerator.Add(Java.OpCodes.checkcast, new Java.Constants.Class(namesController.TypeNameToJava(operand)), e);
         }
 
