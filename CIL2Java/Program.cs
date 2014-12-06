@@ -29,6 +29,7 @@ namespace CIL2Java
         public static bool Unsigned { get; private set; }
         public static bool OverflowCheck { get; private set; }
         public static bool Debug { get; private set; }
+        public static bool CompileBreak { get; private set; }
 
         public static Dictionary<string, string> ReplacedAssemblies { get; private set; }
         public static Dictionary<string, AssemblyDefinition> CachedAssemblies { get; private set; }
@@ -55,6 +56,8 @@ namespace CIL2Java
                     Unsigned = true;
                 else if (args[i] == "-overflow_check")
                     OverflowCheck = true;
+                else if (args[i] == "-compile_break")
+                    CompileBreak = true;
                 else if (args[i] == "-box")
                 {
                     if (args[++i] == "java")
@@ -103,6 +106,7 @@ namespace CIL2Java
                 Console.WriteLine("    -unsigned              - compile with unsigned types support");
                 Console.WriteLine("    -overflow_check        - compile with overlow checks (*ovf instructions)");
                 Console.WriteLine("    -debug                 - add debug information");
+                Console.WriteLine("    -compile_break         - compile `break` instruction");
             }
 
             if (Input.Count == 0)
@@ -165,6 +169,10 @@ namespace CIL2Java
             AsX64 = false;
             BoxType = BoxingType.Cil;
             MethodPointersType = MethodPointerImplementation.Fast;
+            Unsigned = false;
+            OverflowCheck = false;
+            Debug = false;
+            CompileBreak = false;
             ReplacedAssemblies = new Dictionary<string, string>();
 
             if (!ParseCommandLine(args))
