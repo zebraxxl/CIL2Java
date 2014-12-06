@@ -246,5 +246,52 @@ namespace CIL2Java
         {
             CompileMath(e, expect, OpCodes.iushr, OpCodes.lushr, OpCodes.fconst_0, OpCodes.dconst_0);
         }
+
+        private void CompileNeg(ILExpression e, ExpectType expect)
+        {
+            CompileExpression(e.Arguments[0], ExpectType.Primitive);
+
+            InterType opType = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
+            JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(opType);
+
+            OpCodes opcode = OpCodes.ineg;
+
+            switch (jp)
+            {
+                case JavaPrimitiveType.Long: opcode = OpCodes.lneg; break;
+                case JavaPrimitiveType.Float: opcode = OpCodes.fneg; break;
+                case JavaPrimitiveType.Double: opcode = OpCodes.dneg; break;
+
+                case JavaPrimitiveType.Ref:
+                    throw new Exception();  //TODO: normal error
+            }
+
+            codeGenerator.Add(opcode, null, e);
+
+            TranslateType(opType, expect, e);
+        }
+
+        private void CompileNot(ILExpression e, ExpectType expect)
+        {
+            CompileExpression(e.Arguments[0], ExpectType.Primitive);
+
+            InterType opType = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
+            JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(opType);
+
+            if (jp == JavaPrimitiveType.Long)
+            {
+                codeGenerator
+                    .AddLongConst(-1L, e)
+                    .Add(OpCodes.lxor, null, e);
+            }
+            else
+            {
+                codeGenerator
+                    .Add(OpCodes.iconst_m1, null, e)
+                    .Add(OpCodes.ixor, null, e);
+            }
+
+            TranslateType(opType, expect, e);
+        }
     }
 }

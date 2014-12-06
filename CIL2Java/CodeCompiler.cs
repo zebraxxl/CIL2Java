@@ -343,6 +343,8 @@ namespace CIL2Java
                 case ILCode.Shl: CompileShl(e, expectType); break;
                 case ILCode.Shr: CompileShr(e, expectType); break;
                 case ILCode.Shr_Un: CompileShrUn(e, expectType); break;
+                case ILCode.Neg: CompileNeg(e, expectType); break;
+                case ILCode.Not: CompileNot(e, expectType); break;
 
                 //Delegates
                 case ILCode.Ldftn: CompileLdftn(e, expectType); break;
