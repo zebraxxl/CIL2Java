@@ -41,15 +41,7 @@ namespace CIL2Java
         {
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
 
-            if ((operand.IsPrimitive) || (!operand.IsValueType))
-            {
-                // From ECMA-335, III.4.29
-                // The stobj instruction copies the value src to the address dest. If typeTok is not
-                // a generic parameter and either a reference type or a built-in value class, then 
-                // the stind instruction provides a shorthand for the stobj instruction.
-                CompileStind(e, expect);
-            }
-            else if (operand.IsValueType)
+            if (operand.IsValueType)
             {
                 // stobj(destPtr, src) compiling to
                 // src.CopyTo(destPtr)
@@ -65,7 +57,14 @@ namespace CIL2Java
 
                 codeGenerator.Add(Java.OpCodes.invokevirtual, copyToRef, e);
             }
-            //TODO: CompileStobj
+            else
+            {
+                // From ECMA-335, III.4.29
+                // The stobj instruction copies the value src to the address dest. If typeTok is not
+                // a generic parameter and either a reference type or a built-in value class, then 
+                // the stind instruction provides a shorthand for the stobj instruction.
+                CompileStind(e, expect);
+            } 
         }
 
         private void CompileLdobj(ILExpression e, ExpectType expect)
