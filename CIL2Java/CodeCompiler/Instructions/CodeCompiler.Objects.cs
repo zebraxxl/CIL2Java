@@ -59,7 +59,9 @@ namespace CIL2Java
                 MethodRef copyToRef = new MethodRef(namesController.TypeNameToJava(operand),
                     ClassNames.ValueTypeCopyTo, "(" + namesController.GetFieldDescriptor(operand) + ")V");
 
-                //TODO: dup
+                bool needDup = ((e.ExpectedType != null) && (expect != ExpectType.None));
+                if (needDup)
+                    codeGenerator.Add(Java.OpCodes.dup_x1, null, e);
 
                 codeGenerator.Add(Java.OpCodes.invokevirtual, copyToRef, e);
             }

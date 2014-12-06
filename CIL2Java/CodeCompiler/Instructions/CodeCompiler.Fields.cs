@@ -65,12 +65,32 @@ namespace CIL2Java
         private void CompileStfld(ILExpression e, ExpectType expectType)
         {
             InterField operand = resolver.Resolve((FieldReference)e.Operand, thisMethod.FullGenericArguments);
+            bool needDup = ((e.ExpectedType != null) && (expectType != ExpectType.None));
 
             int argIndex = 0;
             if (e.Code == ILCode.Stfld)
                 CompileExpression(e.Arguments[argIndex++], ExpectType.Reference);
 
             CompileExpression(e.Arguments[argIndex++], GetExpectType(operand));
+
+            if (needDup)
+            {
+                JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(operand.FieldType);
+                if (e.Code == ILCode.Stfld)
+                {
+                    if (jp.IsDoubleSlot())
+                        codeGenerator.Add(Java.OpCodes.dup2_x1, null, e);
+                    else
+                        codeGenerator.Add(Java.OpCodes.dup_x1, null, e);
+                }
+                else
+                {
+                    if (jp.IsDoubleSlot())
+                        codeGenerator.Add(Java.OpCodes.dup2, null, e);
+                    else
+                        codeGenerator.Add(Java.OpCodes.dup, null, e);
+                }
+            }
 
             CompileFieldStore(operand, e);
         }
@@ -83,8 +103,6 @@ namespace CIL2Java
                 CompileExpression(e.Arguments[0], ExpectType.Reference);
 
             CompileFieldLoad(operand, e);
-
-            //TODO: dup
 
             TranslateType(operand.FieldType, expectType, e);
         }

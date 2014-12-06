@@ -64,5 +64,10 @@ namespace CIL2Java
 
             return PrimitiveTypeToJavaPrimitiveWorkingArray[(int)pt];
         }
+
+        public static bool IsDoubleSlot(this JavaPrimitiveType jp)
+        {
+            return ((jp == JavaPrimitiveType.Long) || (jp == JavaPrimitiveType.Double));
+        }
     }
 }

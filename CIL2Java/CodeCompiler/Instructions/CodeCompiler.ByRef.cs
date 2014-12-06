@@ -159,12 +159,20 @@ namespace CIL2Java
                 type = JavaHelpers.InterTypeToJavaPrimitive(operand);
             }
 
+            bool needDup = ((e.ExpectedType != null) && (expectType != ExpectType.None));
+
             CompileExpression(e.Arguments[0], ExpectType.ByRef);
             CompileExpression(e.Arguments[1], GetExpectType(type));
 
             Java.Constants.MethodRef setMethodRef = byRefController.GetByRefSetValueMethodRef(type);
 
-            //TODO: dup
+            if (needDup)
+            {
+                if (type.IsDoubleSlot())
+                    codeGenerator.Add(OpCodes.dup2_x1, null, e);
+                else
+                    codeGenerator.Add(OpCodes.dup_x1, null, e);
+            }
 
             codeGenerator.Add(OpCodes.invokevirtual, setMethodRef, e);
         }

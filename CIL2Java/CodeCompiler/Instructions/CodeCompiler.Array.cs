@@ -94,11 +94,19 @@ namespace CIL2Java
             InterType operand = resolver.Resolve(typeRef, thisMethod.FullGenericArguments);
             JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand);
 
+            bool needDup = ((e.ExpectedType != null) && (expect != ExpectType.None));
+
             CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
             CompileExpression(e.Arguments[1], ExpectType.Primitive);    //index
             CompileExpression(e.Arguments[2], GetExpectType(operand));  //value
 
-            //TODO: Add dup
+            if (needDup)
+            {
+                if (JavaHelpers.InterTypeToJavaPrimitive(operand).IsDoubleSlot())
+                    codeGenerator.Add(Java.OpCodes.dup2_x2, null, e);
+                else
+                    codeGenerator.Add(Java.OpCodes.dup_x2, null, e);
+            }
 
             codeGenerator.AddArrayStore(arrType, e);
         }
@@ -158,7 +166,14 @@ namespace CIL2Java
 
             JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand.DeclaringType);
 
-            //TODO: Add dup
+            bool needDup = ((e.ExpectedType != null) && (expect != ExpectType.None));
+            if (needDup)
+            {
+                if (JavaHelpers.InterTypeToJavaPrimitive(operand.DeclaringType).IsDoubleSlot())
+                    codeGenerator.Add(Java.OpCodes.dup2_x2, null, e);
+                else
+                    codeGenerator.Add(Java.OpCodes.dup_x2, null, e);
+            }
 
             codeGenerator.AddArrayStore(arrType, e);
         }
