@@ -351,11 +351,15 @@ namespace CIL2Java
 
         private void CompileDelegate(InterType type)
         {
-            GenerateDelegateRunner(type);
             CompileDelegateCtor(type);
             CompileDelegateInvoke(type);
-            CompileDelegateBeginInvoke(type);
-            CompileDelegateEndInvoke(type);
+
+            if (type.Methods.Where(M => M.Name == ClassNames.DelegateBeginInvokeMethodName).Count() > 0)
+            {
+                GenerateDelegateRunner(type);
+                CompileDelegateBeginInvoke(type);
+                CompileDelegateEndInvoke(type);
+            }
         }
     }
 }

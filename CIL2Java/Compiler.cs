@@ -18,6 +18,13 @@ namespace CIL2Java
             foreach (FieldDefinition fldDef in typeDef.Fields)
                 ((IResolver)this).Resolve(fldDef, null);
 
+            if (typeDef.BaseType != null)
+            {
+                if ((typeDef.BaseType.FullName == ClassNames.DelegateTypeName) ||
+                    (typeDef.BaseType.FullName == ClassNames.MulticastDelegateTypeName))
+                    return;
+            }
+
             foreach (MethodDefinition methodDef in typeDef.Methods)
             {
                 if (methodDef.HasGenericParameters)

@@ -24,7 +24,10 @@ namespace CIL2Java
         {
             Messages.Verbose("Precompile pass...");
 
-            ((IResolver)this).Resolve(ClassNames.SystemRuntimeRemotingMessagingAsyncResult.ClassName);
+            if (typesToCompile
+                .Where(T => T.IsDelegate)
+                .Any(T => T.Methods.Where(M => M.Name == ClassNames.DelegateBeginInvokeMethodName).Count() > 0))
+                    ((IResolver)this).Resolve(ClassNames.SystemRuntimeRemotingMessagingAsyncResult.ClassName);
             if (Program.MethodPointersType == MethodPointerImplementation.Standart)
                 ((IResolver)this).Resolve(ClassNames.CIL2JavaVESMethodPointersGlobal.ClassNames);
 

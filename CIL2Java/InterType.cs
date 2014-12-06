@@ -142,8 +142,8 @@ namespace CIL2Java
 
             if (IsDelegate)
             {
-                foreach (MethodDefinition methodDef in typeDef.Methods)
-                    resolver.Resolve(methodDef, this.genericArgs);
+                typeDef.Methods.Where(M => M.IsConstructor || M.Name == ClassNames.DelegateInvokeMethodName)
+                    .ForEach(M => resolver.Resolve(M, genericArgs));
             }
 
             if ((typeDef.FullName == ClassNames.DelegateTypeName) || (typeDef.FullName == ClassNames.MulticastDelegateTypeName))
