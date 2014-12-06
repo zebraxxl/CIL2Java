@@ -657,6 +657,14 @@ namespace CIL2Java
         }
 
         public int NextInstructionIndex { get { return outputCode.Count; } }
+
         public int GetInstructionOffset(int index) { return outputCodeOffsets[outputCode[index]]; }
+
+        public IEnumerable<Tuple<int, JavaInstruction>> EnumerateInstructions()
+        {
+            foreach (JavaInstruction i in outputCode)
+                yield return new Tuple<int, JavaInstruction>(outputCodeOffsets[i], i);
+            yield break;
+        }
     }
 }

@@ -8,11 +8,24 @@ namespace CIL2Java
 {
     public partial class CodeCompiler
     {
+        private Counter<string> sourceFileNameCounter = null;
+        public string SourceFile
+        {
+            get
+            {
+                if (sourceFileNameCounter == null) return null;
+                if (!sourceFileNameCounter.IsStarted) return null;
+                return sourceFileNameCounter.MostUsed;
+            }
+        }
+
         private void GenerateDebugInfo(int prologSize)
         {
             Messages.Verbose("      Generating debug info...");
-            Messages.Verbose("        Generating LocalVariableTable...");
 
+            sourceFileNameCounter = new Counter<string>();
+
+            Messages.Verbose("        Generating LocalVariableTable...");
             #region LocalVariableTable
             LocalVariableTable varTable = new LocalVariableTable();
             for (int i = 0; i < nextVarIndex; i++)
@@ -78,6 +91,35 @@ namespace CIL2Java
                 }
             }
             resultCode.Attributes.Add(varTable);
+            #endregion
+
+            Messages.Verbose("        Generating LineNumberTable...");
+            #region LineNumberTable
+            LineNumberTable linesTable = new LineNumberTable();
+            int lastLine = -1;
+            var methodInstructions = thisMethod.Body.Instructions;
+            foreach (var i in oldCodeGenerator.EnumerateInstructions())
+            {
+                ILExpression tag = i.Item2.Tag as ILExpression;
+                if (tag == null) continue;
+                if (tag.ILRanges == null) continue;
+
+                int minRange = tag.ILRanges.Min(R => R.From);
+                int maxRange = tag.ILRanges.Max(R => R.To);
+
+                var ilInstruction = methodInstructions.Where(I => I.Offset >= minRange && I.Offset < maxRange).LastOrDefault();
+                if (ilInstruction == null) continue;
+                if (ilInstruction.SequencePoint == null) continue;
+
+                int line = ilInstruction.SequencePoint.StartLine;
+                sourceFileNameCounter.Add(ilInstruction.SequencePoint.Document.Url);
+
+                if (line == lastLine) continue;
+
+                linesTable.Table.Add(new LineNumberTable.LineNumber((ushort)(i.Item1 + prologSize), (ushort)line));
+                lastLine = line;
+            }
+            resultCode.Attributes.Add(linesTable);
             #endregion
         }
     }
