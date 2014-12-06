@@ -12,6 +12,7 @@ namespace CIL2Java
         UnknownNode,
         UnknownPrimitiveType,
         CantFindInterfaceImplMethod,
+        CantConvertType,
 
         InputUnknown = 1000,
         InvalidInputParameterFormat,
@@ -35,7 +36,8 @@ namespace CIL2Java
             "Can't write java class {0} file (Exception message: {1})",
             "Unknown IL graph node: {0}",
             "Unknown primitive type {0}. Unable it to box. Boxing as Integer",
-            "Can't find implementation of interface method `{0}` in type `{1}"
+            "Can't find implementation of interface method `{0}` in type `{1}",
+            "Can't convert type from `{0}` to `{1}`",
         };
 
         private static string[] WarringsStrings = {

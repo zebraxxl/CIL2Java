@@ -325,8 +325,16 @@ namespace CIL2Java
                 case ILCode.Cle_Un: CompileCle_Un(e, expectType); break;
 
                 //Conv
-                case ILCode.Conv_I4: CompileConvI4(e, expectType); break;
-                case ILCode.Conv_U1: CompileConvU1(e, expectType); break;
+                case ILCode.Conv_I1: CompileConvIU1(e, expectType); break;
+                case ILCode.Conv_I2: CompileConvIU2(e, expectType); break;
+                case ILCode.Conv_I4: CompileConvIU4(e, expectType); break;
+                case ILCode.Conv_I8: CompileConvIU8(e, expectType); break;
+                case ILCode.Conv_R4: CompileConvR4(e, expectType); break;
+                case ILCode.Conv_R8: CompileConvR8(e, expectType); break;
+                case ILCode.Conv_U4: CompileConvIU4(e, expectType); break;
+                case ILCode.Conv_U8: CompileConvIU8(e, expectType); break;
+                case ILCode.Conv_U2: CompileConvIU2(e, expectType); break;
+                case ILCode.Conv_U1: CompileConvIU1(e, expectType); break;
 
                 //Math
                 case ILCode.PostIncrement: CompilePostIncrement(e, expectType); break;
