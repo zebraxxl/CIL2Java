@@ -340,6 +340,7 @@ namespace CIL2Java
                 case ILCode.Br: CompileBr(e, expectType); break;
                 case ILCode.Break: CompileBreak(e, expectType); break;
                 case ILCode.Nop: CompileNop(e, expectType); break;
+                //case ILCode.Dup: case ILCode.Pop: break;  //dup and pop should be removed by ILSpy
 
                 default: unknownNode = true; break;
             }
