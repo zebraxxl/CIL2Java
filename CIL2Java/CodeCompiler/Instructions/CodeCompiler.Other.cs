@@ -21,5 +21,9 @@ namespace CIL2Java
             if (Program.CompileBreak)
                 codeGenerator.Add(Java.OpCodes.breakpoint, null, e);
         }
+
+        private void CompileNop(ILExpression e, ExpectType expect)
+        {
+        }
     }
 }
