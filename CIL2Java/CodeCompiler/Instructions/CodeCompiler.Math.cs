@@ -222,6 +222,11 @@ namespace CIL2Java
             CompileMath(e, expect, OpCodes.iand, OpCodes.land, OpCodes.fsub, OpCodes.dsub);
         }
 
+        private void Compileor(ILExpression e, ExpectType expect)
+        {
+            CompileMath(e, expect, OpCodes.ior, OpCodes.lor, OpCodes.fadd, OpCodes.dadd);
+        }
+
         private void CompileXor(ILExpression e, ExpectType expect)
         {
             CompileMath(e, expect, OpCodes.ixor, OpCodes.lxor, OpCodes.fconst_0, OpCodes.dconst_0);
