@@ -222,7 +222,7 @@ namespace CIL2Java
             CompileMath(e, expect, OpCodes.iand, OpCodes.land, OpCodes.fsub, OpCodes.dsub);
         }
 
-        private void Compileor(ILExpression e, ExpectType expect)
+        private void CompileOr(ILExpression e, ExpectType expect)
         {
             CompileMath(e, expect, OpCodes.ior, OpCodes.lor, OpCodes.fadd, OpCodes.dadd);
         }
@@ -235,6 +235,16 @@ namespace CIL2Java
         private void CompileShl(ILExpression e, ExpectType expect)
         {
             CompileMath(e, expect, OpCodes.ishl, OpCodes.lshl, OpCodes.fconst_0, OpCodes.dconst_0);
+        }
+
+        private void CompileShr(ILExpression e, ExpectType expect)
+        {
+            CompileMath(e, expect, OpCodes.ishr, OpCodes.lshr, OpCodes.fconst_0, OpCodes.dconst_0);
+        }
+
+        private void CompileShrUn(ILExpression e, ExpectType expect)
+        {
+            CompileMath(e, expect, OpCodes.iushr, OpCodes.lushr, OpCodes.fconst_0, OpCodes.dconst_0);
         }
     }
 }
