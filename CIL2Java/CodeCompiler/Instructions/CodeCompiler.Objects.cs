@@ -99,6 +99,29 @@ namespace CIL2Java
             }
         }
 
+        private void CompileCpobj(ILExpression e, ExpectType expect)
+        {
+            InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+            // dst = arg[0]
+            // src = arg[1]
+
+
+            if (operand.IsValueType)
+            {
+                CompileExpression(e.Arguments[1], ExpectType.ByRef);
+                CompileExpression(e.Arguments[0], ExpectType.ByRef);
+                codeGenerator.Add(Java.OpCodes.invokevirtual, new MethodRef(
+                    namesController.TypeNameToJava(operand),
+                    ClassNames.ValueTypeCopyTo,
+                    "(" + namesController.GetFieldDescriptor(operand) + ")V"), e);
+            }
+            else
+            {
+                CompileExpression(new ILExpression(ILCode.Ldind_Ref, e.Operand, e.Arguments[1]), ExpectType.Any);
+                CompileExpression(new ILExpression(ILCode.Stind_Ref, e.Operand, e.Arguments[0]), expect);
+            }
+        }
+
         private void CompileIsinst(ILExpression e, ExpectType expect)
         {
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
