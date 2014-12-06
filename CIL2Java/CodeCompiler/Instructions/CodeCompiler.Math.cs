@@ -160,6 +160,11 @@ namespace CIL2Java
             TranslateType(opType, expect, e);
         }
 
+        private void CompileRem(ILExpression e, ExpectType expect)
+        {
+            CompileMath(e, expect, OpCodes.irem, OpCodes.lrem, OpCodes.frem, OpCodes.frem);
+        }
+
         private void CompileXor(ILExpression e, ExpectType expect)
         {
             CompileMath(e, expect, OpCodes.ixor, OpCodes.lxor, OpCodes.fconst_0, OpCodes.dconst_0);

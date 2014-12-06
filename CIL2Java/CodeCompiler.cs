@@ -335,6 +335,7 @@ namespace CIL2Java
                 case ILCode.Mul: CompileMul(e, expectType); break;
                 case ILCode.Div: CompileDiv(e, expectType); break;
                 case ILCode.Div_Un: CompileDivUn(e, expectType); break;
+                case ILCode.Rem: CompileRem(e, expectType); break;
                 case ILCode.Xor: CompileXor(e, expectType); break;
                 case ILCode.Shl: CompileShl(e, expectType); break;
 
