@@ -102,7 +102,7 @@ namespace CIL2Java
             {
                 ILExpression tag = i.Item2.Tag as ILExpression;
                 if (tag == null) continue;
-                if (tag.ILRanges == null) continue;
+                if ((tag.ILRanges == null) || (tag.ILRanges.Count == 0)) continue;
 
                 int minRange = tag.ILRanges.Min(R => R.From);
                 int maxRange = tag.ILRanges.Max(R => R.To);
