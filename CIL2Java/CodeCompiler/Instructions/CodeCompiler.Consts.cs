@@ -67,6 +67,15 @@ namespace CIL2Java
             TranslateType(InterType.PrimitiveTypes[(int)PrimitiveType.Int32], expect, e);
         }
 
+        private void CompileLdcI8(ILExpression e, ExpectType expect)
+        {
+            long operand = (long)e.Operand;
+
+            codeGenerator.AddLongConst(operand, e);
+
+            TranslateType(InterType.PrimitiveTypes[(int)PrimitiveType.Int32], expect, e);
+        }
+
         private void CompileLdnull(ILExpression e, ExpectType expect)
         {
             codeGenerator.Add(Java.OpCodes.aconst_null, null, e);
