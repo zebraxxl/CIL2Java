@@ -19,10 +19,19 @@ namespace CIL2Java
             }
         }
 
+        private struct TempVar
+        {
+            public JavaPrimitiveType type;
+            public int index;
+            public int startInstr;
+            public int endInstr;
+        }
+
         private Dictionary<ILVariable, int> var2Index = new Dictionary<ILVariable, int>();
         private List<int> freeVars = new List<int>();
         private int nextVarIndex = 0;
         private List<ValueTypeVar> valueTypesVars = new List<ValueTypeVar>();
+        private List<TempVar> tempVars = new List<TempVar>();
 
         //For use with `call ctor(getValueTypeVar(), [params])`
         private Dictionary<ILCode, ILCode> LoadVarInvert = new Dictionary<ILCode, ILCode>()
@@ -119,6 +128,7 @@ namespace CIL2Java
                     {
                         freeVars.Remove(result);
                         freeVars.Remove(result + 1);
+                        tempVars.Add(new TempVar() { type = type, index = result, startInstr = codeGenerator.NextInstructionIndex, endInstr = -1 });
                         return result;
                     }
                 }
@@ -126,12 +136,14 @@ namespace CIL2Java
                 {
                     result = freeVars.Last();
                     freeVars.Remove(result);
+                    tempVars.Add(new TempVar() { type = type, index = result, startInstr = codeGenerator.NextInstructionIndex, endInstr = -1 });
                     return result;
                 }
             }
             result = nextVarIndex++;
             if ((type == JavaPrimitiveType.Long) || (type == JavaPrimitiveType.Double))
                 nextVarIndex++;
+            tempVars.Add(new TempVar() { type = type, index = result, startInstr = codeGenerator.NextInstructionIndex, endInstr = -1 });
             return result;
         }
 
@@ -140,6 +152,14 @@ namespace CIL2Java
             freeVars.Add(varType);
             if ((type == JavaPrimitiveType.Double) || (type == JavaPrimitiveType.Long))
                 freeVars.Add(varType + 1);
+
+            var tmpVar = tempVars.Where(TV => TV.index == varType && TV.type == type).FirstOrDefault();
+            int tmpVarIndex = tempVars.IndexOf(tmpVar);
+            if (tmpVarIndex >= 0)
+            {
+                tmpVar.endInstr = codeGenerator.NextInstructionIndex;
+                tempVars[tmpVarIndex] = tmpVar;
+            }
         }
     }
 }

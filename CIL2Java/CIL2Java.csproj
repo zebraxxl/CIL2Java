@@ -56,6 +56,7 @@
     <Compile Include="CodeCompiler.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Box.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.ByRef.cs" />
+    <Compile Include="CodeCompiler\CodeCompiler.DebugInfo.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Delegates.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Exceptions.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.ExpectType.cs" />
@@ -161,6 +162,14 @@
     <ProjectReference Include="..\ILSpy\Mono.Cecil\Mono.Cecil.csproj">
       <Project>{d68133bd-1e63-496e-9ede-4fbdbf77b486}</Project>
       <Name>Mono.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ILSpy\Mono.Cecil\symbols\mdb\Mono.Cecil.Mdb.csproj">
+      <Project>{8559dd7f-a16f-46d0-a05a-9139faeba8fd}</Project>
+      <Name>Mono.Cecil.Mdb</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ILSpy\Mono.Cecil\symbols\pdb\Mono.Cecil.Pdb.csproj">
+      <Project>{63e6915c-7ea4-4d76-ab28-0d7191eea626}</Project>
+      <Name>Mono.Cecil.Pdb</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

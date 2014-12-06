@@ -16,6 +16,7 @@ namespace CIL2Java
         private IByRefController byRefController;
         private InterMethod thisMethod;
         private JavaBytecodeWriter codeGenerator = new JavaBytecodeWriter();
+        private JavaBytecodeWriter oldCodeGenerator = null;
         private Java.ConstantPool constsPool;
         private Java.Attributes.Code resultCode = null;
         private Random rnd = new Random();
@@ -74,6 +75,7 @@ namespace CIL2Java
             byte[] codeBytes = codeGenerator.Link(constsPool);
             GenerateJavaExceptionTable();
 
+            oldCodeGenerator = codeGenerator;
             byte[] prolog = GenerateMethodProlog();
 
             resultCode = new Java.Attributes.Code();
@@ -84,6 +86,9 @@ namespace CIL2Java
             Messages.Verbose("      Simulating stack to calculate MaxStack and MaxLocals...");
             StackSimulator.SimulateStack(constsPool, resultCode);
             resultCode.MaxLocals = (ushort)nextVarIndex;
+
+            if (Program.Debug)
+                GenerateDebugInfo(prolog.Length);
         }
 
         private void CompileNode(ILNode node, ExpectType expectType)

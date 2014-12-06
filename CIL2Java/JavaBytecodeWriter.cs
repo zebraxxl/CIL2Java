@@ -655,5 +655,8 @@ namespace CIL2Java
             StackSimulator.SimulateStack(pool, result);
             return result;
         }
+
+        public int NextInstructionIndex { get { return outputCode.Count; } }
+        public int GetInstructionOffset(int index) { return outputCodeOffsets[outputCode[index]]; }
     }
 }
