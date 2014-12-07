@@ -14,6 +14,7 @@ namespace CIL2Java
         public const string ObjectTypeName = "System.Object";
         public const string DelegateTypeName = "System.Delegate";
         public const string MulticastDelegateTypeName = "System.MulticastDelegate";
+        public const string OverflowExceptionTypeName = "System.OverflowException";
 
         public const string BoxedAttribute = "CIL2Java.Attributes.BoxedAttribute";
         public const string JavaBoxedAttribute = "CIL2Java.Attributes.JavaBoxedAttribute";

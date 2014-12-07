@@ -1,4 +1,5 @@
 ﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
 using ICSharpCode.Decompiler.ILAst;
 using System;
 using System.Collections.Generic;
@@ -7,161 +8,320 @@ namespace CIL2Java
 {
     public partial class CodeCompiler
     {
-        private void CompileConvIU1(ILExpression e, ExpectType expect)
+        private void CompileCheckOvf(ILExpression e, JavaPrimitiveType from, long mask, double minValue, double maxValue)
         {
-            InterType gettedType = resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments);
-            JavaPrimitiveType gettedJava = JavaHelpers.InterTypeToJavaPrimitive(gettedType);
+            string labelsSufix = rnd.Next().ToString();
+            string noOvfLabel = "noOvfLabel" + labelsSufix;
+            string hasOvfLabel = "ovfLabel" + labelsSufix;
 
-            CompileExpression(e.Arguments[0], ExpectType.Any);
+            string overflowJavaTypeName = namesController.TypeNameToJava(ClassNames.OverflowExceptionTypeName);
 
-            switch (gettedJava)
+            switch (from)
             {
                 case JavaPrimitiveType.Bool:
                 case JavaPrimitiveType.Byte:
-                    break;
-
-                case JavaPrimitiveType.Short:
                 case JavaPrimitiveType.Char:
+                case JavaPrimitiveType.Short:
                 case JavaPrimitiveType.Int:
-                    codeGenerator.Add(Java.OpCodes.i2b, e);
+                    codeGenerator
+                        .Add(OpCodes.dup, null, e)
+                        .AddIntConst(~unchecked((int)mask))
+                        .Add(OpCodes.iand)
+                        .Add(OpCodes.ifeq, noOvfLabel, e)
+                        .Add(OpCodes._new, new Java.Constants.Class(overflowJavaTypeName), e)
+                        .Add(OpCodes.dup, null, e)
+                        .Add(OpCodes.invokespecial, new MethodRef(overflowJavaTypeName, ClassNames.JavaConstructorMethodName, "()V"), e)
+                        .Add(OpCodes.athrow, null, e)
+                        .Label(noOvfLabel);
                     break;
 
                 case JavaPrimitiveType.Long:
-                    codeGenerator.Add(Java.OpCodes.l2i, e).Add(Java.OpCodes.i2b, e);
+                    codeGenerator
+                        .Add(OpCodes.dup2, null, e)
+                        .AddLongConst(~mask, e)
+                        .Add(OpCodes.land, null, e)
+                        .Add(OpCodes.iconst_0, null, e)
+                        .Add(OpCodes.lcmp, null, e)
+                        .Add(OpCodes.ifeq, noOvfLabel, e)
+                        .Add(OpCodes._new, new Java.Constants.Class(overflowJavaTypeName), e)
+                        .Add(OpCodes.dup, null, e)
+                        .Add(OpCodes.invokespecial, new MethodRef(overflowJavaTypeName, ClassNames.JavaConstructorMethodName, "()V"), e)
+                        .Add(OpCodes.athrow, null, e)
+                        .Label(noOvfLabel);
                     break;
 
                 case JavaPrimitiveType.Float:
-                    codeGenerator.Add(Java.OpCodes.f2i, e).Add(Java.OpCodes.i2b, e);
+                    codeGenerator
+                        .Add(OpCodes.dup, null, e)
+                        .AddFloatConst((float)minValue, e)
+                        .Add(OpCodes.fcmpg, null, e)
+                        .Add(OpCodes.iflt, hasOvfLabel, e)
+                        .Add(OpCodes.dup, null, e)
+                        .AddFloatConst((float)maxValue, e)
+                        .Add(OpCodes.fcmpg, null, e)
+                        .Add(OpCodes.ifgt, hasOvfLabel, e)
+                        .Add(OpCodes._goto, noOvfLabel, e)
+                        .Label(hasOvfLabel)
+                        .Add(OpCodes._new, new Java.Constants.Class(overflowJavaTypeName), e)
+                        .Add(OpCodes.dup, null, e)
+                        .Add(OpCodes.invokespecial, new MethodRef(overflowJavaTypeName, ClassNames.JavaConstructorMethodName, "()V"), e)
+                        .Add(OpCodes.athrow, null, e)
+                        .Label(noOvfLabel);
                     break;
 
                 case JavaPrimitiveType.Double:
-                    codeGenerator.Add(Java.OpCodes.d2i, e).Add(Java.OpCodes.i2b, e);
+                    codeGenerator
+                        .Add(OpCodes.dup2, null, e)
+                        .AddDoubleConst(minValue, e)
+                        .Add(OpCodes.dcmpg, null, e)
+                        .Add(OpCodes.iflt, hasOvfLabel, e)
+                        .Add(OpCodes.dup2, null, e)
+                        .AddDoubleConst(maxValue, e)
+                        .Add(OpCodes.dcmpg, null, e)
+                        .Add(OpCodes.ifgt, hasOvfLabel, e)
+                        .Add(OpCodes._goto, noOvfLabel, e)
+                        .Label(hasOvfLabel)
+                        .Add(OpCodes._new, new Java.Constants.Class(overflowJavaTypeName), e)
+                        .Add(OpCodes.dup, null, e)
+                        .Add(OpCodes.invokespecial, new MethodRef(overflowJavaTypeName, ClassNames.JavaConstructorMethodName, "()V"), e)
+                        .Add(OpCodes.athrow, null, e)
+                        .Label(noOvfLabel);
                     break;
 
-                default:
-                    Messages.Message(MessageCode.CantConvertType, gettedType.Fullname, "sbyte");
-                    return;
+                default: throw new Exception(); //In valid IL code this never must happend
             }
-
-            PrimitiveType pt = e.Code == ILCode.Conv_U1 ? PrimitiveType.Byte : PrimitiveType.SByte;
-            TranslateType(InterType.PrimitiveTypes[(int)pt], expect, e);
         }
 
-        private void CompileConvIU2(ILExpression e, ExpectType expect)
+        private void CompileConvTo1(ILExpression e, ExpectType expect)
         {
             InterType gettedType = resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments);
             JavaPrimitiveType gettedJava = JavaHelpers.InterTypeToJavaPrimitive(gettedType);
 
             CompileExpression(e.Arguments[0], ExpectType.Any);
 
+            bool isToUnsigned = e.Code.IsConvToUnsigned();
+            bool isFromUnsigned = e.Code.IsConvFromUnsigned();
+            bool isOvf = e.Code.IsConvOvf();
+
+            if (isOvf)
+            {
+                long mask = 0xffL;
+                double minValue = (double)sbyte.MinValue;
+                double maxValue = (double)sbyte.MaxValue;
+
+                if (isToUnsigned)
+                {
+                    minValue = (double)byte.MinValue;
+                    maxValue = (double)byte.MaxValue;
+                }
+
+                if ((isToUnsigned && !isFromUnsigned) || (!isToUnsigned && isFromUnsigned))
+                    mask = 0x7fL;
+                CompileCheckOvf(e, gettedJava, mask, minValue, maxValue);
+            }
+
             switch (gettedJava)
             {
                 case JavaPrimitiveType.Bool:
                 case JavaPrimitiveType.Byte:
-                    codeGenerator.Add(Java.OpCodes.i2s, e);
                     break;
 
-                case JavaPrimitiveType.Short:
                 case JavaPrimitiveType.Char:
+                case JavaPrimitiveType.Short:
+                    codeGenerator.Add(OpCodes.i2b, null, e);
                     break;
 
                 case JavaPrimitiveType.Int:
-                    codeGenerator.Add(Java.OpCodes.i2s, e);
+                    codeGenerator.Add(OpCodes.i2b, null, e);
                     break;
 
                 case JavaPrimitiveType.Long:
-                    codeGenerator.Add(Java.OpCodes.l2i, e).Add(Java.OpCodes.i2s, e);
+                    codeGenerator.Add(OpCodes.l2i, null, e).Add(OpCodes.i2b, null, e);
                     break;
 
                 case JavaPrimitiveType.Float:
-                    codeGenerator.Add(Java.OpCodes.f2i, e).Add(Java.OpCodes.i2s, e);
+                    codeGenerator.Add(OpCodes.f2i, null, e).Add(OpCodes.i2b, null, e);
                     break;
 
                 case JavaPrimitiveType.Double:
-                    codeGenerator.Add(Java.OpCodes.d2i, e).Add(Java.OpCodes.i2s, e);
+                    codeGenerator.Add(OpCodes.d2i, null, e).Add(OpCodes.i2b, null, e);
                     break;
 
-                default:
-                    Messages.Message(MessageCode.CantConvertType, gettedType.Fullname, "sbyte");
-                    return;
+                default: throw new Exception(); //TODO: Normal error
             }
 
-            PrimitiveType pt = e.Code == ILCode.Conv_U2 ? PrimitiveType.UInt16 : PrimitiveType.Int16;
-            TranslateType(InterType.PrimitiveTypes[(int)pt], expect, e);
+            TranslateType(InterType.PrimitiveTypes[(int)(isToUnsigned ? PrimitiveType.Byte : PrimitiveType.SByte)], expect, e);
         }
 
-        private void CompileConvIU4(ILExpression e, ExpectType expect)
+        private void CompileConvTo2(ILExpression e, ExpectType expect)
         {
             InterType gettedType = resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments);
             JavaPrimitiveType gettedJava = JavaHelpers.InterTypeToJavaPrimitive(gettedType);
 
             CompileExpression(e.Arguments[0], ExpectType.Any);
 
+            bool isToUnsigned = e.Code.IsConvToUnsigned();
+            bool isFromUnsigned = e.Code.IsConvFromUnsigned();
+            bool isOvf = e.Code.IsConvOvf();
+
+            if (isOvf)
+            {
+                long mask = 0xffffL;
+                double minValue = (double)short.MinValue;
+                double maxValue = (double)short.MaxValue;
+
+                if (isToUnsigned)
+                {
+                    minValue = (double)ushort.MinValue;
+                    maxValue = (double)ushort.MaxValue;
+                }
+
+                if ((isToUnsigned && !isFromUnsigned) || (!isToUnsigned && isFromUnsigned))
+                    mask = 0x7fffL;
+                CompileCheckOvf(e, gettedJava, mask, minValue, maxValue);
+            }
+
             switch (gettedJava)
             {
                 case JavaPrimitiveType.Bool:
                 case JavaPrimitiveType.Byte:
-                case JavaPrimitiveType.Short:
+                    codeGenerator.Add(OpCodes.i2s, null, e);
+                    break;
+
                 case JavaPrimitiveType.Char:
+                case JavaPrimitiveType.Short:
+                    break;
+
                 case JavaPrimitiveType.Int:
+                    codeGenerator.Add(OpCodes.i2s, null, e);
                     break;
 
                 case JavaPrimitiveType.Long:
-                    codeGenerator.Add(Java.OpCodes.l2i, e);
+                    codeGenerator.Add(OpCodes.l2i, null, e).Add(OpCodes.i2s, null, e);
                     break;
 
                 case JavaPrimitiveType.Float:
-                    codeGenerator.Add(Java.OpCodes.f2i, e);
+                    codeGenerator.Add(OpCodes.f2i, null, e).Add(OpCodes.i2s, null, e);
                     break;
 
                 case JavaPrimitiveType.Double:
-                    codeGenerator.Add(Java.OpCodes.d2i, e);
+                    codeGenerator.Add(OpCodes.d2i, null, e).Add(OpCodes.i2s, null, e);
                     break;
 
-                default:
-                    Messages.Message(MessageCode.CantConvertType, gettedType.Fullname, "sbyte");
-                    return;
+                default: throw new Exception(); //TODO: Normal error
             }
 
-            PrimitiveType pt = e.Code == ILCode.Conv_U4 ? PrimitiveType.UInt32 : PrimitiveType.Int32;
-            TranslateType(InterType.PrimitiveTypes[(int)pt], expect, e);
+            TranslateType(InterType.PrimitiveTypes[(int)(isToUnsigned ? PrimitiveType.UInt16 : PrimitiveType.Int16)], expect, e);
         }
 
-        private void CompileConvIU8(ILExpression e, ExpectType expect)
+        private void CompileConvTo4(ILExpression e, ExpectType expect)
         {
             InterType gettedType = resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments);
             JavaPrimitiveType gettedJava = JavaHelpers.InterTypeToJavaPrimitive(gettedType);
 
             CompileExpression(e.Arguments[0], ExpectType.Any);
 
+            bool isToUnsigned = e.Code.IsConvToUnsigned();
+            bool isFromUnsigned = e.Code.IsConvFromUnsigned();
+            bool isOvf = e.Code.IsConvOvf();
+
+            if (isOvf)
+            {
+                long mask = 0xffffffffL;
+                double minValue = (double)int.MinValue;
+                double maxValue = (double)int.MaxValue;
+
+                if (isToUnsigned)
+                {
+                    minValue = (double)uint.MinValue;
+                    maxValue = (double)uint.MaxValue;
+                }
+
+                if ((isToUnsigned && !isFromUnsigned) || (!isToUnsigned && isFromUnsigned))
+                    mask = 0x7fffffffL;
+                CompileCheckOvf(e, gettedJava, mask, minValue, maxValue);
+            }
+
             switch (gettedJava)
             {
                 case JavaPrimitiveType.Bool:
                 case JavaPrimitiveType.Byte:
-                case JavaPrimitiveType.Short:
                 case JavaPrimitiveType.Char:
+                case JavaPrimitiveType.Short:
                 case JavaPrimitiveType.Int:
-                    codeGenerator.Add(Java.OpCodes.i2l, e);
+                    break;
+
+                case JavaPrimitiveType.Long:
+                    codeGenerator.Add(OpCodes.l2i, null, e);
+                    break;
+
+                case JavaPrimitiveType.Float:
+                    codeGenerator.Add(OpCodes.f2i, null, e);
+                    break;
+
+                case JavaPrimitiveType.Double:
+                    codeGenerator.Add(OpCodes.d2i, null, e);
+                    break;
+
+                default: throw new Exception(); //TODO: Normal error
+            }
+
+            TranslateType(InterType.PrimitiveTypes[(int)(isToUnsigned ? PrimitiveType.UInt32 : PrimitiveType.Int32)], expect, e);
+        }
+
+        private void CompileConvTo8(ILExpression e, ExpectType expect)
+        {
+            InterType gettedType = resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments);
+            JavaPrimitiveType gettedJava = JavaHelpers.InterTypeToJavaPrimitive(gettedType);
+
+            CompileExpression(e.Arguments[0], ExpectType.Any);
+
+            bool isToUnsigned = e.Code.IsConvToUnsigned();
+            bool isFromUnsigned = e.Code.IsConvFromUnsigned();
+            bool isOvf = e.Code.IsConvOvf();
+
+            if (isOvf)
+            {
+                long mask = unchecked((long)0xffffffffffffffffL);
+                double minValue = (double)long.MinValue;
+                double maxValue = (double)long.MaxValue;
+
+                if (isToUnsigned)
+                {
+                    minValue = (double)ulong.MinValue;
+                    maxValue = (double)ulong.MaxValue;
+                }
+
+                if ((isToUnsigned && !isFromUnsigned) || (!isToUnsigned && isFromUnsigned))
+                    mask = 0x7fffffffffffffffL;
+                CompileCheckOvf(e, gettedJava, mask, minValue, maxValue);
+            }
+
+            switch (gettedJava)
+            {
+                case JavaPrimitiveType.Bool:
+                case JavaPrimitiveType.Byte:
+                case JavaPrimitiveType.Char:
+                case JavaPrimitiveType.Short:
+                case JavaPrimitiveType.Int:
+                    codeGenerator.Add(OpCodes.i2l, null, e);
                     break;
 
                 case JavaPrimitiveType.Long:
                     break;
 
                 case JavaPrimitiveType.Float:
-                    codeGenerator.Add(Java.OpCodes.f2l, e);
+                    codeGenerator.Add(OpCodes.f2l, null, e);
                     break;
 
                 case JavaPrimitiveType.Double:
-                    codeGenerator.Add(Java.OpCodes.d2l, e);
+                    codeGenerator.Add(OpCodes.d2l, null, e);
                     break;
 
-                default:
-                    Messages.Message(MessageCode.CantConvertType, gettedType.Fullname, "sbyte");
-                    return;
+                default: throw new Exception(); //TODO: Normal error
             }
 
-            PrimitiveType pt = e.Code == ILCode.Conv_U8 ? PrimitiveType.UInt64 : PrimitiveType.Int64;
-            TranslateType(InterType.PrimitiveTypes[(int)pt], expect, e);
+            TranslateType(InterType.PrimitiveTypes[(int)(isToUnsigned ? PrimitiveType.UInt64 : PrimitiveType.Int64)], expect, e);
         }
 
         private void CompileConvR4(ILExpression e, ExpectType expect)

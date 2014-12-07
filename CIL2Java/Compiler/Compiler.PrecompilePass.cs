@@ -20,11 +20,41 @@ namespace CIL2Java
             }
         }
 
+        private void AddCtorsForMappedExceptions()
+        {
+            var exceptionsWithMapped = typesToCompile.Where(T => T.JavaExceptions.Length > 0);
+            foreach (InterType exception in exceptionsWithMapped)
+            {
+                int lastCount = typesToCompile.Count;
+
+                TypeDefinition typeDef = loadedModules.Select(M => M.GetType(exception.Fullname))
+                    .Where(T => T != null).FirstOrDefault();
+                exception.JavaExceptions.ForEach(e =>
+                {
+                    var method = typeDef.Methods.Where(M => ((M.IsConstructor) && (M.Parameters.Count == 1) &&
+                        (M.Parameters[0].ParameterType.FullName == e))).FirstOrDefault();
+                    if (method != null)
+                        ((IResolver)this).Resolve(method, null);
+                });
+
+                if (lastCount != typesToCompile.Count)
+                {
+                    AddCtorsForMappedExceptions();
+                    break;
+                }
+            }
+        }
+
         private void PrecompilePass()
         {
             Messages.Verbose("Precompile pass...");
 
+            IResolver resolver = (IResolver)this;
+
             ((IResolver)this).Resolve(ClassNames.CIL2JavaVESInstructions.ClassName);
+            if (Program.OverflowCheck)
+                resolver.Resolve(ClassNames.OverflowExceptionTypeName);
+
             if (typesToCompile
                 .Where(T => T.IsDelegate)
                 .Any(T => T.Methods.Where(M => M.Name == ClassNames.DelegateBeginInvokeMethodName).Count() > 0))
@@ -70,19 +100,7 @@ namespace CIL2Java
             }
 
             //Special: adding ctors for Mapped exceptions
-            var exceptionsWithMapped = typesToCompile.Where(T => T.JavaExceptions.Length > 0);
-            foreach (InterType exception in exceptionsWithMapped)
-            {
-                TypeDefinition typeDef = loadedModules.Select(M => M.GetType(exception.Fullname))
-                    .Where(T => T != null).FirstOrDefault();
-                exception.JavaExceptions.ForEach(e =>
-                {
-                    var method = typeDef.Methods.Where(M => ((M.IsConstructor) && (M.Parameters.Count == 1) &&
-                        (M.Parameters[0].ParameterType.FullName == e))).FirstOrDefault();
-                    if (method != null)
-                        ((IResolver)this).Resolve(method, null);
-                });
-            }
+            AddCtorsForMappedExceptions();
 
             Messages.Verbose("  Checking for non standart overriding...");
             foreach (InterType type in typesToCompile)

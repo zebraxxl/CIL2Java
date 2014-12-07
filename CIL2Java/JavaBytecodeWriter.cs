@@ -620,6 +620,24 @@ namespace CIL2Java
             return AddLongConst(p, null);
         }
 
+        public JavaBytecodeWriter AddFloatConst(float p, object tag)
+        {
+            if (p == 0.0f)
+                Add(Java.OpCodes.fconst_0, null, tag);
+            else if (p == 1.0f)
+                Add(Java.OpCodes.fconst_1, null, tag);
+            else if (p == 2.0f)
+                Add(Java.OpCodes.fconst_2, null, tag);
+            else
+                Add(Java.OpCodes.ldc, new Java.Constants.Float(p), tag);
+            return this;
+        }
+
+        public JavaBytecodeWriter AddFloatConst(float p)
+        {
+            return AddFloatConst(p, null);
+        }
+
         public JavaBytecodeWriter AddDoubleConst(double p, object tag)
         {
             if (p == 0.0)

@@ -327,16 +327,38 @@ namespace CIL2Java
                 case ILCode.Cle_Un: CompileCle_Un(e, expectType); break;
 
                 //Conv
-                case ILCode.Conv_I1: CompileConvIU1(e, expectType); break;
-                case ILCode.Conv_I2: CompileConvIU2(e, expectType); break;
-                case ILCode.Conv_I4: CompileConvIU4(e, expectType); break;
-                case ILCode.Conv_I8: CompileConvIU8(e, expectType); break;
-                case ILCode.Conv_R4: CompileConvR4(e, expectType); break;
-                case ILCode.Conv_R8: CompileConvR8(e, expectType); break;
-                case ILCode.Conv_U4: CompileConvIU4(e, expectType); break;
-                case ILCode.Conv_U8: CompileConvIU8(e, expectType); break;
-                case ILCode.Conv_U2: CompileConvIU2(e, expectType); break;
-                case ILCode.Conv_U1: CompileConvIU1(e, expectType); break;
+                case ILCode.Conv_I1: 
+                case ILCode.Conv_Ovf_I1:
+                case ILCode.Conv_Ovf_I1_Un:
+                case ILCode.Conv_Ovf_U1:
+                case ILCode.Conv_Ovf_U1_Un:
+                case ILCode.Conv_U1:
+                    CompileConvTo1(e, expectType); break;
+
+                case ILCode.Conv_I2:
+                case ILCode.Conv_Ovf_I2:
+                case ILCode.Conv_Ovf_I2_Un:
+                case ILCode.Conv_Ovf_U2:
+                case ILCode.Conv_Ovf_U2_Un:
+                case ILCode.Conv_U2:
+                    CompileConvTo2(e, expectType); break;
+
+                case ILCode.Conv_I4:
+                case ILCode.Conv_Ovf_I4:
+                case ILCode.Conv_Ovf_I4_Un:
+                case ILCode.Conv_Ovf_U4:
+                case ILCode.Conv_Ovf_U4_Un:
+                case ILCode.Conv_U4:
+                    CompileConvTo4(e, expectType); break;
+
+                case ILCode.Conv_I8:
+                case ILCode.Conv_Ovf_I8:
+                case ILCode.Conv_Ovf_I8_Un:
+                case ILCode.Conv_Ovf_U8:
+                case ILCode.Conv_Ovf_U8_Un:
+                case ILCode.Conv_U8:
+                    CompileConvTo8(e, expectType); break;
+
                 case ILCode.Conv_R_Un: CompileConvRUn(e, expectType); break;
 
                 //Math

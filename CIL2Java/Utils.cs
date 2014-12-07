@@ -1,4 +1,5 @@
 ﻿using ICSharpCode.Decompiler;
+using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
@@ -123,6 +124,85 @@ namespace CIL2Java
         public static void SetDecompillerSettings(DecompilerSettings s)
         {
             s.YieldReturn = false;
+        }
+
+        public static bool IsConvToUnsigned(this ILCode self)
+        {
+            switch (self)
+            {
+                case ILCode.Conv_Ovf_U:
+                case ILCode.Conv_Ovf_U_Un:
+                case ILCode.Conv_Ovf_U1:
+                case ILCode.Conv_Ovf_U1_Un:
+                case ILCode.Conv_Ovf_U2:
+                case ILCode.Conv_Ovf_U2_Un:
+                case ILCode.Conv_Ovf_U4:
+                case ILCode.Conv_Ovf_U4_Un:
+                case ILCode.Conv_Ovf_U8:
+                case ILCode.Conv_Ovf_U8_Un:
+                case ILCode.Conv_U:
+                case ILCode.Conv_U1:
+                case ILCode.Conv_U2:
+                case ILCode.Conv_U4:
+                case ILCode.Conv_U8:
+                    return Program.Unsigned;
+
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsConvFromUnsigned(this ILCode self)
+        {
+            switch (self)
+            {
+                case ILCode.Conv_Ovf_I_Un:
+                case ILCode.Conv_Ovf_I1_Un:
+                case ILCode.Conv_Ovf_I2_Un:
+                case ILCode.Conv_Ovf_I4_Un:
+                case ILCode.Conv_Ovf_I8_Un:
+                case ILCode.Conv_Ovf_U_Un:
+                case ILCode.Conv_Ovf_U1_Un:
+                case ILCode.Conv_Ovf_U2_Un:
+                case ILCode.Conv_Ovf_U4_Un:
+                case ILCode.Conv_Ovf_U8_Un:
+                case ILCode.Conv_R_Un:
+                    return Program.Unsigned;
+
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsConvOvf(this ILCode self)
+        {
+            switch (self)
+            {
+                case ILCode.Conv_Ovf_I:
+                case ILCode.Conv_Ovf_I_Un:
+                case ILCode.Conv_Ovf_I1:
+                case ILCode.Conv_Ovf_I1_Un:
+                case ILCode.Conv_Ovf_I2:
+                case ILCode.Conv_Ovf_I2_Un:
+                case ILCode.Conv_Ovf_I4:
+                case ILCode.Conv_Ovf_I4_Un:
+                case ILCode.Conv_Ovf_I8:
+                case ILCode.Conv_Ovf_I8_Un:
+                case ILCode.Conv_Ovf_U:
+                case ILCode.Conv_Ovf_U_Un:
+                case ILCode.Conv_Ovf_U1:
+                case ILCode.Conv_Ovf_U1_Un:
+                case ILCode.Conv_Ovf_U2:
+                case ILCode.Conv_Ovf_U2_Un:
+                case ILCode.Conv_Ovf_U4:
+                case ILCode.Conv_Ovf_U4_Un:
+                case ILCode.Conv_Ovf_U8:
+                case ILCode.Conv_Ovf_U8_Un:
+                    return Program.OverflowCheck;
+
+                default:
+                    return false;
+            }
         }
     }
 }
