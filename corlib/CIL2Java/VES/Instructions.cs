@@ -1,6 +1,8 @@
 ﻿using CIL2Java.Attributes;
 using System;
 using System.Collections.Generic;
+using javaFloat = java.lang.Float;
+using javaDouble = java.lang.Double;
 
 namespace CIL2Java.VES
 {
@@ -65,6 +67,22 @@ namespace CIL2Java.VES
             long quotiend = (Intrinsics.lushr(dividend, 1) / divisor) << 1;
             long rem = dividend - quotiend * divisor;
             return rem - (compare(rem, divisor) >= 0 ? divisor : 0L);
+        }
+
+        [AlwaysCompile]
+        public static float Ckfinite(float val)
+        {
+            if (javaFloat.isNaN(val) || javaFloat.isInfinite(val))
+                throw new ArithmeticException(Local.GetText("value is NaN or Infinity"));
+            return val;
+        }
+
+        [AlwaysCompile]
+        public static double Ckfinite(double val)
+        {
+            if (javaDouble.isNaN(val) || javaDouble.isInfinite(val))
+                throw new ArithmeticException(Local.GetText("value is NaN or Infinity"));
+            return val;
         }
     }
 }

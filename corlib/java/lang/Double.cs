@@ -39,5 +39,11 @@ namespace java.lang
          */
         [FromJava]
         public static Double valueOf(double d) { return null; }
+
+        [FromJava]
+        public static bool isNaN(double v) { return false; }
+
+        [FromJava]
+        public static bool isInfinite(double v) { return false; }
     }
 }

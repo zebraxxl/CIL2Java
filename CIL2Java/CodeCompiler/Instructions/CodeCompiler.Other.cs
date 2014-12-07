@@ -1,4 +1,5 @@
-﻿using ICSharpCode.Decompiler.ILAst;
+﻿using CIL2Java.Java;
+using ICSharpCode.Decompiler.ILAst;
 using System;
 using System.Collections.Generic;
 
@@ -24,6 +25,19 @@ namespace CIL2Java
 
         private void CompileNop(ILExpression e, ExpectType expect)
         {
+        }
+
+        private void CompileCkfinite(ILExpression e, ExpectType expect)
+        {
+            InterType operand = resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments);
+
+            CompileExpression(e.Arguments[0], ExpectType.Primitive);
+
+            if (operand.PrimitiveType == PrimitiveType.Double)
+                codeGenerator.Add(OpCodes.invokestatic, ClassNames.CIL2JavaVESInstructions.CkfiniteDoubleRef, e);
+            else if (operand.PrimitiveType == PrimitiveType.Single)
+                codeGenerator.Add(OpCodes.invokestatic, ClassNames.CIL2JavaVESInstructions.CkfiniteFloatRef, e);
+            else throw new Exception(); //In valid CIL code this never will happed
         }
     }
 }

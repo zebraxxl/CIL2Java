@@ -39,5 +39,11 @@ namespace java.lang
          */
         [FromJava]
         public static Float valueOf(float f) { return null; }
+
+        [FromJava]
+        public static bool isNaN(float v) { return false; }
+
+        [FromJava]
+        public static bool isInfinite(float v) { return false; }
     }
 }

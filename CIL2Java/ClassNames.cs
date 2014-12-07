@@ -214,6 +214,8 @@ namespace CIL2Java
 
             public static readonly MethodRef UInt64DivideRef = new MethodRef("CIL2Java/VES/Instructions", "UInt64Divide", "(JJ)J");
             public static readonly MethodRef UInt64RemainderRef = new MethodRef("CIL2Java/VES/Instructions", "UInt64Remainder", "(JJ)J");
+            public static readonly MethodRef CkfiniteFloatRef = new MethodRef("CIL2Java/VES/Instructions", "Ckfinite", "(F)F");
+            public static readonly MethodRef CkfiniteDoubleRef = new MethodRef("CIL2Java/VES/Instructions", "Ckfinite", "(D)D");
         }
 
         public static class CIL2JavaVESMethodPointersGlobal
