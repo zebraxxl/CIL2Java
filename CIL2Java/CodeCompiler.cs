@@ -359,6 +359,14 @@ namespace CIL2Java
                 case ILCode.Conv_U8:
                     CompileConvTo8(e, expectType); break;
 
+                case ILCode.Conv_I:
+                case ILCode.Conv_Ovf_I:
+                case ILCode.Conv_Ovf_I_Un:
+                case ILCode.Conv_Ovf_U:
+                case ILCode.Conv_Ovf_U_Un:
+                case ILCode.Conv_U:
+                    CompileConvToNative(e, expectType); break;
+
                 case ILCode.Conv_R_Un: CompileConvRUn(e, expectType); break;
 
                 //Math

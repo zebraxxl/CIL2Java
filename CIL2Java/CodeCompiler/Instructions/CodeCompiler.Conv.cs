@@ -324,6 +324,14 @@ namespace CIL2Java
             TranslateType(InterType.PrimitiveTypes[(int)(isToUnsigned ? PrimitiveType.UInt64 : PrimitiveType.Int64)], expect, e);
         }
 
+        private void CompileConvToNative(ILExpression e, ExpectType expect)
+        {
+            if (Program.AsX64)
+                CompileConvTo8(e, expect);
+            else
+                CompileConvTo4(e, expect);
+        }
+
         private void CompileConvR4(ILExpression e, ExpectType expect)
         {
             InterType gettedType = resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments);
