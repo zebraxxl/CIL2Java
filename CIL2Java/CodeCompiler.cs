@@ -221,7 +221,7 @@ namespace CIL2Java
 
             switch (e.Code)
             {
-                //Consts
+                #region Consts
                 case ILCode.Ldstr: CompileLdstr(e, expectType); break;
                 case ILCode.Ldc_I4: CompileLdcI4(e, expectType); break;
                 case ILCode.Ldc_I8: CompileLdcI8(e, expectType); break;
@@ -229,18 +229,18 @@ namespace CIL2Java
                 case ILCode.Ldc_R8: CompileLdcR8(e, expectType); break;
                 case ILCode.Ldnull: CompileLdnull(e, expectType); break;
                 case ILCode.DefaultValue: CompileDefaultValue(e, expectType); break;
-
-                //Vars
+                #endregion
+                #region Vars
                 case ILCode.Ldloc: CompileLdloc(e, expectType); break;
                 case ILCode.Stloc: CompileStloc(e, expectType); break;
-
-                //Fields
+                #endregion
+                #region Fields
                 case ILCode.Stfld: CompileStfld(e, expectType); break;
                 case ILCode.Stsfld: CompileStfld(e, expectType); break;
                 case ILCode.Ldfld: CompileLdfld(e, expectType); break;
                 case ILCode.Ldsfld: CompileLdfld(e, expectType); break;
-
-                //Calls
+                #endregion
+                #region Calls
                 case ILCode.Call: CompileCall(e, expectType); break;
                 case ILCode.Callvirt: CompileCall(e, expectType); break;
                 case ILCode.CallGetter: CompileCall(e, expectType); break;
@@ -250,8 +250,8 @@ namespace CIL2Java
                 //case ILCode.Calli: CompileCalli(e, expectType); break;    //TODO: opcode `calli`
                 case ILCode.Ret: CompileRet(e, expectType); break;
                 case ILCode.Jmp: CompileJmp(e, expectType); break;
-
-                //ByRef
+                #endregion
+                #region ByRef
                 case ILCode.Ldloca: CompileLdloca(e, expectType); break;
                 case ILCode.Ldflda: CompileLdflda(e, expectType); break;
                 case ILCode.Ldsflda: CompileLdflda(e, expectType); break;
@@ -259,8 +259,8 @@ namespace CIL2Java
                 case ILCode.AddressOf: CompileAddressOf(e, expectType); break;
                 case ILCode.Ldind_Ref: CompileLdind(e, expectType); break;
                 case ILCode.Stind_Ref: CompileStind(e, expectType); break;
-
-                //Objects
+                #endregion
+                #region Objects
                 case ILCode.Castclass: CompileCastclass(e, expectType); break;
                 case ILCode.Newobj: CompileNewobj(e, expectType); break;
                 case ILCode.Stobj: CompileStobj(e, expectType); break;
@@ -270,8 +270,8 @@ namespace CIL2Java
                 case ILCode.Box: CompileBox(e, expectType); break;
                 case ILCode.Unbox: CompileUnbox(e, expectType); break;
                 case ILCode.Unbox_Any: CompileUnbox_Any(e, expectType); break;
-
-                //Arrays
+                #endregion
+                #region Arrays
                 case ILCode.Newarr: CompileNewarr(e, expectType); break;
                 case ILCode.InitArray: CompileNewarr(e, expectType); break;
                 case ILCode.Stelem_Any: CompileStelem(e, expectType); break;
@@ -295,11 +295,11 @@ namespace CIL2Java
                 case ILCode.Ldelem_U2: CompileLdelem(e, expectType); break;
                 case ILCode.Ldelem_U4: CompileLdelem(e, expectType); break;
                 case ILCode.Ldlen: CompileLdlen(e, expectType); break;
-
-                //Exceptions
+                #endregion
+                #region Exceptions
                 case ILCode.Throw: CompileThrow(e, expectType); break;
-
-                //Logic
+                #endregion
+                #region Logic
                 case ILCode.LogicNot: CompileLogicNot(e, expectType); break;
                 case ILCode.LogicAnd: CompileLogicAnd(e, expectType); break;
                 case ILCode.LogicOr: CompileLogicOr(e, expectType); break;
@@ -325,8 +325,8 @@ namespace CIL2Java
                 case ILCode.Cge: CompileCge(e, expectType); break;
                 case ILCode.Cgt: CompileCgt(e, expectType); break;
                 case ILCode.Cle_Un: CompileCle_Un(e, expectType); break;
-
-                //Conv
+                #endregion
+                #region Conv
                 case ILCode.Conv_I1: 
                 case ILCode.Conv_Ovf_I1:
                 case ILCode.Conv_Ovf_I1_Un:
@@ -368,8 +368,8 @@ namespace CIL2Java
                     CompileConvToNative(e, expectType); break;
 
                 case ILCode.Conv_R_Un: CompileConvRUn(e, expectType); break;
-
-                //Math
+                #endregion
+                #region Math
                 case ILCode.PostIncrement: CompilePostIncrement(e, expectType); break;
                 case ILCode.Add: CompileAdd(e, expectType); break;
                 case ILCode.Sub: CompileSub(e, expectType); break;
@@ -386,16 +386,17 @@ namespace CIL2Java
                 case ILCode.Shr_Un: CompileShrUn(e, expectType); break;
                 case ILCode.Neg: CompileNeg(e, expectType); break;
                 case ILCode.Not: CompileNot(e, expectType); break;
-
-                //Delegates
+                #endregion
+                #region Delegates
                 case ILCode.Ldftn: CompileLdftn(e, expectType); break;
-
-                //Other
+                #endregion
+                #region Other
                 case ILCode.LoopOrSwitchBreak: CompileLoopOrSwitchBreak(e, expectType); break;
                 case ILCode.Br: CompileBr(e, expectType); break;
                 case ILCode.Break: CompileBreak(e, expectType); break;
                 case ILCode.Nop: CompileNop(e, expectType); break;
                 //case ILCode.Dup: case ILCode.Pop: break;  //dup and pop should be removed by ILSpy
+                #endregion
 
                 default: unknownNode = true; break;
             }
