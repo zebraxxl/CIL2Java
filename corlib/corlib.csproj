@@ -68,6 +68,8 @@
     <Compile Include="java\lang\Iterator.cs" />
     <Compile Include="java\lang\Long.cs" />
     <Compile Include="java\lang\reflect\Array.cs" />
+    <Compile Include="java\lang\reflect\Field.cs" />
+    <Compile Include="java\lang\reflect\Method.cs" />
     <Compile Include="java\lang\Runnable.cs" />
     <Compile Include="java\lang\RuntimeException.cs" />
     <Compile Include="java\lang\Short.cs" />

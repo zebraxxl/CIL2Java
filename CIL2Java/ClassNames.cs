@@ -109,8 +109,10 @@ namespace CIL2Java
 
         public static class JavaLangClass
         {
-            public readonly static MethodRef getDeclaredField =
-                new MethodRef("java/lang/Class", "getDeclaredField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;");
+            public const string ClassName = "java.lang.Class";
+            public readonly static MethodRef getDeclaredFieldRef = new MethodRef("java/lang/Class", "getDeclaredField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;");
+            public readonly static MethodRef getDeclaredMethodRef = new MethodRef("java/lang/Class", "getDeclaredMethod", "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;");
+            public readonly static MethodRef getDeclaredConstructorRef = new MethodRef("java/lang/Class", "getDeclaredConstructor", "([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;");
         }
 
         public static class JavaLangReflectField
@@ -179,6 +181,18 @@ namespace CIL2Java
             public const string ClassName = "System.RuntimeTypeHandle";
 
             public static readonly MethodRef CtorMethodRef = new MethodRef("System/RuntimeTypeHandle", "<init>", "(Ljava/lang/Class;)V");
+        }
+
+        public static class SystemRuntimeFieldHandle
+        {
+            public const string ClassName = "System.RuntimeFieldHandle";
+            public static readonly MethodRef CtorMethodRef = new MethodRef("System/RuntimeFieldHandle", "<init>", "(Ljava/lang/reflect/Field;)V");
+        }
+
+        public static class SystemRuntimeMethodHandle
+        {
+            public const string ClassName = "System.RuntimeMethodHandle";
+            public static readonly MethodRef CtorMethodRef = new MethodRef("System/RuntimeMethodHandle", "<init>", "(Ljava/lang/reflect/AccessibleObject;)V");
         }
 
         public static class SystemThreadingMonitor

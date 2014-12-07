@@ -2,6 +2,9 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Runtime.ConstrainedExecution;
+using javaMethod = java.lang.reflect.Method;
+using javaConstructor = java.lang.reflect.Constructor;
+using CIL2Java.Attributes;
 
 namespace System
 {
@@ -10,6 +13,16 @@ namespace System
     [ComVisibleAttribute(true)]
     public struct RuntimeMethodHandle : ISerializable
     {
+        public java.lang.reflect.AccessibleObject method;   //Can be method or constructor
+
+        [AlwaysCompile]
+        public RuntimeMethodHandle(java.lang.reflect.AccessibleObject method)
+        {
+            if ((!(method is javaConstructor)) && (!(method is javaMethod)))
+                throw new ArgumentException(Local.GetText("method must be java.lang.reflect.Method or java.lang.reflect.Constructor"), "method");
+
+            this.method = method;
+        }
     
         /// <summary>Gets the value of this instance.</summary><returns>A <see cref="T:System.RuntimeMethodHandle" /> that is the internal metadata representation of a method.</returns><filterpriority>2</filterpriority>
         public IntPtr Value

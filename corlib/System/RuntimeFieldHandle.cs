@@ -2,6 +2,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Runtime.ConstrainedExecution;
+using javaField = java.lang.reflect.Field;
+using CIL2Java.Attributes;
 
 namespace System
 {
@@ -10,6 +12,13 @@ namespace System
     [ComVisibleAttribute(true)]
     public struct RuntimeFieldHandle : ISerializable
     {
+        public javaField field;
+
+        [AlwaysCompile]
+        public RuntimeFieldHandle(javaField field)
+        {
+            this.field = field;
+        }
     
         /// <summary>Gets a handle to the field represented by the current instance.</summary><returns>An <see cref="T:System.IntPtr" /> that contains the handle to the field represented by the current instance.</returns><filterpriority>2</filterpriority>
         public IntPtr Value

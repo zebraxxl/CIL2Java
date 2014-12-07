@@ -270,6 +270,7 @@ namespace CIL2Java
                 case ILCode.Box: CompileBox(e, expectType); break;
                 case ILCode.Unbox: CompileUnbox(e, expectType); break;
                 case ILCode.Unbox_Any: CompileUnbox_Any(e, expectType); break;
+                case ILCode.Ldtoken: CompileLdtoken(e, expectType); break;
                 #endregion
                 #region Arrays
                 case ILCode.Newarr: CompileNewarr(e, expectType); break;

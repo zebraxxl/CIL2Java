@@ -59,6 +59,16 @@ namespace CIL2Java
                 if ((e.Code == ILCode.Div_Un) || (e.Code == ILCode.Rem_Un) || (e.Code == ILCode.Ckfinite))
                     ((IResolver)this).Resolve(ClassNames.CIL2JavaVESInstructions.ClassName);
 
+                if (e.Code == ILCode.Ldtoken)
+                {
+                    if (e.Operand is TypeReference)
+                        ((IResolver)this).Resolve(ClassNames.SystemRuntimeTypeHandle.ClassName);
+                    else if (e.Operand is FieldReference)
+                        ((IResolver)this).Resolve(ClassNames.SystemRuntimeFieldHandle.ClassName);
+                    else if (e.Operand is MethodReference)
+                        ((IResolver)this).Resolve(ClassNames.SystemRuntimeMethodHandle.ClassName);
+                }
+
                 if (e.Operand is ILVariable) ((IResolver)this).Resolve(((ILVariable)e.Operand).Type, genericArgs);
                 if (e.Operand is TypeReference) ((IResolver)this).Resolve((TypeReference)e.Operand, genericArgs);
                 if (e.Operand is MethodReference) ((IResolver)this).Resolve((MethodReference)e.Operand, genericArgs);

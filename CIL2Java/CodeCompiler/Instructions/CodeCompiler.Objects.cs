@@ -183,7 +183,7 @@ namespace CIL2Java
 
                 codeGenerator.Add(OpCodes.ldc, constFieldDeclClass, e);
                 codeGenerator.Add(OpCodes.ldc, constFieldName, e);
-                codeGenerator.Add(OpCodes.invokevirtual, ClassNames.JavaLangClass.getDeclaredField, e);
+                codeGenerator.Add(OpCodes.invokevirtual, ClassNames.JavaLangClass.getDeclaredFieldRef, e);
                 codeGenerator.Add(OpCodes.invokespecial, constFieldByRefCtorRef);
             }
             else if (operand.IsNullable)
@@ -262,6 +262,64 @@ namespace CIL2Java
                     namesController.TypeNameToJava(nullableType),
                     ClassNames.JavaConstructorMethodName,
                     "(" + namesController.GetFieldDescriptor(operand) + ")V"));
+            }
+        }
+
+        private void CompileLdtoken(ILExpression e, ExpectType expect)
+        {
+            if (e.Operand is TypeReference)
+            {
+                InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+
+                codeGenerator
+                    .Add(OpCodes._new, new Java.Constants.Class(namesController.TypeNameToJava(ClassNames.SystemRuntimeTypeHandle.ClassName)), e)
+                    .Add(OpCodes.dup, null, e)
+                    .Add(OpCodes.ldc, new Java.Constants.Class(namesController.TypeNameToJava(operand)), e)
+                    .Add(OpCodes.invokespecial, ClassNames.SystemRuntimeTypeHandle.CtorMethodRef, e);
+            }
+            else if (e.Operand is FieldReference)
+            {
+                InterField operand = resolver.Resolve((FieldReference)e.Operand, thisMethod.FullGenericArguments);
+
+                codeGenerator
+                    .Add(OpCodes._new, new Java.Constants.Class(namesController.TypeNameToJava(ClassNames.SystemRuntimeFieldHandle.ClassName)), e)
+                    .Add(OpCodes.dup, null, e)
+                    .Add(OpCodes.ldc, new Java.Constants.Class(namesController.TypeNameToJava(operand.DeclaringType)), e)
+                    .Add(OpCodes.ldc, new Java.Constants.String(operand.Name), e)
+                    .Add(OpCodes.invokevirtual, ClassNames.JavaLangClass.getDeclaredFieldRef, e)
+                    .Add(OpCodes.invokespecial, ClassNames.SystemRuntimeFieldHandle.CtorMethodRef, e);
+            }
+            else if (e.Operand is MethodReference)
+            {
+                InterMethod operand = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
+
+                codeGenerator
+                    .Add(OpCodes._new, new Java.Constants.Class(namesController.TypeNameToJava(ClassNames.SystemRuntimeMethodHandle.ClassName)), e)
+                    .Add(OpCodes.dup, null, e)
+                    .Add(OpCodes.ldc, new Java.Constants.Class(namesController.TypeNameToJava(operand.DeclaringType)), e);
+
+                if (!operand.IsConstructor)
+                    codeGenerator.Add(OpCodes.ldc, new Java.Constants.String(operand.NewName), e);
+
+                codeGenerator
+                    .AddIntConst(operand.Parameters.Count, e)
+                    .Add(OpCodes.anewarray, new Java.Constants.Class(namesController.TypeNameToJava(ClassNames.JavaLangClass.ClassName)), e);
+
+                for (int i = 0; i < operand.Parameters.Count; i++)
+                {
+                    codeGenerator
+                        .Add(OpCodes.dup)
+                        .AddIntConst(i, e)
+                        .Add(OpCodes.ldc, new Java.Constants.Class(namesController.TypeNameToJava(operand.Parameters[i].Type)))
+                        .Add(OpCodes.aastore, null, e);
+                }
+
+                if (operand.IsConstructor)
+                    codeGenerator.Add(OpCodes.invokevirtual, ClassNames.JavaLangClass.getDeclaredConstructorRef, e);
+                else
+                    codeGenerator.Add(OpCodes.invokevirtual, ClassNames.JavaLangClass.getDeclaredMethodRef, e);
+
+                codeGenerator.Add(OpCodes.invokespecial, ClassNames.SystemRuntimeMethodHandle.CtorMethodRef, e);
             }
         }
     }

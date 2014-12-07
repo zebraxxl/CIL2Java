@@ -90,7 +90,7 @@ namespace CIL2Java
 
             codeGenerator.Add(OpCodes.ldc, constFieldDeclClass, e);
             codeGenerator.Add(OpCodes.ldc, constFieldName, e);
-            codeGenerator.Add(OpCodes.invokevirtual, ClassNames.JavaLangClass.getDeclaredField, e);
+            codeGenerator.Add(OpCodes.invokevirtual, ClassNames.JavaLangClass.getDeclaredFieldRef, e);
             codeGenerator.Add(OpCodes.invokespecial, constFieldByRefCtorRef);
         }
 
