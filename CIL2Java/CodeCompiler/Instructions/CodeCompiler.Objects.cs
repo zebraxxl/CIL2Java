@@ -151,6 +151,13 @@ namespace CIL2Java
             CompileExpression(e.Arguments[0], ExpectType.Boxed);
         }
 
+        private void CompileUnbox(ILExpression e, ExpectType expect)
+        {
+            // By standart, we must compute a ref to value type from it boxed representation
+            // But in CIL2Java boxed value type is ref to it
+            CompileExpression(e.Arguments[0], ExpectType.Any);
+        }
+
         private void CompileUnbox_Any(ILExpression e, ExpectType expect)
         {
             CompileExpression(e.Arguments[0], ExpectType.Boxed);

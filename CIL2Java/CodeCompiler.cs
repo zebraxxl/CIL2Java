@@ -268,6 +268,7 @@ namespace CIL2Java
                 case ILCode.Cpobj: CompileCpobj(e, expectType); break;
                 case ILCode.Isinst: CompileIsinst(e, expectType); break;
                 case ILCode.Box: CompileBox(e, expectType); break;
+                case ILCode.Unbox: CompileUnbox(e, expectType); break;
                 case ILCode.Unbox_Any: CompileUnbox_Any(e, expectType); break;
 
                 //Arrays
