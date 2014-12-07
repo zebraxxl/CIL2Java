@@ -84,7 +84,7 @@ namespace CIL2Java
                 e.Code = ILCode.Newobj;
                 getVar.Code = LoadVarInvert[getVar.Code];
                 getVar.Arguments.Add(e);
-                CompileExpression(getVar, ExpectType.Any);
+                CompileExpression(getVar, expect);
 
                 return;
             }
