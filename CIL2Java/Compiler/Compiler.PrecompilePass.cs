@@ -51,7 +51,6 @@ namespace CIL2Java
 
             IResolver resolver = (IResolver)this;
 
-            ((IResolver)this).Resolve(ClassNames.CIL2JavaVESInstructions.ClassName);
             if (Program.OverflowCheck)
                 resolver.Resolve(ClassNames.OverflowExceptionTypeName);
 

@@ -56,6 +56,9 @@ namespace CIL2Java
                     ((IResolver)this).Resolve(ClassNames.SystemRuntimeTypeHandle.ClassName);
                 }
 
+                if ((e.Code == ILCode.Div_Un) || (e.Code == ILCode.Rem_Un))
+                    ((IResolver)this).Resolve(ClassNames.CIL2JavaVESInstructions.ClassName);
+
                 if (e.Operand is ILVariable) ((IResolver)this).Resolve(((ILVariable)e.Operand).Type, genericArgs);
                 if (e.Operand is TypeReference) ((IResolver)this).Resolve((TypeReference)e.Operand, genericArgs);
                 if (e.Operand is MethodReference) ((IResolver)this).Resolve((MethodReference)e.Operand, genericArgs);
