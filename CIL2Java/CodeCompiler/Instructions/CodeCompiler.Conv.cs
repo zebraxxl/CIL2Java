@@ -101,7 +101,7 @@ namespace CIL2Java
 
             bool isToUnsigned = e.Code.IsConvToUnsigned();
             bool isFromUnsigned = e.Code.IsConvFromUnsigned();
-            bool isOvf = e.Code.IsConvOvf();
+            bool isOvf = e.Code.IsOvf();
 
             if (isOvf)
             {
@@ -162,7 +162,7 @@ namespace CIL2Java
 
             bool isToUnsigned = e.Code.IsConvToUnsigned();
             bool isFromUnsigned = e.Code.IsConvFromUnsigned();
-            bool isOvf = e.Code.IsConvOvf();
+            bool isOvf = e.Code.IsOvf();
 
             if (isOvf)
             {
@@ -223,7 +223,7 @@ namespace CIL2Java
 
             bool isToUnsigned = e.Code.IsConvToUnsigned();
             bool isFromUnsigned = e.Code.IsConvFromUnsigned();
-            bool isOvf = e.Code.IsConvOvf();
+            bool isOvf = e.Code.IsOvf();
 
             if (isOvf)
             {
@@ -278,7 +278,7 @@ namespace CIL2Java
 
             bool isToUnsigned = e.Code.IsConvToUnsigned();
             bool isFromUnsigned = e.Code.IsConvFromUnsigned();
-            bool isOvf = e.Code.IsConvOvf();
+            bool isOvf = e.Code.IsOvf();
 
             if (isOvf)
             {

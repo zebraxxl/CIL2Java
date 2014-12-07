@@ -174,7 +174,7 @@ namespace CIL2Java
             }
         }
 
-        public static bool IsConvOvf(this ILCode self)
+        public static bool IsOvf(this ILCode self)
         {
             switch (self)
             {
@@ -198,11 +198,78 @@ namespace CIL2Java
                 case ILCode.Conv_Ovf_U4_Un:
                 case ILCode.Conv_Ovf_U8:
                 case ILCode.Conv_Ovf_U8_Un:
+                case ILCode.Add_Ovf:
+                case ILCode.Add_Ovf_Un:
+                case ILCode.Sub_Ovf:
+                case ILCode.Sub_Ovf_Un:
+                case ILCode.Mul_Ovf:
+                case ILCode.Mul_Ovf_Un:
                     return Program.OverflowCheck;
 
                 default:
                     return false;
             }
+        }
+
+        public static bool IsMathUnsigned(this ILCode self)
+        {
+            switch (self)
+            {
+                case ILCode.Add_Ovf_Un:
+                case ILCode.Sub_Ovf_Un:
+                case ILCode.Mul_Ovf_Un:
+                case ILCode.Div_Un:
+                    return Program.Unsigned;
+
+                default: return false;
+            }
+        }
+
+        public static bool IsMath(this ILCode self)
+        {
+            switch (self)
+            {
+                case ILCode.Add:
+                case ILCode.Add_Ovf:
+                case ILCode.Add_Ovf_Un:
+                case ILCode.Sub:
+                case ILCode.Sub_Ovf:
+                case ILCode.Sub_Ovf_Un:
+                case ILCode.Mul:
+                case ILCode.Mul_Ovf:
+                case ILCode.Mul_Ovf_Un:
+                case ILCode.Div:
+                case ILCode.Div_Un:
+                case ILCode.Rem:
+                case ILCode.Rem_Un:
+                case ILCode.And:
+                case ILCode.Or:
+                case ILCode.Xor:
+                case ILCode.Shl:
+                case ILCode.Shr:
+                case ILCode.Shr_Un:
+                case ILCode.Neg:
+                case ILCode.Not:
+                    return true;
+
+                default: return false;
+            }
+        }
+
+        public static bool IsExternalRealization(this ILCode self)
+        {
+            switch (self)
+            {
+                case ILCode.Div_Un:
+                case ILCode.Rem_Un:
+                case ILCode.Ckfinite:
+                    return true;
+            }
+
+            if ((self.IsMath()) && (self.IsOvf()))
+                return true;
+
+            return false;
         }
     }
 }

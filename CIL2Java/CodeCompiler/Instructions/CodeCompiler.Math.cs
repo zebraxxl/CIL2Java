@@ -65,11 +65,47 @@ namespace CIL2Java
 
         private void CompileMath(ILExpression e, ExpectType expect, OpCodes intOp, OpCodes longOp, OpCodes floatOp, OpCodes doubleOp)
         {
-            CompileExpression(e.Arguments[0], ExpectType.Primitive);
-            CompileExpression(e.Arguments[1], ExpectType.Primitive);
+            bool isOvf = e.Code.IsOvf();
+            bool isUnsigned = e.Code.IsMathUnsigned();
 
             InterType opType = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
             JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(opType);
+
+            CompileExpression(e.Arguments[0], ExpectType.Primitive);
+            CompileExpression(e.Arguments[1], ExpectType.Primitive);
+
+            if (isOvf)
+            {
+                string methodName = null;
+                string methodDescriptor = null;
+
+                switch (e.Code)
+                {
+                    case ILCode.Add_Ovf: methodName = "Add_Ovf"; break;
+                    case ILCode.Add_Ovf_Un: methodName = "Add_Ovf_Un"; break;
+                    case ILCode.Sub_Ovf: methodName = "Sub_Ovf"; break;
+                    case ILCode.Sub_Ovf_Un: methodName = "Sub_Ovf_Un"; break;
+                    case ILCode.Mul_Ovf: methodName = "Mul_Ovf"; break;
+                    case ILCode.Mul_Ovf_Un: methodName = "Mul_Ovf_Un"; break;
+                }
+
+                switch (jp)
+                {
+                    case JavaPrimitiveType.Bool:
+                    case JavaPrimitiveType.Byte: methodDescriptor = "(BB)B"; break;
+                    case JavaPrimitiveType.Char: methodDescriptor = "(CC)C"; break;
+                    case JavaPrimitiveType.Int: methodDescriptor = "(II)I"; break;
+                    case JavaPrimitiveType.Long: methodDescriptor = "(JJ)J"; break;
+                    case JavaPrimitiveType.Short: methodDescriptor = "(SS)S"; break;
+                }
+
+                if ((methodName != null) && (methodDescriptor != null))
+                {
+                    codeGenerator.Add(OpCodes.invokestatic, new MethodRef(namesController.TypeNameToJava(
+                        ClassNames.CIL2JavaVESInstructions.ClassName), methodName, methodDescriptor), e);
+                    return;
+                }
+            }
 
             OpCodes opcode = intOp;
 

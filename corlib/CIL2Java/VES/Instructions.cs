@@ -15,6 +15,19 @@ namespace CIL2Java.VES
             return (a < b) ? -1 : ((a > b) ? 1 : 0);
         }
 
+        private static int compare(int a, int b)
+        {
+            a = a ^ int.MinValue;
+            b = b ^ int.MinValue;
+            return (a < b) ? -1 : ((a > b) ? 1 : 0);
+        }
+
+        private static void Check_Ovf(int r, int min, int max)
+        {
+            if ((r < min) || (r > max))
+                throw new OverflowException();
+        }
+
         [AlwaysCompile]
         public static long UInt64Divide(long dividend, long divisor)
         {
@@ -84,5 +97,283 @@ namespace CIL2Java.VES
                 throw new ArithmeticException(Local.GetText("value is NaN or Infinity"));
             return val;
         }
+
+        #region Math
+        #region Add
+        [AlwaysCompile]
+        public static sbyte Add_Ovf(sbyte a, sbyte b)
+        {
+            int r = a + b;
+            Check_Ovf(r, sbyte.MinValue, sbyte.MaxValue);
+            return (sbyte)r;
+        }
+
+        [AlwaysCompile]
+        public static byte Add_Ovf_Un(sbyte a, sbyte b)
+        {
+            int r = (a & 0xff) + (b & 0xff);
+            Check_Ovf(r, byte.MinValue, byte.MaxValue & 0xff);
+            return (byte)r;
+        }
+
+        [AlwaysCompile]
+        public static short Add_Ovf(short a, short b)
+        {
+            int r = a + b;
+            Check_Ovf(r, short.MinValue, short.MaxValue);
+            return (short)r;
+        }
+
+        [AlwaysCompile]
+        public static ushort Add_Ovf_Un(short a, short b)
+        {
+            int r = (a & 0xffff) + (b & 0xffff);
+            Check_Ovf(r, ushort.MinValue, ushort.MaxValue & 0xffff);
+            return (ushort)r;
+        }
+
+        // Char always unsigned
+        [AlwaysCompile]
+        public static char Add_Ovf(char a, char b)
+        {
+            int r = (a & 0xffff) + (b & 0xffff);
+            Check_Ovf(r, ushort.MinValue, ushort.MaxValue & 0xffff);
+            return (char)r;
+        }
+
+        [AlwaysCompile]
+        public static char Add_Ovf_Un(char a, char b)
+        {
+            int r = (a & 0xffff) + (b & 0xffff);
+            Check_Ovf(r, ushort.MinValue, ushort.MaxValue & 0xffff);
+            return (char)r;
+        }
+
+        [AlwaysCompile] 
+        public static int Add_Ovf(int a, int b)
+        {
+            int r = a + b;
+
+            if ((r < a) || (r < b))
+                throw new OverflowException();
+
+            return r;
+        }
+        [AlwaysCompile] 
+        public static int Add_Ovf_Un(int a, int b)
+        {
+            int r = a + b;
+
+            if (((a < 0) || (b < 0)) && (r > 0))
+                throw new OverflowException();
+
+            return r;
+        }
+
+        [AlwaysCompile] 
+        public static long Add_Ovf(long a, long b)
+        {
+            long r = a + b;
+
+            if ((r < a) || (r < b))
+                throw new OverflowException();
+
+            return r;
+        }
+
+        [AlwaysCompile]
+        public static long Add_Ovf_Un(long a, long b)
+        {
+            long r = a + b;
+
+            if (((a < 0) || (b < 0)) && (r > 0))
+                throw new OverflowException();
+
+            return r;
+        }
+        #endregion
+        #region Sub
+        [AlwaysCompile]
+        public static sbyte Sub_Ovf(sbyte a, sbyte b)
+        {
+            int r = a - b;
+            Check_Ovf(r, sbyte.MinValue, sbyte.MaxValue);
+            return (sbyte)r;
+        }
+
+        [AlwaysCompile]
+        public static byte Sub_Ovf_Un(sbyte a, sbyte b)
+        {
+            int r = (a & 0xff) - (b & 0xff);
+            Check_Ovf(r, byte.MinValue, byte.MaxValue & 0xff);
+            return (byte)r;
+        }
+
+        [AlwaysCompile]
+        public static short Sub_Ovf(short a, short b)
+        {
+            int r = a - b;
+            Check_Ovf(r, short.MinValue, short.MaxValue);
+            return (short)r;
+        }
+
+        [AlwaysCompile]
+        public static ushort Sub_Ovf_Un(short a, short b)
+        {
+            int r = (a & 0xffff) - (b & 0xffff);
+            Check_Ovf(r, ushort.MinValue, ushort.MaxValue & 0xffff);
+            return (ushort)r;
+        }
+
+        // Char always unsigned
+        [AlwaysCompile]
+        public static char Sub_Ovf(char a, char b)
+        {
+            int r = (a & 0xffff) - (b & 0xffff);
+            Check_Ovf(r, ushort.MinValue, ushort.MaxValue & 0xffff);
+            return (char)r;
+        }
+
+        [AlwaysCompile]
+        public static char Sub_Ovf_Un(char a, char b)
+        {
+            int r = (a & 0xffff) - (b & 0xffff);
+            Check_Ovf(r, ushort.MinValue, ushort.MaxValue & 0xffff);
+            return (char)r;
+        }
+
+        [AlwaysCompile]
+        public static int Sub_Ovf(int a, int b)
+        {
+            int r = a - b;
+
+            if (r > a)
+                throw new OverflowException();
+
+            return r;
+        }
+        [AlwaysCompile]
+        public static int Sub_Ovf_Un(int a, int b)
+        {
+            if (compare(a, b) < 0)
+                throw new OverflowException();
+
+            return a - b;
+        }
+
+        [AlwaysCompile]
+        public static long Sub_Ovf(long a, long b)
+        {
+            long r = a - b;
+
+            if (r > a)
+                throw new OverflowException();
+
+            return r;
+        }
+
+        [AlwaysCompile]
+        public static long Sub_Ovf_Un(long a, long b)
+        {
+            if (compare(a, b) < 0)
+                throw new OverflowException();
+
+            return a - b;
+        }
+        #endregion
+        #region Mul
+        [AlwaysCompile]
+        public static sbyte Mul_Ovf(sbyte a, sbyte b)
+        {
+            int r = a * b;
+            Check_Ovf(r, sbyte.MinValue, sbyte.MaxValue);
+            return (sbyte)r;
+        }
+
+        [AlwaysCompile]
+        public static byte Mul_Ovf_Un(sbyte a, sbyte b)
+        {
+            int r = (a & 0xff) * (b & 0xff);
+            Check_Ovf(r, byte.MinValue, byte.MaxValue & 0xff);
+            return (byte)r;
+        }
+
+        [AlwaysCompile]
+        public static short Mul_Ovf(short a, short b)
+        {
+            int r = a * b;
+            Check_Ovf(r, short.MinValue, short.MaxValue);
+            return (short)r;
+        }
+
+        [AlwaysCompile]
+        public static ushort Mul_Ovf_Un(short a, short b)
+        {
+            int r = (a & 0xffff) * (b & 0xffff);
+            Check_Ovf(r, ushort.MinValue, ushort.MaxValue & 0xffff);
+            return (ushort)r;
+        }
+
+        // Char always unsigned
+        [AlwaysCompile]
+        public static char Mul_Ovf(char a, char b)
+        {
+            int r = (a & 0xffff) * (b & 0xffff);
+            Check_Ovf(r, ushort.MinValue, ushort.MaxValue & 0xffff);
+            return (char)r;
+        }
+
+        [AlwaysCompile]
+        public static char Mul_Ovf_Un(char a, char b)
+        {
+            int r = (a & 0xffff) * (b & 0xffff);
+            Check_Ovf(r, ushort.MinValue, ushort.MaxValue & 0xffff);
+            return (char)r;
+        }
+
+        [AlwaysCompile]
+        public static int Mul_Ovf(int a, int b)
+        {
+            int r = a * b;
+
+            if ((r < a) || (r < b))
+                throw new OverflowException();
+
+            return r;
+        }
+        [AlwaysCompile]
+        public static int Mul_Ovf_Un(int a, int b)
+        {
+            int r = a * b;
+
+            if ((compare(r, a) < 0) || (compare(r, b) < 0))
+                throw new OverflowException();
+
+            return r;
+        }
+
+        [AlwaysCompile]
+        public static long Mul_Ovf(long a, long b)
+        {
+            long r = a * b;
+
+            if ((r < a) || (r < b))
+                throw new OverflowException();
+
+            return r;
+        }
+
+        [AlwaysCompile]
+        public static long Mul_Ovf_Un(long a, long b)
+        {
+            long r = a * b;
+
+            if ((compare(r, a) < 0) || (compare(r, b) < 0))
+                throw new OverflowException();
+
+            return r;
+        }
+        #endregion
+        #endregion
     }
 }

@@ -373,8 +373,14 @@ namespace CIL2Java
                 #region Math
                 case ILCode.PostIncrement: CompilePostIncrement(e, expectType); break;
                 case ILCode.Add: CompileAdd(e, expectType); break;
+                case ILCode.Add_Ovf: CompileAdd(e, expectType); break;
+                case ILCode.Add_Ovf_Un: CompileAdd(e, expectType); break;
                 case ILCode.Sub: CompileSub(e, expectType); break;
+                case ILCode.Sub_Ovf: CompileSub(e, expectType); break;
+                case ILCode.Sub_Ovf_Un: CompileSub(e, expectType); break;
                 case ILCode.Mul: CompileMul(e, expectType); break;
+                case ILCode.Mul_Ovf: CompileMul(e, expectType); break;
+                case ILCode.Mul_Ovf_Un: CompileMul(e, expectType); break;
                 case ILCode.Div: CompileDiv(e, expectType); break;
                 case ILCode.Div_Un: CompileDivUn(e, expectType); break;
                 case ILCode.Rem: CompileRem(e, expectType); break;

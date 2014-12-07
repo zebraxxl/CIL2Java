@@ -56,7 +56,7 @@ namespace CIL2Java
                     ((IResolver)this).Resolve(ClassNames.SystemRuntimeTypeHandle.ClassName);
                 }
 
-                if ((e.Code == ILCode.Div_Un) || (e.Code == ILCode.Rem_Un) || (e.Code == ILCode.Ckfinite))
+                if (e.Code.IsExternalRealization())
                     ((IResolver)this).Resolve(ClassNames.CIL2JavaVESInstructions.ClassName);
 
                 if (e.Code == ILCode.Ldtoken)
