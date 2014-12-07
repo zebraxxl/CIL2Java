@@ -49,7 +49,7 @@ namespace CIL2Java
             else if (operand == 1.0)
                 codeGenerator.AddInstruction(new JavaInstruction(Java.OpCodes.dconst_1, null, e));
             else
-                codeGenerator.AddInstruction(new JavaInstruction(Java.OpCodes.ldc, new Java.Constants.Double(operand), e));
+                codeGenerator.AddInstruction(new JavaInstruction(Java.OpCodes.ldc2_w, new Java.Constants.Double(operand), e));
 
             TranslateType(InterType.PrimitiveTypes[(int)PrimitiveType.Single], expect, e);
         }
