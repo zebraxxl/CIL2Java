@@ -505,6 +505,8 @@ namespace java.lang
         public override string ToString() { return null; }
 
 #if JAVA_1_7
+        protected Throwable(string message, string cause, bool enableSuppression, bool writableStackTrace) { }
+
         /**
          * Appends the specified exception to the exceptions that were
          * suppressed in order to deliver this exception. This method is
