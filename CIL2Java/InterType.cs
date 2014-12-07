@@ -109,6 +109,7 @@ namespace CIL2Java
         public bool IsValueType { get; private set; }
         public bool IsEnum { get; private set; }
         public bool IsDelegate { get; private set; }
+        public bool IsNullable { get; private set; }
 
         public bool IsArray { get; private set; }
         public bool IsByRef { get; private set; }
@@ -165,6 +166,8 @@ namespace CIL2Java
                 foreach (var fld in typeDef.Fields)
                     resolver.Resolve(fld, genericArgs);
             }
+
+            IsNullable = typeDef.FullName == ClassNames.SystemNullable_1.ClassName;
         }
 
         public InterType(TypeReference typeRef, List<InterGenericArgument> genericArgs, IResolver resolver, Func<InterType, bool> register)

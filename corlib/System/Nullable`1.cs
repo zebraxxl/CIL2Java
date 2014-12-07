@@ -1,4 +1,5 @@
 
+using CIL2Java.Attributes;
 namespace System
 {
     /// <summary>
@@ -21,6 +22,7 @@ namespace System
         /// </returns>
         public bool HasValue
         {
+            [AlwaysCompile]
             get { return hasValue; }
         }
     
@@ -36,6 +38,7 @@ namespace System
         /// is false.</exception>
         public T Value
         {
+            [AlwaysCompile]
             get
             {
                 if (!hasValue)

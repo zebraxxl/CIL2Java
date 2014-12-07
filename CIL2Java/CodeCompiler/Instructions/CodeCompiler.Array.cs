@@ -122,6 +122,13 @@ namespace CIL2Java
 
             codeGenerator.AddArrayLoad(arrType, e);
 
+            if (operand.IsValueType)
+            {
+                MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operand),
+                    ClassNames.ValueTypeGetCopy, "()" + namesController.GetFieldDescriptor(operand));
+                codeGenerator.Add(Java.OpCodes.invokevirtual, getCopyRef, e);
+            }
+
             TranslateType(operand, expect, e);
         }
 
@@ -182,8 +189,15 @@ namespace CIL2Java
         {
             InterMethod operand = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
 
-            JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand.DeclaringType);
+            JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand.DeclaringType.ElementType);
             codeGenerator.AddArrayLoad(arrType, e);
+
+            if (operand.DeclaringType.ElementType.IsValueType)
+            {
+                MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operand.DeclaringType.ElementType),
+                    ClassNames.ValueTypeGetCopy, "()" + namesController.GetFieldDescriptor(operand.DeclaringType.ElementType));
+                codeGenerator.Add(Java.OpCodes.invokevirtual, getCopyRef, e);
+            }
         }
 
         private void CompileLdlen(ILExpression e, ExpectType expect)

@@ -80,6 +80,8 @@ namespace CIL2Java
         public const string RenamedMethodPrefix = "c2j_renamed_";
         public const string FieldAccessorPrefix = "c2j_field_access_";
 
+        public const string BoxedPrimitiveValueFieldName = "value";
+
         public static class ByRef
         {
             public const string TypeBase = "ByRef";
@@ -149,6 +151,13 @@ namespace CIL2Java
             public const string lushr = "lushr";
         }
 
+        public static class SystemNullable_1
+        {
+            public const string ClassName = "System.Nullable`1";
+            public const string GetHasValueMethodName = "get_HasValue";
+            public const string GetValueMethodName = "get_Value";
+        }
+
         public static class SystemAsyncCallback
         {
             public const string ClassName = "System.AsyncCallback";
@@ -195,5 +204,6 @@ namespace CIL2Java
         {
             public const string ClassNames = "CIL2Java.VES.MethodPointers.Global";
         }
+
     }
 }

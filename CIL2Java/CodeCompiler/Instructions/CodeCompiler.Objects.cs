@@ -1,4 +1,5 @@
-﻿using CIL2Java.Java.Constants;
+﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
 using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
@@ -153,9 +154,61 @@ namespace CIL2Java
 
         private void CompileUnbox(ILExpression e, ExpectType expect)
         {
-            // By standart, we must compute a ref to value type from it boxed representation
-            // But in CIL2Java boxed value type is ref to it
-            CompileExpression(e.Arguments[0], ExpectType.Any);
+            InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+
+            if ((operand.IsPrimitive) || (operand.IsEnum))
+            {
+                string fieldName = ClassNames.BoxedPrimitiveValueFieldName;
+                if (operand.IsEnum)
+                    fieldName = ClassNames.EnumValueFieldName;
+
+                // Generating FieldByRef to value field of boxed class
+                // In java boxed primitived has field named "value" too.
+                // Yes, it is bad hack, but I don't known another way to do this
+                string boxedClass = GetBoxType(operand);
+
+                string byRefTypeName = byRefController.GetFieldByRefTypeName(operand);
+
+                Java.Constants.Class constByRefType = new Java.Constants.Class(namesController.TypeNameToJava(byRefTypeName));
+                Java.Constants.Class constFieldDeclClass =
+                    new Java.Constants.Class(namesController.TypeNameToJava(operand));
+                Java.Constants.String constFieldName = new Java.Constants.String(
+                    namesController.FieldNameToJava(fieldName));
+                MethodRef constFieldByRefCtorRef = byRefController.GetFieldByRefCtorMethodRef(operand);
+
+                codeGenerator.Add(OpCodes._new, constByRefType, e);
+                codeGenerator.Add(OpCodes.dup, null, e);
+
+                CompileExpression(e.Arguments[0], ExpectType.Boxed);
+
+                codeGenerator.Add(OpCodes.ldc, constFieldDeclClass, e);
+                codeGenerator.Add(OpCodes.ldc, constFieldName, e);
+                codeGenerator.Add(OpCodes.invokevirtual, ClassNames.JavaLangClass.getDeclaredField, e);
+                codeGenerator.Add(OpCodes.invokespecial, constFieldByRefCtorRef);
+            }
+            else if (operand.IsNullable)
+            {
+                // From ECMA-335, III.4.32
+                // [Note: Typically, unbox simply computes the address of the value type that is already present
+                // inside of the boxed object. This approach is not possible when unboxing nullable value types.
+                // Because Nullable<T> values are converted to boxed Ts during the box operation, an
+                // implementation often must manufacture a new Nullable<T> on the heap and compute the address
+                // to the newly allocated object. end note]
+                codeGenerator
+                    .Add(OpCodes._new, new Java.Constants.Class(namesController.TypeNameToJava(operand)), e)
+                    .Add(OpCodes.dup, null, e);
+
+                CompileUnbox_Any(e, ExpectType.Any);
+
+                codeGenerator.Add(OpCodes.invokespecial, new MethodRef(
+                    namesController.TypeNameToJava(operand),
+                    ClassNames.JavaConstructorMethodName,
+                    "(" + namesController.GetFieldDescriptor(operand.GenericArguments[0].Type) + ")V"));
+            }
+            else
+                // By standart, we must compute a ref to value type from it boxed representation
+                // But in CIL2Java boxed value type is ref to it
+                CompileExpression(e.Arguments[0], ExpectType.Any);
         }
 
         private void CompileUnbox_Any(ILExpression e, ExpectType expect)
@@ -163,6 +216,19 @@ namespace CIL2Java
             CompileExpression(e.Arguments[0], ExpectType.Boxed);
 
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+            InterType nullableType = null;
+            
+            if (operand.IsNullable)
+            {
+                nullableType = operand;
+                operand = operand.GenericArguments[0].Type;
+
+                codeGenerator
+                    .Add(OpCodes._new, new Java.Constants.Class(namesController.TypeNameToJava(operand)), e)
+                    .Add(OpCodes.dup, null, e);
+            }
+
+
             string boxType = GetBoxType(operand);
 
             Java.Constants.Class operandRef = new Java.Constants.Class(namesController.TypeNameToJava(boxType));
@@ -189,6 +255,14 @@ namespace CIL2Java
             codeGenerator
                 .Add(Java.OpCodes.checkcast, operandRef, e)
                 .Add(Java.OpCodes.invokevirtual, valueRef, e);
+
+            if (nullableType != null)
+            {
+                codeGenerator.Add(OpCodes.invokespecial, new MethodRef(
+                    namesController.TypeNameToJava(nullableType),
+                    ClassNames.JavaConstructorMethodName,
+                    "(" + namesController.GetFieldDescriptor(operand) + ")V"));
+            }
         }
     }
 }

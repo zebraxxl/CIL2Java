@@ -104,6 +104,13 @@ namespace CIL2Java
 
             CompileFieldLoad(operand, e);
 
+            if (operand.FieldType.IsValueType)
+            {
+                MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operand.FieldType),
+                    ClassNames.ValueTypeGetCopy, "()" + namesController.GetFieldDescriptor(operand.FieldType));
+                codeGenerator.Add(Java.OpCodes.invokevirtual, getCopyRef, e);
+            }
+
             TranslateType(operand.FieldType, expectType, e);
         }
     }

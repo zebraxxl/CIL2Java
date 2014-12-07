@@ -21,8 +21,9 @@ namespace CIL2Java
                 MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operandType),
                     ClassNames.ValueTypeGetCopy, "()" + namesController.GetFieldDescriptor(operandType));
                 codeGenerator.Add(Java.OpCodes.invokevirtual, getCopyRef, e);
-            } else
-                TranslateType(operandType, expectType, e);
+            }
+
+            TranslateType(operandType, expectType, e);
         }
 
         private void CompileStloc(ILExpression e, ExpectType expectType)

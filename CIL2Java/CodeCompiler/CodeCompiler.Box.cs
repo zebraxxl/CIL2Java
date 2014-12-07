@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
+using System;
 using System.Collections.Generic;
 
 namespace CIL2Java
@@ -55,6 +57,35 @@ namespace CIL2Java
 
         private void BoxTypeImpl(Dictionary<InterType, string> BoxTypes, InterType type, object tag)
         {
+            if (type.IsNullable)
+            {
+                InterType instant = type.GenericArguments[0].Type;
+
+                string labelsSufix = rnd.Next().ToString();
+                string hasValueLabel = "hasValue" + labelsSufix;
+                string exitLabel = "exit" + labelsSufix;
+
+                MethodRef hasValueMethodRef = new MethodRef(namesController.TypeNameToJava(type),
+                    ClassNames.SystemNullable_1.GetHasValueMethodName, "()Z");
+                MethodRef valueMethodRef = new MethodRef(hasValueMethodRef.Class,
+                    ClassNames.SystemNullable_1.GetValueMethodName, "()" + namesController.GetFieldDescriptor(instant));
+
+                codeGenerator
+                    .Add(OpCodes.dup, null, tag)
+                    .Add(OpCodes.invokevirtual, hasValueMethodRef, tag)
+                    .Add(OpCodes.ifne, hasValueLabel, tag)
+                    .Add(OpCodes.pop, null, tag)
+                    .Add(OpCodes.aconst_null, null, tag)
+                    .Add(OpCodes._goto, exitLabel, tag)
+                    .Label(hasValueLabel)
+                    .Add(OpCodes.invokevirtual, valueMethodRef, tag);
+
+                BoxType(instant, tag);
+
+                codeGenerator.Label(exitLabel);
+                return;
+            }
+
             if (type.IsEnum)
             {
                 codeGenerator.Add(Java.OpCodes.invokestatic, new Java.Constants.MethodRef(
@@ -63,6 +94,9 @@ namespace CIL2Java
                     namesController.TypeNameToJava(type.Fullname) + ";"));
                 return;
             }
+
+            if (type.IsValueType)
+                return;
 
             if (!BoxTypes.ContainsKey(type))
             {
