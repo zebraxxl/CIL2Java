@@ -165,6 +165,22 @@ namespace CIL2Java
             public static readonly MethodRef InvokeMethodRef = new MethodRef("System/AsyncCallback", "Invoke", "(LSystem/IAsyncResult;)V");
         }
 
+        public static class SystemTypedReference
+        {
+            public const string ClassName = "System.TypedReference";
+
+            public static readonly MethodRef CtorMethodRef = new MethodRef("System/TypedReference", "<init>", "(Ljava/lang/Object;Ljava/lang/Class;)V");
+            public static readonly FieldRef ClassFieldRef = new FieldRef("System/TypedReference", "klass", "Ljava/lang/Class;");
+            public static readonly FieldRef PointerFieldRef = new FieldRef("System/TypedReference", "pointer", "Ljava/lang/Object;");
+        }
+
+        public static class SystemRuntimeTypeHandle
+        {
+            public const string ClassName = "System.RuntimeTypeHandle";
+
+            public static readonly MethodRef CtorMethodRef = new MethodRef("System/RuntimeTypeHandle", "<init>", "(Ljava/lang/Class;)V");
+        }
+
         public static class SystemThreadingMonitor
         {
             public const string ClassName = "System.Threading.Monitor";

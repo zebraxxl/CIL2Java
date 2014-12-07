@@ -390,6 +390,11 @@ namespace CIL2Java
                 #region Delegates
                 case ILCode.Ldftn: CompileLdftn(e, expectType); break;
                 #endregion
+                #region TypedRef
+                case ILCode.Mkrefany: CompileMkrefany(e, expectType); break;
+                case ILCode.Refanytype: CompileRefanytype(e, expectType); break;
+                case ILCode.Refanyval: CompileRefanyval(e, expectType); break;
+                #endregion
                 #region Other
                 case ILCode.LoopOrSwitchBreak: CompileLoopOrSwitchBreak(e, expectType); break;
                 case ILCode.Br: CompileBr(e, expectType); break;

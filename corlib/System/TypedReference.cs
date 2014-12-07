@@ -1,6 +1,9 @@
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Reflection;
+using javaClass = java.lang.Class;
+using CIL2Java.Attributes;
+
 
 namespace System
 {
@@ -8,7 +11,15 @@ namespace System
     [ComVisibleAttribute(true)]
     public struct TypedReference
     {
-    
+        public object pointer;
+        public javaClass klass;
+
+        [AlwaysCompile]
+        public TypedReference(object pointer, javaClass klass)
+        {
+            this.pointer = pointer;
+            this.klass = klass;
+        }
     
         /// <summary>Makes a TypedReference for a field identified by a specified object and list of field descriptions.</summary><returns>A <see cref="T:System.TypedReference" /> for the field described by the last element of <paramref name="flds" />.</returns><param name="target">An object that contains the field described by the first element of <paramref name="flds" />. </param><param name="flds">A list of field descriptions where each element describes a field that contains the field described by the succeeding element. Each described field must be a value type. The field descriptions must be RuntimeFieldInfo objects supplied by the type system.</param><exception cref="T:System.ArgumentNullException"><paramref name="target" /> or <paramref name="flds" /> is null.-or- An element of <paramref name="flds" /> is null. </exception><exception cref="T:System.ArgumentException">The <paramref name="flds" /> array has no elements.-or- An element of <paramref name="flds" /> is not a RuntimeFieldInfo.-or- The <see cref="P:System.Reflection.FieldInfo.IsInitOnly" /> or <see cref="P:System.Reflection.FieldInfo.IsStatic" /> property of an element of <paramref name="flds" /> is true. </exception><exception cref="T:System.MissingMemberException">Parameter <paramref name="target" /> does not contain the field described by the first element of <paramref name="flds" />, or an element of <paramref name="flds" /> describes a field that is not contained in the field described by the succeeding element of <paramref name="flds" />.-or- The field described by an element of <paramref name="flds" /> is not a value type. </exception><filterpriority>1</filterpriority><PermissionSet><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess" /></PermissionSet>
         [SecurityCriticalAttribute()]

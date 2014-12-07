@@ -2,6 +2,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.ConstrainedExecution;
 using System.Security;
+using javaClass = java.lang.Class;
+using CIL2Java.Attributes;
 
 namespace System
 {
@@ -10,6 +12,13 @@ namespace System
     [ComVisibleAttribute(true)]
     public struct RuntimeTypeHandle : ISerializable
     {
+        public javaClass klass;
+
+        [AlwaysCompile]
+        public RuntimeTypeHandle(javaClass klass)
+        {
+            this.klass = klass;
+        }
     
         /// <summary>Gets a handle to the type represented by this instance.</summary><returns>A handle to the type represented by this instance.</returns><filterpriority>2</filterpriority>
         public IntPtr Value

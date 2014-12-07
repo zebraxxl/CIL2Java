@@ -47,6 +47,15 @@ namespace CIL2Java
 
                 foreach (var n in e.Arguments) ProcessMethodDecencies(method, n, genericArgs);
 
+                if ((e.Code == ILCode.Mkrefany) || (e.Code == ILCode.Refanyval))
+                    ((IResolver)this).Resolve(ClassNames.SystemTypedReference.ClassName);
+
+                if (e.Code == ILCode.Refanytype)
+                {
+                    ((IResolver)this).Resolve(ClassNames.SystemTypedReference.ClassName);
+                    ((IResolver)this).Resolve(ClassNames.SystemRuntimeTypeHandle.ClassName);
+                }
+
                 if (e.Operand is ILVariable) ((IResolver)this).Resolve(((ILVariable)e.Operand).Type, genericArgs);
                 if (e.Operand is TypeReference) ((IResolver)this).Resolve((TypeReference)e.Operand, genericArgs);
                 if (e.Operand is MethodReference) ((IResolver)this).Resolve((MethodReference)e.Operand, genericArgs);
