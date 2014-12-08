@@ -217,7 +217,7 @@ namespace CIL2Java
                 else if (fld.FieldType.IsValueType)
                 {
                     MethodRef equalMethod = new MethodRef(TypeNameToJava(fld.FieldType.Fullname), result.Name, result.Descriptor);
-                    codeGenerator.Add(OpCodes.invokevirtual, equalMethod).Add(OpCodes.ifeq, false);
+                    codeGenerator.Add(OpCodes.invokevirtual, equalMethod).Add(OpCodes.ifeq, "false");
                 }
                 else
                     codeGenerator.Add(OpCodes.if_acmpne, "false");
