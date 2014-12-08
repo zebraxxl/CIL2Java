@@ -9,6 +9,8 @@ namespace CIL2Java
 {
     public partial class CodeCompiler
     {
+        private Stack<int> initializedObjectsVarIndexes = new Stack<int>();
+
         private void CompileCastclass(ILExpression e, ExpectType expect)
         {
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
@@ -357,6 +359,29 @@ namespace CIL2Java
 
                 codeGenerator.Add(OpCodes.invokespecial, ClassNames.SystemRuntimeMethodHandle.CtorMethodRef, e);
             }
+        }
+
+        private void CompileInitObjectOrCollection(ILExpression e, ExpectType expect)
+        {
+            int tmpVar = GetNextFreeVar(JavaPrimitiveType.Ref);
+
+            CompileExpression(e.Arguments[0], ExpectType.Reference);
+            codeGenerator.AddStore(JavaPrimitiveType.Ref, tmpVar, e);
+
+            initializedObjectsVarIndexes.Push(tmpVar);
+            for (int i = 1; i < e.Arguments.Count; i++)
+                CompileExpression(e.Arguments[i], ExpectType.None);
+
+            codeGenerator.AddLoad(JavaPrimitiveType.Ref, initializedObjectsVarIndexes.Pop(), e);
+            FreeVar(tmpVar, JavaPrimitiveType.Ref);
+        }
+
+        private void CompileInitializedObject(ILExpression e, ExpectType expect)
+        {
+            if (initializedObjectsVarIndexes.Count == 0)
+                Messages.Message(MessageCode.NoInitializedObject);
+            else
+                codeGenerator.AddLoad(JavaPrimitiveType.Ref, initializedObjectsVarIndexes.Peek(), e);
         }
     }
 }

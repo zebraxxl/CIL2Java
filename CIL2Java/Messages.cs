@@ -23,6 +23,7 @@ namespace CIL2Java
         NotZeroLowerBound,
         UnsafeInstruction,
         NoExceptionForRethrow,
+        NoInitializedObject,
     }
 
     public static class Messages
@@ -52,6 +53,7 @@ namespace CIL2Java
             "Non zero lower bound in array {0} not supported",
             "Instruction {0} is unsafe and has partial support",
             "No exception for rethrow. May be rethrow founded out of catch block?",
+            "No initialized object founded",
         };
 
         public static void Message(MessageCode Code, params string[] MessageParams)

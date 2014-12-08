@@ -272,6 +272,9 @@ namespace CIL2Java
                 case ILCode.Unbox: CompileUnbox(e, expectType); break;
                 case ILCode.Unbox_Any: CompileUnbox_Any(e, expectType); break;
                 case ILCode.Ldtoken: CompileLdtoken(e, expectType); break;
+                case ILCode.InitObject: CompileInitObjectOrCollection(e, expectType); break;
+                case ILCode.InitCollection: CompileInitObjectOrCollection(e, expectType); break;
+                case ILCode.InitializedObject: CompileInitializedObject(e, expectType); break;
                 #endregion
                 #region Arrays
                 case ILCode.Newarr: CompileNewarr(e, expectType); break;
