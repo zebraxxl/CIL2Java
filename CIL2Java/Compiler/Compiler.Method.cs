@@ -43,7 +43,7 @@ namespace CIL2Java
 
             if (method.IsAbstract)
                 result.AccessFlags |= MethodAccessFlags.Abstract;
-            if (method.IsFinal)
+            if ((method.IsFinal) || ((!method.IsVirtual) && (!method.IsConstructor)) && (!method.IsStatic))
                 result.AccessFlags |= MethodAccessFlags.Final;
             if (method.IsStatic)
                 result.AccessFlags |= MethodAccessFlags.Static;
