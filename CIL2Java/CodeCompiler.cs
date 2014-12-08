@@ -299,6 +299,8 @@ namespace CIL2Java
                 #endregion
                 #region Exceptions
                 case ILCode.Throw: CompileThrow(e, expectType); break;
+                //case ILCode.Endfinally: break;    //endfinally will be removed by ILSpy
+                //case ILCode.Leave: CompileLeave(e, expectType); break;    //TODO: leave instruction
                 #endregion
                 #region Logic
                 case ILCode.LogicNot: CompileLogicNot(e, expectType); break;
