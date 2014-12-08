@@ -47,5 +47,27 @@ namespace CIL2Java
             CompileExpression(e.Arguments[0], ExpectType.Primitive);
             codeGenerator.AddNewArray(JavaArrayType.Byte, e);
         }
+
+        private void CompileCpblk(ILExpression e, ExpectType expect)
+        {
+            Messages.Message(MessageCode.UnsafeInstruction, e.Code.ToString());
+
+            CompileExpression(e.Arguments[0], ExpectType.Reference);
+            CompileExpression(e.Arguments[1], ExpectType.Reference);
+            CompileExpression(e.Arguments[2], ExpectType.Primitive);
+
+            codeGenerator.Add(OpCodes.invokestatic, ClassNames.CIL2JavaVESInstructions.CpblkRef, e);
+        }
+
+        private void CompileInitblk(ILExpression e, ExpectType expect)
+        {
+            Messages.Message(MessageCode.UnsafeInstruction, e.Code.ToString());
+
+            CompileExpression(e.Arguments[0], ExpectType.Reference);
+            CompileExpression(e.Arguments[1], ExpectType.Primitive);
+            CompileExpression(e.Arguments[2], ExpectType.Primitive);
+
+            codeGenerator.Add(OpCodes.invokestatic, ClassNames.CIL2JavaVESInstructions.InitblkRef, e);
+        }
     }
 }

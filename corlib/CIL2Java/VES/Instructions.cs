@@ -375,5 +375,19 @@ namespace CIL2Java.VES
         }
         #endregion
         #endregion
+
+        [AlwaysCompile]
+        public static void Cpblk(byte[] dest, byte[] src, int size)
+        {
+            for (int i = 0; i < size; i++)
+                dest[i] = src[i];
+        }
+
+        [AlwaysCompile]
+        public static void Initblk(byte[] dest, byte value, int size)
+        {
+            for (int i = 0; i < size; i++)
+                dest[i] = value;
+        }
     }
 }

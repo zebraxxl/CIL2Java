@@ -414,6 +414,8 @@ namespace CIL2Java
                 case ILCode.Nop: CompileNop(e, expectType); break;
                 case ILCode.Ckfinite: CompileCkfinite(e, expectType); break;
                 case ILCode.Localloc: CompileLocalloc(e, expectType); break;
+                case ILCode.Cpblk: CompileCpblk(e, expectType); break;
+                case ILCode.Initblk: CompileInitblk(e, expectType); break;
                 //case ILCode.Dup: case ILCode.Pop: break;  //dup and pop should be removed by ILSpy
                 #endregion
 

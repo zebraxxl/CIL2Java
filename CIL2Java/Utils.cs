@@ -263,6 +263,8 @@ namespace CIL2Java
                 case ILCode.Div_Un:
                 case ILCode.Rem_Un:
                 case ILCode.Ckfinite:
+                case ILCode.Cpblk:
+                case ILCode.Initblk:
                     return true;
             }
 
