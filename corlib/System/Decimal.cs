@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Security;
 using System.Runtime.ConstrainedExecution;
 using System.Globalization;
+using CIL2Java.Attributes;
 
 namespace System
 {
@@ -82,6 +83,7 @@ namespace System
         
         
         /// <summary>Initializes a new instance of <see cref="T:System.Decimal" /> to a decimal value represented in binary and contained in a specified array.</summary><param name="bits">An array of 32-bit signed integers containing a representation of a decimal value. </param><exception cref="T:System.ArgumentNullException"><paramref name="bits" /> is null. </exception><exception cref="T:System.ArgumentException">The length of the <paramref name="bits" /> is not 4.-or- The representation of the decimal value in <paramref name="bits" /> is not valid. </exception>
+        [AlwaysCompile]
         public Decimal(int[] bits)
         {
              throw new NotImplementedException();

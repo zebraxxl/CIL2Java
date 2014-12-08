@@ -59,6 +59,9 @@ namespace CIL2Java
                 if (e.Code.IsExternalRealization())
                     ((IResolver)this).Resolve(ClassNames.CIL2JavaVESInstructions.ClassName);
 
+                if (e.Code == ILCode.Ldc_Decimal)
+                    ((IResolver)this).Resolve(ClassNames.SystemDecimal.ClassNames);
+
                 if (e.Code == ILCode.Ldtoken)
                 {
                     if (e.Operand is TypeReference)

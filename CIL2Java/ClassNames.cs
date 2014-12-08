@@ -195,6 +195,12 @@ namespace CIL2Java
             public static readonly MethodRef CtorMethodRef = new MethodRef("System/RuntimeMethodHandle", "<init>", "(Ljava/lang/reflect/AccessibleObject;)V");
         }
 
+        public static class SystemDecimal
+        {
+            public const string ClassNames = "System.Decimal";
+            public static readonly MethodRef FromBitsCtorRef = new MethodRef("System/Decimal", "<init>", "([I)V");
+        }
+
         public static class SystemThreadingMonitor
         {
             public const string ClassName = "System.Threading.Monitor";

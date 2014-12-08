@@ -232,6 +232,7 @@ namespace CIL2Java
                 case ILCode.Ldc_R8: CompileLdcR8(e, expectType); break;
                 case ILCode.Ldnull: CompileLdnull(e, expectType); break;
                 case ILCode.DefaultValue: CompileDefaultValue(e, expectType); break;
+                case ILCode.Ldc_Decimal: CompileLdcDecimal(e, expectType); break;
                 #endregion
                 #region Vars
                 case ILCode.Ldloc: CompileLdloc(e, expectType); break;

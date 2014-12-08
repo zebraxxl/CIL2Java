@@ -1,4 +1,5 @@
-﻿using CIL2Java.Java.Constants;
+﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
 using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
@@ -112,6 +113,41 @@ namespace CIL2Java
             else
                 codeGenerator.AddDefaultValue(JavaHelpers.InterTypeToJavaPrimitive(operand), e);
             TranslateType(operand, expect, e);
+        }
+
+        private void CompileLdcDecimal(ILExpression e, ExpectType expect)
+        {
+            decimal operand = (decimal)e.Operand;
+            int[] bits = decimal.GetBits(operand);
+
+            codeGenerator
+                .Add(OpCodes._new, new Java.Constants.Class(namesController.TypeNameToJava(ClassNames.SystemDecimal.ClassNames)), e)
+                .Add(OpCodes.dup, null, e)
+
+                .Add(OpCodes.iconst_4, null, e)
+                .AddNewArray(JavaArrayType.Int, e)
+
+                .Add(OpCodes.dup, null, e)
+                .Add(OpCodes.iconst_0, null, e)
+                .AddIntConst(bits[0], e)
+                .Add(OpCodes.iastore, null, e)
+
+                .Add(OpCodes.dup, null, e)
+                .Add(OpCodes.iconst_1, null, e)
+                .AddIntConst(bits[1], e)
+                .Add(OpCodes.iastore, null, e)
+
+                .Add(OpCodes.dup, null, e)
+                .Add(OpCodes.iconst_2, null, e)
+                .AddIntConst(bits[2], e)
+                .Add(OpCodes.iastore, null, e)
+
+                .Add(OpCodes.dup, null, e)
+                .Add(OpCodes.iconst_3, null, e)
+                .AddIntConst(bits[3], e)
+                .Add(OpCodes.iastore, null, e)
+
+                .Add(OpCodes.invokespecial, ClassNames.SystemDecimal.FromBitsCtorRef, e);
         }
     }
 }
