@@ -23,7 +23,7 @@ namespace CIL2Java
 
             foreach (InterField fld in type.Fields)
             {
-                if (fld.FieldType.IsValueType)
+                if ((fld.FieldType.IsValueType) && (!fld.IsStatic))
                 {
                     Java.Constants.Class fldTypeClassRef = new Java.Constants.Class(TypeNameToJava(fld.FieldType.Fullname));
                     MethodRef fldTypeCtorRef = new MethodRef(fldTypeClassRef.Value, "<init>", "()V");
