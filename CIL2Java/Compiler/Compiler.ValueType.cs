@@ -93,7 +93,7 @@ namespace CIL2Java
 
             JavaBytecodeWriter codeWriter = new JavaBytecodeWriter();
 
-            foreach (InterField fld in type.Fields)
+            foreach (InterField fld in type.Fields.Where(F=>!F.IsStatic))
             {
                 FieldRef fldRef = new FieldRef(TypeNameToJava(type.Fullname), FieldNameToJava(fld.Name),
                     GetFieldDescriptor(fld.FieldType));

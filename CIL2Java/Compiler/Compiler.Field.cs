@@ -50,7 +50,9 @@ namespace CIL2Java
 
             if (field.IsStatic)
                 result.AccessFlags |= Java.FieldAccessFlags.Static;
-            if ((field.IsReadonly) || (field.IsLiteral))
+
+            //if it will be readonly, we will get error in CopyTo method of ValueType
+            if (((field.IsReadonly) || (field.IsLiteral)) && (!field.DeclaringType.IsValueType))
                 result.AccessFlags |= Java.FieldAccessFlags.Final;
             if (field.IsVolatile)
                 result.AccessFlags |= Java.FieldAccessFlags.Volatile;
