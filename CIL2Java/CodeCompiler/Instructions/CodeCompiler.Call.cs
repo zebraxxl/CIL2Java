@@ -1,4 +1,5 @@
-﻿using CIL2Java.Java.Constants;
+﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
 using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
@@ -118,6 +119,24 @@ namespace CIL2Java
 
             foreach (InterParameter param in operand.Parameters)
                 CompileExpression(e.Arguments[argIndex++], GetExpectType(param));
+
+            if (operand.IsVarArg)
+            {
+                codeGenerator
+                    .AddIntConst(e.Arguments.Count - argIndex)
+                    .Add(OpCodes.anewarray, new Java.Constants.Class(namesController.TypeNameToJava(ClassNames.JavaObject)), e);
+
+                int i = 0;
+                while (argIndex < e.Arguments.Count)
+                {
+                    codeGenerator
+                        .Add(OpCodes.dup, null, e)
+                        .AddIntConst(i++, e);
+
+                    CompileExpression(e.Arguments[argIndex++], ExpectType.Reference);
+                    codeGenerator.Add(OpCodes.aastore, null, e);
+                }
+            }
 
             if (operand.DeclaringType.Fullname == ClassNames.Intrinsics.ClassName)
             {

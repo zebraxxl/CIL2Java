@@ -23,6 +23,10 @@ namespace CIL2Java
 
             foreach (InterParameter param in method.Parameters)
                 result.Append(GetFieldDescriptor(param.Type));
+
+            if (method.IsVarArg)
+                result.Append("[L" + TypeNameToJava(ClassNames.JavaObject) + ";");
+
             result
                 .Append(')')
                 .Append(GetFieldDescriptor(method.ReturnParameter.Type));

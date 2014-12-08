@@ -4,6 +4,7 @@ using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CIL2Java
 {
@@ -167,6 +168,15 @@ namespace CIL2Java
             CompileExpression(e.Arguments[0], GetExpectType(result));
             codeGenerator.Add(OpCodes.invokespecial, new MethodRef(namesController.TypeNameToJava(result),
                 ClassNames.JavaConstructorMethodName, "(" + namesController.GetFieldDescriptor(nullableType) + ")V"), e);
+        }
+
+        private void CompileArglist(ILExpression e, ExpectType expect)
+        {
+            codeGenerator
+                .Add(OpCodes._new, new Java.Constants.Class(namesController.TypeNameToJava(ClassNames.SystemRuntimeArgumentHandle.ClassName)), e)
+                .Add(OpCodes.dup, null, e)
+                .AddLoad(JavaPrimitiveType.Ref, var2Index.Where(K => K.Key.Name == ClassNames.VarArgParamName).FirstOrDefault().Value, e)
+                .Add(OpCodes.invokespecial, ClassNames.SystemRuntimeArgumentHandle.CtorMethodRef);
         }
     }
 }

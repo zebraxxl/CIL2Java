@@ -1,3 +1,4 @@
+using CIL2Java.Attributes;
 using System.Runtime.InteropServices;
 
 namespace System
@@ -6,7 +7,12 @@ namespace System
     [ComVisibleAttribute(true)]
     public struct RuntimeArgumentHandle
     {
-    
-    
+        internal object[] varArgParams;
+
+        [AlwaysCompile]
+        internal RuntimeArgumentHandle(object[] varArgParams)
+        {
+            this.varArgParams = varArgParams;
+        }
     }
 }

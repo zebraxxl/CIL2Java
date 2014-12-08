@@ -85,6 +85,9 @@ namespace CIL2Java
                         nextVarIndex++;
                 }
             }
+
+            if (thisMethod.IsVarArg)
+                var2Index.Add(new ILVariable() { Name = ClassNames.VarArgParamName }, nextVarIndex++);
         }
 
         private int GetVarIndex(ILVariable var)

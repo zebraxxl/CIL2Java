@@ -337,7 +337,7 @@ namespace CIL2Java
                 case ILCode.Cle_Un: CompileCle_Un(e, expectType); break;
                 #endregion
                 #region Conv
-                case ILCode.Conv_I1: 
+                case ILCode.Conv_I1:
                 case ILCode.Conv_Ovf_I1:
                 case ILCode.Conv_Ovf_I1_Un:
                 case ILCode.Conv_Ovf_U1:
@@ -426,6 +426,7 @@ namespace CIL2Java
                 case ILCode.Sizeof: CompileSizeof(e, expectType); break;
                 case ILCode.ValueOf: CompileValueOf(e, expectType); break;
                 case ILCode.NullableOf: CompileNullableOf(e, expectType); break;
+                case ILCode.Arglist: CompileArglist(e, expectType); break;
                 //case ILCode.Dup: case ILCode.Pop: break;  //dup and pop should be removed by ILSpy
                 #endregion
 

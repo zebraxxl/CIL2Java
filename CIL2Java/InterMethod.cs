@@ -70,6 +70,9 @@ namespace CIL2Java
                 MethodSignature thisMethod = new MethodSignature(methodRef);
                 for (int i = 0; i < methodRef.Parameters.Count; i++)
                 {
+                    if (methodRef.Parameters[i].ParameterType.IsSentinel)
+                        break;
+
                     thisMethod.Parameters[i] = resolver.Resolve(methodRef.Parameters[i].ParameterType, genericArgs).Fullname;
                 }
 
@@ -158,7 +161,12 @@ namespace CIL2Java
                 methodRef.MethodReturnType.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.JavaBoxedAttribute).Count() > 0);
 
             foreach (ParameterDefinition paramDef in methodRef.Parameters)
+            {
+                if (paramDef.ParameterType.IsSentinel)
+                    break;
+
                 parameters.Add(new InterParameter(paramDef, this.FullGenericArguments, resolver));
+            }
 
             if (methodDef != null)
             {

@@ -34,7 +34,7 @@ namespace CIL2Java
                 varDesc.Index = (ushort)i;
 
                 ILVariable ilVar = var2Index.Where(K => K.Value == i).FirstOrDefault().Key;
-                if (ilVar != null)
+                if ((ilVar != null) && (ilVar.Name != ClassNames.VarArgParamName))
                 {
                     varDesc.Name = null;
                     if (ilVar.IsGenerated)
@@ -56,6 +56,14 @@ namespace CIL2Java
                     }
                     else
                         varDesc.Descriptor = namesController.GetFieldDescriptor(resolver.Resolve(ilVar.Type, thisMethod.FullGenericArguments));
+                    varDesc.StartPC = 0;
+                    varDesc.Length = (ushort)resultCode.CodeBytes.Length;
+                    varTable.Table.Add(varDesc);
+                }
+                else if (ilVar.Name == ClassNames.VarArgParamName)
+                {
+                    varDesc.Name = ClassNames.VarArgParamName;
+                    varDesc.Descriptor = "Ljava/lang/Object;";
                     varDesc.StartPC = 0;
                     varDesc.Length = (ushort)resultCode.CodeBytes.Length;
                     varTable.Table.Add(varDesc);

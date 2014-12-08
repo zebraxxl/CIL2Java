@@ -83,6 +83,8 @@ namespace CIL2Java
 
         public const string BoxedPrimitiveValueFieldName = "value";
 
+        public const string VarArgParamName = "__arglist";
+
         public static class ByRef
         {
             public const string TypeBase = "ByRef";
@@ -210,6 +212,12 @@ namespace CIL2Java
         {
             public const string ClassNames = "System.Decimal";
             public static readonly MethodRef FromBitsCtorRef = new MethodRef("System/Decimal", "<init>", "([I)V");
+        }
+
+        public static class SystemRuntimeArgumentHandle
+        {
+            public const string ClassName = "System.RuntimeArgumentHandle";
+            public static readonly MethodRef CtorMethodRef = new MethodRef("System.RuntimeArgumentHandle", "<init>", "([Ljava/lang/Object;)V");
         }
 
         public static class SystemThreadingMonitor
