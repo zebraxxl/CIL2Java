@@ -51,8 +51,9 @@ namespace System
         {
             this.hasValue = true;
             this.value = value;
-        }        
-        
+        }
+
+        [AlwaysCompile]
         public T GetValueOrDefault()
         {
             if (!hasValue)

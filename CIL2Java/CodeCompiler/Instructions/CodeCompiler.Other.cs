@@ -155,5 +155,18 @@ namespace CIL2Java
             codeGenerator.Add(OpCodes.invokevirtual, new MethodRef(namesController.TypeNameToJava(nullableType),
                 ClassNames.SystemNullable_1.GetValueOrDefaultMethodName, "()" + namesController.GetFieldDescriptor(returnType)));
         }
+
+        private void CompileNullableOf(ILExpression e, ExpectType expect)
+        {
+            InterType result = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
+            InterType nullableType = result.GenericArguments[0].Type;
+
+            codeGenerator
+                .Add(OpCodes._new, new Java.Constants.Class(namesController.TypeNameToJava(result)), e)
+                .Add(OpCodes.dup);
+            CompileExpression(e.Arguments[0], GetExpectType(result));
+            codeGenerator.Add(OpCodes.invokespecial, new MethodRef(namesController.TypeNameToJava(result),
+                ClassNames.JavaConstructorMethodName, "(" + namesController.GetFieldDescriptor(nullableType) + ")V"), e);
+        }
     }
 }
