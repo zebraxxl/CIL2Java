@@ -16,6 +16,7 @@ namespace CIL2Java
 
         private List<ExceptionDescription> exceptions = new List<ExceptionDescription>();
         private List<Java.Attributes.Code.Exception> javaExceptions = new List<Java.Attributes.Code.Exception>();
+        private Stack<int> exceptionVar = new Stack<int>();
 
         private void CompileTryBlock(ILTryCatchBlock block)
         {
@@ -107,7 +108,9 @@ namespace CIL2Java
                         .Label(catchHandlerStartLabel)
                         .AddStore(JavaPrimitiveType.Ref, varIndex);
 
+                    exceptionVar.Push(varIndex);
                     CompileBlock(cblock);
+                    exceptionVar.Pop();
 
                     codeGenerator.Add(Java.OpCodes._goto, exitLabel);
 

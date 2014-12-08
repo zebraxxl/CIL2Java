@@ -22,6 +22,7 @@ namespace CIL2Java
         MethodPrivateAndVirtual,
         NotZeroLowerBound,
         UnsafeInstruction,
+        NoExceptionForRethrow,
     }
 
     public static class Messages
@@ -49,7 +50,8 @@ namespace CIL2Java
             "Can't find type {0}. On this type was mapped type {1}",
             "Method {0} marked as virtual and private",
             "Non zero lower bound in array {0} not supported",
-            "Instruction {0} is unsafe and has partial support"
+            "Instruction {0} is unsafe and has partial support",
+            "No exception for rethrow. May be rethrow founded out of catch block?",
         };
 
         public static void Message(MessageCode Code, params string[] MessageParams)

@@ -12,5 +12,18 @@ namespace CIL2Java
 
             codeGenerator.Add(Java.OpCodes.athrow, null, e);
         }
+
+        private void CompileRethrow(ILExpression e, ExpectType expect)
+        {
+            if (exceptionVar.Count == 0)
+            {
+                Messages.Message(MessageCode.NoExceptionForRethrow);
+                codeGenerator.Add(Java.OpCodes.aconst_null, null, e);
+            }
+            else
+                codeGenerator.AddLoad(JavaPrimitiveType.Ref, exceptionVar.Peek());
+
+            codeGenerator.Add(Java.OpCodes.athrow, null, e);
+        }
     }
 }
