@@ -39,5 +39,13 @@ namespace CIL2Java
                 codeGenerator.Add(OpCodes.invokestatic, ClassNames.CIL2JavaVESInstructions.CkfiniteFloatRef, e);
             else throw new Exception(); //In valid CIL code this never will happed
         }
+
+        private void CompileLocalloc(ILExpression e, ExpectType expect)
+        {
+            Messages.Message(MessageCode.UnsafeInstruction, e.Code.ToString());
+
+            CompileExpression(e.Arguments[0], ExpectType.Primitive);
+            codeGenerator.AddNewArray(JavaArrayType.Byte, e);
+        }
     }
 }

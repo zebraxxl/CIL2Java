@@ -121,6 +121,42 @@ namespace CIL2Java
             }
         }
 
+        private void CompileInitobj(ILExpression e, ExpectType expect)
+        {
+            InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+
+            CompileExpression(e.Arguments[0], ExpectType.ByRef);
+
+            if (!operand.IsValueType)
+            {
+                JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(operand);
+                MethodRef setValueRef = byRefController.GetByRefSetValueMethodRef(jp);
+
+                switch (jp)
+                {
+                    case JavaPrimitiveType.Bool:
+                    case JavaPrimitiveType.Byte:
+                    case JavaPrimitiveType.Char:
+                    case JavaPrimitiveType.Int:
+                    case JavaPrimitiveType.Short:
+                        codeGenerator.AddIntConst(0, e);
+                        break;
+
+                    case JavaPrimitiveType.Long: codeGenerator.AddLongConst(0L, e); break;
+                    case JavaPrimitiveType.Float: codeGenerator.AddFloatConst(0.0f, e); break;
+                    case JavaPrimitiveType.Double: codeGenerator.AddDoubleConst(0.0, e); break;
+                    case JavaPrimitiveType.Ref: codeGenerator.Add(OpCodes.aconst_null, e); break;
+                }
+
+                codeGenerator.Add(OpCodes.invokevirtual, setValueRef, e);
+            }
+            else
+            {
+                codeGenerator.Add(OpCodes.invokevirtual, new MethodRef(namesController.TypeNameToJava(operand),
+                    ClassNames.ValueTypeZeroFill, "()V"));
+            }
+        }
+
         private void CompileIsinst(ILExpression e, ExpectType expect)
         {
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);

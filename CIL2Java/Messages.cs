@@ -21,6 +21,7 @@ namespace CIL2Java
         CantFindTypeMappedTo,
         MethodPrivateAndVirtual,
         NotZeroLowerBound,
+        UnsafeInstruction,
     }
 
     public static class Messages
@@ -47,7 +48,8 @@ namespace CIL2Java
             "Cant resolve generic parameter {0} in type {1}",
             "Can't find type {0}. On this type was mapped type {1}",
             "Method {0} marked as virtual and private",
-            "Non zero lower bound in array {0} not supported"
+            "Non zero lower bound in array {0} not supported",
+            "Instruction {0} is unsafe and has partial support"
         };
 
         public static void Message(MessageCode Code, params string[] MessageParams)

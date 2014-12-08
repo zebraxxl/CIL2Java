@@ -266,6 +266,7 @@ namespace CIL2Java
                 case ILCode.Stobj: CompileStobj(e, expectType); break;
                 case ILCode.Ldobj: CompileLdobj(e, expectType); break;
                 case ILCode.Cpobj: CompileCpobj(e, expectType); break;
+                case ILCode.Initobj: CompileInitobj(e, expectType); break;
                 case ILCode.Isinst: CompileIsinst(e, expectType); break;
                 case ILCode.Box: CompileBox(e, expectType); break;
                 case ILCode.Unbox: CompileUnbox(e, expectType); break;
@@ -301,6 +302,7 @@ namespace CIL2Java
                 case ILCode.Throw: CompileThrow(e, expectType); break;
                 //case ILCode.Endfinally: break;    //endfinally will be removed by ILSpy
                 //case ILCode.Leave: CompileLeave(e, expectType); break;    //TODO: leave instruction
+                //case ILCode.Endfilter: CompileEndFilter(e, expectType); break;    //Filter unsupported for now
                 #endregion
                 #region Logic
                 case ILCode.LogicNot: CompileLogicNot(e, expectType); break;
@@ -398,6 +400,7 @@ namespace CIL2Java
                 #endregion
                 #region Delegates
                 case ILCode.Ldftn: CompileLdftn(e, expectType); break;
+                case ILCode.Ldvirtftn: CompileLdftn(e, expectType); break;
                 #endregion
                 #region TypedRef
                 case ILCode.Mkrefany: CompileMkrefany(e, expectType); break;
@@ -410,6 +413,7 @@ namespace CIL2Java
                 case ILCode.Break: CompileBreak(e, expectType); break;
                 case ILCode.Nop: CompileNop(e, expectType); break;
                 case ILCode.Ckfinite: CompileCkfinite(e, expectType); break;
+                case ILCode.Localloc: CompileLocalloc(e, expectType); break;
                 //case ILCode.Dup: case ILCode.Pop: break;  //dup and pop should be removed by ILSpy
                 #endregion
 
