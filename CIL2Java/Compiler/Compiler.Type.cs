@@ -196,7 +196,10 @@ namespace CIL2Java
 
                 if (overrideMethod == null)
                 {
-                    Messages.Message(MessageCode.CantFindInterfaceImplMethod, renamedMethod.ToString(), type.Fullname);
+                    // In CIL interfaces didn't duplicate methods from base interfaces
+                    if (!type.IsInterface)
+                        Messages.Message(MessageCode.CantFindInterfaceImplMethod, renamedMethod.ToString(), type.Fullname);
+                    
                     continue;
                 }
 
