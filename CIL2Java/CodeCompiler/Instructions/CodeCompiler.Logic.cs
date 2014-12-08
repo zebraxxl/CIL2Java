@@ -231,15 +231,31 @@ namespace CIL2Java
 
         private void CompileNullCoalescing(ILExpression e, ExpectType expect)
         {
-            //TODO: check for non ref types
+            InterType inferredType = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
+            JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(inferredType);
+
             string exitLabel = "exit" + rnd.Next().ToString();
 
             CompileExpression(e.Arguments[0], expect);
+            codeGenerator.Add(jp.IsDoubleSlot() ? OpCodes.dup2 : OpCodes.dup, null, e);
 
-            codeGenerator
-                .Add(Java.OpCodes.dup, null, e)
-                .Add(Java.OpCodes.ifnonnull, exitLabel, e)
-                .Add(Java.OpCodes.pop);
+            if (jp == JavaPrimitiveType.Ref)
+                codeGenerator.Add(Java.OpCodes.ifnonnull, exitLabel, e);
+            else if (jp.IsIntSlot())
+                codeGenerator.Add(Java.OpCodes.ifne, exitLabel, e);
+            else
+            {
+                if (jp == JavaPrimitiveType.Float)
+                    codeGenerator.Add(OpCodes.fconst_0, null, e).Add(OpCodes.fcmpg, null, e);
+                else if (jp == JavaPrimitiveType.Double)
+                    codeGenerator.Add(OpCodes.dconst_0, null, e).Add(OpCodes.dcmpg, null, e);
+                else if (jp == JavaPrimitiveType.Long)
+                    codeGenerator.Add(OpCodes.lconst_0, null, e).Add(OpCodes.lcmp, null, e);
+
+                codeGenerator.Add(OpCodes.ifeq, exitLabel, e);
+            }
+
+            codeGenerator.Add(jp.IsDoubleSlot() ? OpCodes.pop2 : OpCodes.pop);
             CompileExpression(e.Arguments[1], expect);
             codeGenerator.Label(exitLabel);
         }

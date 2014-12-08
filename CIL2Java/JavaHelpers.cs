@@ -69,5 +69,20 @@ namespace CIL2Java
         {
             return ((jp == JavaPrimitiveType.Long) || (jp == JavaPrimitiveType.Double));
         }
+
+        public static bool IsIntSlot(this JavaPrimitiveType jp)
+        {
+            switch (jp)
+            {
+                case JavaPrimitiveType.Bool:
+                case JavaPrimitiveType.Byte:
+                case JavaPrimitiveType.Char:
+                case JavaPrimitiveType.Int:
+                case JavaPrimitiveType.Short:
+                    return true;
+
+                default: return false;
+            }
+        }
     }
 }
