@@ -158,10 +158,33 @@ namespace CIL2Java
         }
         #endregion
 
+        // stelem.any(T, ldloc(array), ldloc(pos), <OP>(ldelem.any(T, ldloc(array), ldloc(pos)), <RIGHT>))
+        // or
+        // stobj(T, ldloc(ptr), <OP>(ldobj(T, ldloc(ptr)), <RIGHT>))
+        private void PreprocessorRemoveCompoundAssignment(ILNode node)
+        {
+            ILExpression e = node as ILExpression;
+            if ((e != null) && (e.Code == ILCode.CompoundAssignment))
+            {
+                ILExpression op = e.Arguments[0];
+                e.Arguments.Clear();
+
+                ILExpression loadExp = op.Arguments[0];
+
+                e.Code = LoadVarInvert[loadExp.Code];
+                e.Arguments.AddRange(loadExp.Arguments);
+                e.Arguments.Add(op);
+            }
+
+            foreach (ILNode n in node.GetChildren())
+                PreprocessorRemoveCompoundAssignment(n);
+        }
+
         private void RunPreprocessor()
         {
             PreprocessorFindDefaultCtorCallInValueTypeCtor();
             PreprocessorFindAndMoveSuperOrThisCalls();
+            PreprocessorRemoveCompoundAssignment(ilBody);
 
             PreprocessorCheckUninitializedLocalVarsBranch(ilBody, new List<ILVariable>());
             PreprocessorPrepareUninitializedLocalVars();

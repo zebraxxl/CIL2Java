@@ -33,7 +33,7 @@ namespace CIL2Java
         private List<ValueTypeVar> valueTypesVars = new List<ValueTypeVar>();
         private List<TempVar> tempVars = new List<TempVar>();
 
-        //For use with `call ctor(getValueTypeVar(), [params])`
+        //For use with `call ctor(getValueTypeVar(), [params])` and remove CompoundAssignment
         private Dictionary<ILCode, ILCode> LoadVarInvert = new Dictionary<ILCode, ILCode>()
         {
             {ILCode.Ldloc, ILCode.Stloc},
@@ -55,6 +55,8 @@ namespace CIL2Java
             {ILCode.Ldelem_U2, ILCode.Stelem_I2},
             {ILCode.Ldelem_U4, ILCode.Stelem_I4},
             {ILCode.Ldelema, ILCode.Stelem_Any},
+
+            {ILCode.Ldobj, ILCode.Stobj}
         };
 
         private Dictionary<ILCode, ILCode> GetAddrInvert = new Dictionary<ILCode, ILCode>()
