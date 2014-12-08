@@ -158,6 +158,7 @@ namespace CIL2Java
             public const string ClassName = "System.Nullable`1";
             public const string GetHasValueMethodName = "get_HasValue";
             public const string GetValueMethodName = "get_Value";
+            public const string GetValueOrDefaultMethodName = "GetValueOrDefault";
         }
 
         public static class SystemAsyncCallback

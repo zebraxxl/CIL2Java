@@ -16,7 +16,7 @@ namespace CIL2Java
             //TODO: GetExpectType(InterParameter);
             codeGenerator.AddLocalVarInstruction(LocalVarInstruction.Load, JavaHelpers.InterTypeToJavaPrimitive(operandType), varIndex, e);
 
-            if (operandType.IsValueType)
+            if ((operandType.IsValueType) && (expectType != ExpectType.ByRef))
             {
                 MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operandType),
                     ClassNames.ValueTypeGetCopy, "()" + namesController.GetFieldDescriptor(operandType));

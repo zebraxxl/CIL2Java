@@ -416,6 +416,7 @@ namespace CIL2Java
                 case ILCode.Refanyval: CompileRefanyval(e, expectType); break;
                 #endregion
                 #region Other
+                case ILCode.Wrap: CompileExpression(e.Arguments[0], expectType); break;
                 case ILCode.LoopOrSwitchBreak: CompileLoopOrSwitchBreak(e, expectType); break;
                 case ILCode.LoopContinue: CompileLoopContinue(e, expectType); break;
                 case ILCode.Br: CompileBr(e, expectType); break;
@@ -426,6 +427,7 @@ namespace CIL2Java
                 case ILCode.Cpblk: CompileCpblk(e, expectType); break;
                 case ILCode.Initblk: CompileInitblk(e, expectType); break;
                 case ILCode.Sizeof: CompileSizeof(e, expectType); break;
+                case ILCode.ValueOf: CompileValueOf(e, expectType); break;
                 //case ILCode.Dup: case ILCode.Pop: break;  //dup and pop should be removed by ILSpy
                 #endregion
 

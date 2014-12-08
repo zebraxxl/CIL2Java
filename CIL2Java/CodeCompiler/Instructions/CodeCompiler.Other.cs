@@ -1,4 +1,5 @@
 ﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
 using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
@@ -143,6 +144,16 @@ namespace CIL2Java
                 else
                     return 4;
             }
+        }
+
+        private void CompileValueOf(ILExpression e, ExpectType expect)
+        {
+            InterType returnType = resolver.Resolve(e.InferredType, thisMethod.FullGenericArguments);
+            InterType nullableType = resolver.Resolve(e.Arguments[0].InferredType, thisMethod.FullGenericArguments);
+
+            CompileExpression(e.Arguments[0], ExpectType.ByRef);
+            codeGenerator.Add(OpCodes.invokevirtual, new MethodRef(namesController.TypeNameToJava(nullableType),
+                ClassNames.SystemNullable_1.GetValueOrDefaultMethodName, "()" + namesController.GetFieldDescriptor(returnType)));
         }
     }
 }
