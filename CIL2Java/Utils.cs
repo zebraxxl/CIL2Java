@@ -124,6 +124,7 @@ namespace CIL2Java
         public static void SetDecompillerSettings(DecompilerSettings s)
         {
             s.YieldReturn = false;
+            s.IntroduceIncrementAndDecrement = false;
         }
 
         public static bool IsConvToUnsigned(this ILCode self)

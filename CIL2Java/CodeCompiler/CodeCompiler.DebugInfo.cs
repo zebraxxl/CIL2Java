@@ -37,7 +37,9 @@ namespace CIL2Java
                 if (ilVar != null)
                 {
                     varDesc.Name = null;
-                    if (ilVar.IsParameter)
+                    if (ilVar.IsGenerated)
+                        varDesc.Name = "gen_" + i.ToString();
+                    else if (ilVar.IsParameter)
                         varDesc.Name = ilVar.OriginalParameter.Name;
                     else
                         varDesc.Name = ilVar.OriginalVariable.Name;
