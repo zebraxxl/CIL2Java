@@ -10,7 +10,18 @@ namespace CIL2Java
     {
         private void CompileLoopOrSwitchBreak(ILExpression e, ExpectType expect)
         {
-            codeGenerator.Add(Java.OpCodes._goto, loopOrSwitchExitLabel.Peek(), e);
+            if (loopOrSwitchExitLabel.Count == 0)
+                Messages.Message(MessageCode.LoopOpcodeFoundedOutsideLoop, e.Code.ToString());
+            else
+                codeGenerator.Add(OpCodes._goto, loopOrSwitchExitLabel.Peek(), e);
+        }
+
+        private void CompileLoopContinue(ILExpression e, ExpectType expect)
+        {
+            if (loopContinueLabel.Count == 0)
+                Messages.Message(MessageCode.LoopOpcodeFoundedOutsideLoop, e.Code.ToString());
+            else
+                codeGenerator.Add(OpCodes._goto, loopContinueLabel.Peek(), e);
         }
 
         private void CompileBr(ILExpression e, ExpectType expect)

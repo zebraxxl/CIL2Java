@@ -13,6 +13,7 @@ namespace CIL2Java
         UnknownPrimitiveType,
         CantFindInterfaceImplMethod,
         CantConvertType,
+        LoopOpcodeFoundedOutsideLoop,
 
         InputUnknown = 1000,
         InvalidInputParameterFormat,
@@ -41,6 +42,7 @@ namespace CIL2Java
             "Unknown primitive type {0}. Unable it to box. Boxing as Integer",
             "Can't find implementation of interface method `{0}` in type `{1}",
             "Can't convert type from `{0}` to `{1}`",
+            "Loop opcode {0} founded outside of loop",
         };
 
         private static string[] WarringsStrings = {
