@@ -1,5 +1,6 @@
 ﻿using CIL2Java.Java;
 using ICSharpCode.Decompiler.ILAst;
+using Mono.Cecil;
 using System;
 using System.Collections.Generic;
 
@@ -68,6 +69,69 @@ namespace CIL2Java
             CompileExpression(e.Arguments[2], ExpectType.Primitive);
 
             codeGenerator.Add(OpCodes.invokestatic, ClassNames.CIL2JavaVESInstructions.InitblkRef, e);
+        }
+
+        private void CompileSizeof(ILExpression e, ExpectType expect)
+        {
+            InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
+
+            codeGenerator.AddIntConst(GetSize(operand));
+        }
+
+        private int GetSize(InterType operand)
+        {
+            if (operand.IsEnum)
+                operand = operand.ElementType;
+
+            if (operand.IsPrimitive)
+            {
+                switch (operand.PrimitiveType)
+                {
+                    case PrimitiveType.Bool:
+                    case PrimitiveType.Byte:
+                    case PrimitiveType.SByte:
+                        return 1;
+
+                    case PrimitiveType.Char:
+                    case PrimitiveType.Int16:
+                    case PrimitiveType.UInt16:
+                        return 2;
+
+                    case PrimitiveType.Int32:
+                    case PrimitiveType.UInt32:
+                    case PrimitiveType.Single:
+                        return 4;
+
+                    case PrimitiveType.Int64:
+                    case PrimitiveType.UInt64:
+                    case PrimitiveType.Double:
+                        return 8;
+
+                    case PrimitiveType.IntPtr:
+                    case PrimitiveType.UIntPtr:
+                        if (Program.AsX64)
+                            return 8;
+                        else
+                            return 4;
+
+                    default:
+                        return 0;
+                }
+            }
+            else if (operand.IsValueType)
+            {
+                int size = 0;
+                foreach (InterField fld in operand.Fields)
+                    size += GetSize(fld.FieldType);
+                return size;
+            }
+            else
+            {
+                if (Program.AsX64)
+                    return 8;
+                else
+                    return 4;
+            }
         }
     }
 }

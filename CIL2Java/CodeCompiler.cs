@@ -417,6 +417,7 @@ namespace CIL2Java
                 case ILCode.Localloc: CompileLocalloc(e, expectType); break;
                 case ILCode.Cpblk: CompileCpblk(e, expectType); break;
                 case ILCode.Initblk: CompileInitblk(e, expectType); break;
+                case ILCode.Sizeof: CompileSizeof(e, expectType); break;
                 //case ILCode.Dup: case ILCode.Pop: break;  //dup and pop should be removed by ILSpy
                 #endregion
 
