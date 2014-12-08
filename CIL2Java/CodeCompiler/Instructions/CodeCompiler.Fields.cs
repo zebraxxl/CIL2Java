@@ -1,4 +1,5 @@
-﻿using CIL2Java.Java.Constants;
+﻿using CIL2Java.Java;
+using CIL2Java.Java.Constants;
 using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
@@ -8,8 +9,28 @@ namespace CIL2Java
 {
     public partial class CodeCompiler
     {
-        private void CompileFieldLoad(InterField operand, object tag)
+        private void CompileFieldLoadThreadLocal(InterField operand, object tag)
         {
+            InterType fldType = operand.FieldType;
+
+            codeGenerator.Add(OpCodes.invokevirtual, ClassNames.JavaLangThreadLocal.GetMethodRef, tag);
+
+            if ((fldType.IsPrimitive) || (fldType.IsValueType) || (fldType.IsEnum))
+                CompileUnbox_Any(
+                    new ILExpression(ILCode.Unbox_Any, fldType,
+                        new ILExpression(ILCode.Nop, null)),
+                    GetExpectType(fldType));
+            else
+                codeGenerator.Add(OpCodes.checkcast, new Java.Constants.Class(namesController.TypeNameToJava(
+                    fldType)), tag);
+        }
+
+        private void CompileFieldLoad(InterField operand, object tag, bool getFromThreadLocal = true)
+        {
+            string fldDesc = namesController.GetFieldDescriptor(operand.FieldType);
+            if ((operand.IsStatic) && (operand.IsThreadLocal))
+                fldDesc = "L" + namesController.TypeNameToJava(ClassNames.JavaLangThreadLocal.ClassName) + ";";
+
             if (((operand.IsPrivate) && (operand.DeclaringType != thisMethod.DeclaringType)) ||
                 ((operand.IsProtected) && (operand.DeclaringType != thisMethod.DeclaringType) &&
                 (!thisMethod.DeclaringType.IsSuper(operand.DeclaringType))))
@@ -19,8 +40,8 @@ namespace CIL2Java
                 MethodRef accessMethod = new MethodRef(
                     namesController.TypeNameToJava(operand.DeclaringType),
                     accessMethodName,
-                    "(" + namesController.GetFieldDescriptor(operand.DeclaringType) + ")"
-                        + namesController.GetFieldDescriptor(operand.FieldType));
+                    "(" + (operand.IsStatic ? "" : namesController.GetFieldDescriptor(operand.DeclaringType)) + ")"
+                        + fldDesc);
                 codeGenerator.Add(Java.OpCodes.invokestatic, accessMethod);
             }
             else
@@ -30,13 +51,24 @@ namespace CIL2Java
                     new Java.Constants.FieldRef(
                         namesController.TypeNameToJava(operand.DeclaringType),
                         namesController.FieldNameToJava(operand.Name),
-                        namesController.GetFieldDescriptor(operand.FieldType)),
+                        fldDesc),
                     tag));
             }
+
+            if ((operand.IsStatic) && (operand.IsThreadLocal) && (getFromThreadLocal))
+                CompileFieldLoadThreadLocal(operand, tag);
         }
 
         private void CompileFieldStore(InterField operand, object tag)
         {
+            if ((operand.IsStatic) && (operand.IsThreadLocal))
+            {
+                CompileFieldLoad(operand, tag, false);
+                codeGenerator.Add(OpCodes.swap, null, tag);
+                codeGenerator.Add(OpCodes.invokevirtual, ClassNames.JavaLangThreadLocal.SetMethodRef, tag);
+                return;
+            }
+
             if (((operand.IsPrivate) && (operand.DeclaringType != thisMethod.DeclaringType)) ||
                 ((operand.IsProtected) && (operand.DeclaringType != thisMethod.DeclaringType) &&
                 (!thisMethod.DeclaringType.IsSuper(operand.DeclaringType))))
@@ -67,11 +99,13 @@ namespace CIL2Java
             InterField operand = resolver.Resolve((FieldReference)e.Operand, thisMethod.FullGenericArguments);
             bool needDup = ((e.ExpectedType != null) && (expectType != ExpectType.None));
 
+            bool boxed = operand.IsStatic && operand.IsThreadLocal;
+
             int argIndex = 0;
             if (e.Code == ILCode.Stfld)
                 CompileExpression(e.Arguments[argIndex++], ExpectType.Reference);
 
-            CompileExpression(e.Arguments[argIndex++], GetExpectType(operand));
+            CompileExpression(e.Arguments[argIndex++], boxed ? ExpectType.Boxed : GetExpectType(operand));
 
             if (needDup)
             {

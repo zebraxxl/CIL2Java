@@ -15,6 +15,7 @@ namespace CIL2Java
         public const string DelegateTypeName = "System.Delegate";
         public const string MulticastDelegateTypeName = "System.MulticastDelegate";
         public const string OverflowExceptionTypeName = "System.OverflowException";
+        public const string ThreadStaticAttribute = "System.ThreadStaticAttribute";
 
         public const string BoxedAttribute = "CIL2Java.Attributes.BoxedAttribute";
         public const string JavaBoxedAttribute = "CIL2Java.Attributes.JavaBoxedAttribute";
@@ -113,6 +114,15 @@ namespace CIL2Java
             public readonly static MethodRef getDeclaredFieldRef = new MethodRef("java/lang/Class", "getDeclaredField", "(Ljava/lang/String;)Ljava/lang/reflect/Field;");
             public readonly static MethodRef getDeclaredMethodRef = new MethodRef("java/lang/Class", "getDeclaredMethod", "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;");
             public readonly static MethodRef getDeclaredConstructorRef = new MethodRef("java/lang/Class", "getDeclaredConstructor", "([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;");
+        }
+
+        public static class JavaLangThreadLocal
+        {
+            public const string ClassName = "java.lang.ThreadLocal";
+
+            public static readonly MethodRef GetMethodRef = new MethodRef("java/lang/ThreadLocal", "get", "()Ljava/lang/Object;");
+            public static readonly MethodRef SetMethodRef = new MethodRef("java/lang/ThreadLocal", "set", "(Ljava/lang/Object;)V");
+            public static readonly MethodRef CtorMethodRef = new MethodRef("java/lang/ThreadLocal", "<init>", "()V");
         }
 
         public static class JavaLangReflectField

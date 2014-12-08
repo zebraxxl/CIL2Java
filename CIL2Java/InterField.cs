@@ -24,6 +24,7 @@ namespace CIL2Java
         public bool IsReadonly { get; private set; }
         public bool IsLiteral { get; private set; }
         public bool IsVolatile { get; private set; }
+        public bool IsThreadLocal { get; private set; }
 
         public object Constatnt { get { return constant; } }
         public byte[] InitialValue { get { return initialValue; } }
@@ -43,6 +44,7 @@ namespace CIL2Java
             this.IsStatic = fldDef.IsStatic;
             this.IsReadonly = fldDef.IsInitOnly;
             this.IsLiteral = fldDef.IsLiteral;
+            this.IsThreadLocal = fldDef.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.ThreadStaticAttribute).Count() > 0;
 
             if (fldRef.FieldType is RequiredModifierType)
             {

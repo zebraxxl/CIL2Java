@@ -34,6 +34,25 @@ namespace CIL2Java
                         .Add(OpCodes.invokespecial, superCall);
                 }
 
+                if (thisMethod.IsStatic)
+                {
+                    var threadLocalFields = thisMethod.DeclaringType.Fields.Where(F => F.IsStatic && F.IsThreadLocal);
+
+                    foreach (InterField fld in threadLocalFields)
+                    {
+                        FieldRef fldRef = new FieldRef(
+                            namesController.TypeNameToJava(fld.DeclaringType.Fullname),
+                            namesController.FieldNameToJava(fld.Name),
+                            "L" + namesController.TypeNameToJava(ClassNames.JavaLangThreadLocal.ClassName) + ";");
+
+                        codeGenerator
+                            .Add(OpCodes._new, new Java.Constants.Class(namesController.TypeNameToJava(ClassNames.JavaLangThreadLocal.ClassName)))
+                            .Add(OpCodes.dup)
+                            .Add(OpCodes.invokespecial, ClassNames.JavaLangThreadLocal.CtorMethodRef)
+                            .Add(OpCodes.putstatic, fldRef);
+                    }
+                }
+
                 var valueTypeFields = thisMethod.DeclaringType.Fields
                     .Where(F => ((F.FieldType.IsValueType) && (F.IsStatic == thisMethod.IsStatic)));
                 OpCodes putfield = thisMethod.IsStatic ? OpCodes.putstatic : OpCodes.putfield;

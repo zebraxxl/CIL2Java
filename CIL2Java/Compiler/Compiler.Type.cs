@@ -132,6 +132,7 @@ namespace CIL2Java
 
             bool hasStaticCtor = type.Methods.Where(M => ((M.IsConstructor) && (M.IsStatic))).Count() > 0;
             bool needStaticCtor = type.Fields.Where(F => ((F.FieldType.IsValueType) && (F.IsStatic))).Count() > 0;
+            needStaticCtor |= type.Fields.Where(F => F.IsStatic && F.IsThreadLocal).Count() > 0;
 
             if ((needStaticCtor) && (!hasStaticCtor))
                 GenerateStaticCtor(type);
@@ -152,6 +153,9 @@ namespace CIL2Java
             {
                 FieldAccessor fld = type.FieldAccessors[i];
                 string fldTypeDescr = GetFieldDescriptor(fld.Field.FieldType);
+                if ((fld.Field.IsStatic) && (fld.Field.IsThreadLocal))
+                    fldTypeDescr = "L" + TypeNameToJava(ClassNames.JavaLangThreadLocal.ClassName) + ";";
+
                 JavaPrimitiveType javaFldType = JavaHelpers.InterTypeToJavaPrimitive(fld.Field.FieldType);
                 FieldRef fldRef = new FieldRef(TypeNameToJava(type.Fullname), FieldNameToJava(fld.Field.Name), fldTypeDescr);
 
@@ -165,14 +169,14 @@ namespace CIL2Java
 
                 if (fld.Type == FieldAccessorType.Getter)
                 {
-                    result.Descriptor = "(" + GetFieldDescriptor(type) + ")" + fldTypeDescr;
+                    result.Descriptor = "(" + (fld.Field.IsStatic ? "" : GetFieldDescriptor(type)) + ")" + fldTypeDescr;
                     codeWriter
                         .Add(fld.Field.IsStatic ? OpCodes.getstatic : OpCodes.getfield, fldRef)
                         .AddReturn(javaFldType);
                 }
                 else
                 {
-                    result.Descriptor = "(" + GetFieldDescriptor(type) + fldTypeDescr + ")V";
+                    result.Descriptor = "(" + (fld.Field.IsStatic ? "" : GetFieldDescriptor(type)) + fldTypeDescr + ")V";
                     codeWriter
                         .AddLoad(javaFldType, 1)
                         .Add(fld.Field.IsStatic ? OpCodes.putstatic : OpCodes.putfield, fldRef)
@@ -215,6 +219,19 @@ namespace CIL2Java
             ctor.Descriptor = "()V";
 
             JavaBytecodeWriter codeWriter = new JavaBytecodeWriter();
+
+            var threadLocalFields = type.Fields.Where(F => F.IsThreadLocal && F.IsStatic);
+            foreach (InterField fld in threadLocalFields)
+            {
+                FieldRef fldRef = new FieldRef(TypeNameToJava(type.Fullname), FieldNameToJava(fld.Name),
+                    "L" + TypeNameToJava(ClassNames.JavaLangThreadLocal.ClassName) + ";");
+
+                codeWriter
+                    .Add(OpCodes._new, new Java.Constants.Class(TypeNameToJava(ClassNames.JavaLangThreadLocal.ClassName)))
+                    .Add(OpCodes.dup)
+                    .Add(OpCodes.invokespecial, ClassNames.JavaLangThreadLocal.CtorMethodRef)
+                    .Add(OpCodes.putstatic, fldRef);
+            }
 
             var staticValueTypeFields = type.Fields.Where(F => ((F.IsStatic) && (F.FieldType.IsValueType)));
 

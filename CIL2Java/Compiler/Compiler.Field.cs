@@ -58,6 +58,9 @@ namespace CIL2Java
             result.Name = FieldNameToJava(field.Name);
             result.Descriptor = GetFieldDescriptor(field.FieldType);
 
+            if ((field.IsStatic) && (field.IsThreadLocal))
+                result.Descriptor = "L" + TypeNameToJava(ClassNames.JavaLangThreadLocal.ClassName) + ";";
+
             if (field.Constatnt != null)
             {
                 Java.Constant constVal = null;
