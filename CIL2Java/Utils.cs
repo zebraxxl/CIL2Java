@@ -125,6 +125,8 @@ namespace CIL2Java
         {
             s.YieldReturn = false;
             s.IntroduceIncrementAndDecrement = false;
+            s.ExpressionTrees = false;
+            s.AsyncAwait = false;
         }
 
         public static bool IsConvToUnsigned(this ILCode self)
