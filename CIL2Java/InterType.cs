@@ -275,7 +275,7 @@ namespace CIL2Java
                             genericArg.Type = resolver.Resolve(ClassNames.ObjectTypeName);
                         }
                         else
-                            genericArg.Type = resolver.Resolve(genericArgType, InterGenericArgument.EmptyGenericArgsList);
+                            genericArg.Type = resolver.Resolve(genericArgType, genericArgs);
                     }
 
                     genericArg = new InterGenericArgument(GenericArgumentOwnerType.Type, this, null, param.Position, genericArg.Type);
