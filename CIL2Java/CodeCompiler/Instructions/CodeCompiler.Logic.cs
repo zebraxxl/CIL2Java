@@ -30,7 +30,7 @@ namespace CIL2Java
             {ILCode.Cne, ILCode.Ceq},
             {ILCode.Cge, ILCode.Clt},
             {ILCode.Cge_Un, ILCode.Clt_Un},
-            {ILCode.Cle, ILCode.Cgt_Un},
+            {ILCode.Cle, ILCode.Cgt},
             {ILCode.Cle_Un, ILCode.Cgt_Un}
         };
 
