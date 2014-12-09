@@ -60,12 +60,12 @@ namespace CIL2Java
                 // !(a || b) = (!a) && (!b)
                 if (e.Arguments[0].Code == ILCode.LogicAnd)
                     e = new ILExpression(ILCode.LogicOr, null,
-                            new ILExpression(ILCode.LogicNot, null, e.Arguments[0]),
-                            new ILExpression(ILCode.LogicNot, null, e.Arguments[1]));
+                            new ILExpression(ILCode.LogicNot, null, e.Arguments[0].Arguments[0]),
+                            new ILExpression(ILCode.LogicNot, null, e.Arguments[0].Arguments[1]));
                 else if (e.Arguments[0].Code == ILCode.LogicOr)
                     e = new ILExpression(ILCode.LogicAnd, null,
-                            new ILExpression(ILCode.LogicNot, null, e.Arguments[0]),
-                            new ILExpression(ILCode.LogicNot, null, e.Arguments[1]));
+                            new ILExpression(ILCode.LogicNot, null, e.Arguments[0].Arguments[0]),
+                            new ILExpression(ILCode.LogicNot, null, e.Arguments[0].Arguments[1]));
                 else
                 {
                     if (invertLogic.ContainsKey(e.Arguments[0].Code))
