@@ -213,7 +213,10 @@ namespace CIL2Java
             }
 
             Start();
+
+#if DEBUG
             Console.ReadKey();
+#endif
         }
     }
 }
