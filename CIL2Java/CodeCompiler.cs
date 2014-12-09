@@ -174,10 +174,7 @@ namespace CIL2Java
             codeGenerator.Label(loopLabel);
 
             if (node.Condition != null)
-            {
-                CompileExpression(node.Condition, ExpectType.Primitive);
-                codeGenerator.Add(Java.OpCodes.ifeq, exitLabel, node);  //goto to `exit` if Condition == 0
-            }
+                CompileCondition(new ILExpression(ILCode.LogicNot, null, node.Condition), exitLabel);
 
             loopOrSwitchExitLabel.Push(exitLabel);
             loopContinueLabel.Push(loopLabel);
