@@ -217,7 +217,7 @@ namespace CIL2Java
         public static class SystemRuntimeArgumentHandle
         {
             public const string ClassName = "System.RuntimeArgumentHandle";
-            public static readonly MethodRef CtorMethodRef = new MethodRef("System.RuntimeArgumentHandle", "<init>", "([Ljava/lang/Object;)V");
+            public static readonly MethodRef CtorMethodRef = new MethodRef("System/RuntimeArgumentHandle", "<init>", "([Ljava/lang/Object;)V");
         }
 
         public static class SystemThreadingMonitor
