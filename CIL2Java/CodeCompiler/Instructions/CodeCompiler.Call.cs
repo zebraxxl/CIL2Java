@@ -133,7 +133,7 @@ namespace CIL2Java
                         .Add(OpCodes.dup, null, e)
                         .AddIntConst(i++, e);
 
-                    CompileExpression(e.Arguments[argIndex++], ExpectType.Reference);
+                    CompileExpression(e.Arguments[argIndex++], ExpectType.Boxed);
                     codeGenerator.Add(OpCodes.aastore, null, e);
                 }
             }
