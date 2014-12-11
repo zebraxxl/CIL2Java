@@ -438,6 +438,53 @@ namespace CIL2Java
                         resolver.Resolve(method, genericArgs);
                 }
             }
+
+            #region Virtual Generics Methods
+            foreach (var method in typeDef.Methods.Where((M => (M.IsVirtual && M.HasGenericParameters))))
+            {
+                InterType baseType = firstBaseType;
+
+                while (baseType != null)
+                {
+                    baseType.Methods.Where(M =>
+                    {
+                        MethodDefinition methodDef = M.Body.Method;
+
+                        return methodDef.Name == method.Name &&
+                            methodDef.Parameters.Count == method.Parameters.Count &&
+                            methodDef.GenericParameters.Count == method.GenericParameters.Count;
+                    }).ForEach(M => resolver.Resolve(method, M.FullGenericArguments));
+
+                    baseType = baseType.baseType;
+                }
+
+                foreach (InterType iface in interfaces)
+                {
+                    iface.methods.Where(im =>
+                    {
+                        MethodDefinition methodDef = im.Body.Method;
+
+                        return methodDef.Name == method.Name &&
+                            methodDef.Parameters.Count == method.Parameters.Count &&
+                            methodDef.GenericParameters.Count == method.GenericParameters.Count;
+                    }).ForEach(M => resolver.Resolve(method, M.FullGenericArguments));
+                }
+
+                foreach (MethodReference mRef in method.Overrides)
+                {
+                    InterType mRefDecl = resolver.Resolve(mRef.DeclaringType, genericArgs);
+
+                    mRefDecl.methods.Where(im =>
+                    {
+                        MethodDefinition methodDef = im.Body.Method;
+
+                        return methodDef.Name == method.Name &&
+                            methodDef.Parameters.Count == method.Parameters.Count &&
+                            methodDef.GenericParameters.Count == method.GenericParameters.Count;
+                    }).ForEach(M => resolver.Resolve(method, M.FullGenericArguments));
+                }
+            }
+            #endregion
         }
 
         public string AddFieldAccessor(FieldAccessor fld)
