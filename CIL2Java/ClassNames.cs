@@ -163,6 +163,14 @@ namespace CIL2Java
             public const string monitorexit = "monitorexit";
             public const string lshr = "lshr";
             public const string lushr = "lushr";
+
+            public const string CreatePointerToArray = "CreatePointerToArray";
+            public const string GetBoxedDataFromPointer = "GetBoxedDataFromPointer";
+
+            public const string IsCILBoxing = "IsCILBoxing";
+            public const string IsJavaBoxing = "IsJavaBoxing";
+
+            public const string GetClass = "GetClass";
         }
 
         public static class SystemNullable_1

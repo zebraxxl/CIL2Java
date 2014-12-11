@@ -16,5 +16,7 @@ namespace CIL2Java
 
         string GetArrayByRefTypeName(InterType type);
         Java.Constants.MethodRef GetArrayByRefCtorMethodRef(InterType type);
+
+        IEnumerable<JavaPrimitiveType> GetByRefTypes();
     }
 }

@@ -60,6 +60,7 @@
     <Compile Include="CodeCompiler\CodeCompiler.Delegates.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Exceptions.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.ExpectType.cs" />
+    <Compile Include="CodeCompiler\CodeCompiler.Intrinsics.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Preprocessor.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Prolog.cs" />
     <Compile Include="CodeCompiler\CodeCompiler.Vars.cs" />

@@ -3,6 +3,7 @@ using CIL2Java.Java.Constants;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace CIL2Java
 {
@@ -558,6 +559,11 @@ namespace CIL2Java
                 TypeNameToJava(byRefType.ToString()),
                 ClassNames.ByRef.SetValueMethodName,
                 "(" + descr + ")V");
+        }
+
+        IEnumerable<JavaPrimitiveType> IByRefController.GetByRefTypes()
+        {
+            return byRefToGenerate.Where(T => T.place == ByRefPlace.Unknown).Select(T => T.type);
         }
     }
 }

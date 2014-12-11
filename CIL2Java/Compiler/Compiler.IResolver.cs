@@ -200,6 +200,15 @@ namespace CIL2Java
                     return true;
                 }
             });
+
+            if ((toReturn != null) && (toReturn.IsByRef))
+            {
+                JavaPrimitiveType jp = JavaHelpers.InterTypeToJavaPrimitive(toReturn.ElementType);
+                JavaByRefType jbrt = new JavaByRefType(ByRefPlace.Unknown, jp);
+                if (!byRefToGenerate.Contains(jbrt))
+                    byRefToGenerate.Add(jbrt);
+            }
+
             return toReturn;
         }
 

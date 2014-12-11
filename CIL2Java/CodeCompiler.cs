@@ -189,6 +189,36 @@ namespace CIL2Java
 
         private void CompileCondition(ILCondition node, ExpectType expectType)
         {
+            ILExpression condition = node.Condition;
+
+            while (condition != null)
+            {
+                if (condition.Code == ILCode.Call)
+                {
+                    InterMethod callMethod = resolver.Resolve((MethodReference)condition.Operand, thisMethod.FullGenericArguments);
+
+                    if (callMethod.DeclaringType.Fullname == ClassNames.Intrinsics.ClassName)
+                    {
+                        if (callMethod.Name == ClassNames.Intrinsics.IsCILBoxing)
+                        {
+                            if (Program.BoxType == BoxingType.Cil)
+                                CompileBlock(node.TrueBlock);
+                            return;
+                        }
+
+                        if (callMethod.Name == ClassNames.Intrinsics.IsJavaBoxing)
+                        {
+                            if (Program.BoxType == BoxingType.Java)
+                                CompileBlock(node.TrueBlock);
+                            return;
+                        }
+                    }
+                    break;
+                }
+
+                condition = condition.Arguments.FirstOrDefault();
+            }
+
             string labelsSufix = rnd.Next().ToString();
             string falseLabel = "false" + labelsSufix;
             string exitLabel = "exit" + labelsSufix;
