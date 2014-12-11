@@ -70,7 +70,8 @@ namespace CIL2Java
         private void FillVars(List<ILVariable> vars)
         {
             if (thisMethod.HasThis)
-                var2Index.Add(vars.Where(V => V.Name == "this").FirstOrDefault(), nextVarIndex++);
+                var2Index.Add(vars.Where(V => V.Name == "this").FirstOrDefault() ?? new ILVariable() { Name = "this" },
+                    nextVarIndex++);
             for (int i = 0; i < thisMethod.Parameters.Count; i++)
             {
                 InterParameter param = thisMethod.Parameters[i];

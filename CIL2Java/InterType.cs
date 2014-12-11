@@ -155,10 +155,14 @@ namespace CIL2Java
             }
 
             typeDef.Fields
-                .Where(F => F.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.AlwaysCompileAttribute).Count() > 0)
+                .Where(F => F.CustomAttributes.Where(A =>
+                    ((A.AttributeType.FullName == ClassNames.AlwaysCompileAttribute) ||
+                    (A.AttributeType.FullName == ClassNames.FromJavaAttribute))).Count() > 0)
                 .ForEach(F => resolver.Resolve(F, genericArgs));
             typeDef.Methods
-                .Where(M => M.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.AlwaysCompileAttribute).Count() > 0)
+                .Where(M => M.CustomAttributes.Where(A =>
+                    ((A.AttributeType.FullName == ClassNames.AlwaysCompileAttribute) ||
+                    (A.AttributeType.FullName == ClassNames.FromJavaAttribute))).Count() > 0)
                 .ForEach(M => resolver.Resolve(M, genericArgs));
 
             if (IsEnum)

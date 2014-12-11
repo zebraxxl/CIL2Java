@@ -222,7 +222,11 @@ namespace CIL2Java
             }
             else
             {
-                CompileExpression(e.Arguments[0], returnExpect);
+                //TODO: ArgIterator GetHashCode - blank;
+                if (e == null)
+                    codeGenerator.AddDefaultValue(JavaHelpers.InterTypeToJavaPrimitive(returnType));
+                else
+                    CompileExpression(e.Arguments[0], returnExpect);
                 codeGenerator.AddReturn(JavaHelpers.InterTypeToJavaPrimitive(returnType), e);
             }
         }

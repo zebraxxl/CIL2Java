@@ -41,7 +41,7 @@ namespace CIL2Java
                         varDesc.Name = "gen_" + i.ToString();
                     else if (ilVar.IsParameter)
                         varDesc.Name = ilVar.OriginalParameter.Name;
-                    else
+                    else if (ilVar.OriginalVariable != null)
                         varDesc.Name = ilVar.OriginalVariable.Name;
                     if ((varDesc.Name == null) || (varDesc.Name.Length == 0))
                         varDesc.Name = ilVar.Name ?? "unknown_" + i.ToString();
@@ -60,7 +60,7 @@ namespace CIL2Java
                     varDesc.Length = (ushort)resultCode.CodeBytes.Length;
                     varTable.Table.Add(varDesc);
                 }
-                else if (ilVar.Name == ClassNames.VarArgParamName)
+                else if ((ilVar != null) && (ilVar.Name == ClassNames.VarArgParamName))
                 {
                     varDesc.Name = ClassNames.VarArgParamName;
                     varDesc.Descriptor = "Ljava/lang/Object;";
