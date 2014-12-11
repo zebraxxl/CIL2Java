@@ -182,6 +182,8 @@ namespace CIL2Java
                 ReplacedAssemblies.Add("mscorlib", Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), "corlib.dll"));
             if (!ReplacedAssemblies.ContainsKey("System"))
                 ReplacedAssemblies.Add("System", Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), "c2j_System.dll"));
+            if (!ReplacedAssemblies.ContainsKey("System.Core"))
+                ReplacedAssemblies.Add("System.Core", Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location), "c2j_System.Core.dll"));
 
             CachedAssemblies = new Dictionary<string, AssemblyDefinition>();
             foreach (KeyValuePair<string, string> Assembly in ReplacedAssemblies)

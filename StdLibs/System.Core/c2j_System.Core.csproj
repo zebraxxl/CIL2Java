@@ -1,0 +1,302 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5BCD209E-F75E-4B31-8984-010446CE0BBA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>
+    </RootNamespace>
+    <AssemblyName>c2j_System.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>0436,0618,1685</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System/Diagnostics/Eventing\EventDescriptor.cs" />
+    <Compile Include="System/Diagnostics/Eventing\EventProvider.cs" />
+    <Compile Include="System/Diagnostics/Eventing\EventProviderTraceListener.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementEntityAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementHostingModel.cs" />
+    <Compile Include="System/Management/Instrumentation\WmiConfigurationAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementMemberAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementNewInstanceAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementBindAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementCreateAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementRemoveAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementEnumeratorAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementProbeAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementTaskAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementKeyAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementReferenceAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementConfigurationType.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementConfigurationAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementCommitAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\ManagementNameAttribute.cs" />
+    <Compile Include="System/Management/Instrumentation\InstrumentationBaseException.cs" />
+    <Compile Include="System/Management/Instrumentation\InstrumentationException.cs" />
+    <Compile Include="System/Management/Instrumentation\InstanceNotFoundException.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventBookmark.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogType.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogIsolation.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogMode.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogConfiguration.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogLink.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogStatus.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventProperty.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogPropertySelector.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventRecord.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventKeyword.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLevel.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogRecord.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogReader.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogWatcher.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventRecordWrittenEventArgs.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogQuery.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\SessionAuthentication.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\PathType.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogSession.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventMetadata.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventOpcode.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventTask.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogException.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogNotFoundException.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogReadingException.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogProviderDisabledException.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogInvalidDataException.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\EventLogInformation.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\ProviderMetadata.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\StandardEventLevel.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\StandardEventTask.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\StandardEventOpcode.cs" />
+    <Compile Include="System/Diagnostics/Eventing/Reader\StandardEventKeywords.cs" />
+    <Compile Include="System/Linq\IQueryable.cs" />
+    <Compile Include="System/Linq\IQueryable`1.cs" />
+    <Compile Include="System/Linq\IQueryProvider.cs" />
+    <Compile Include="System/Linq\IOrderedQueryable.cs" />
+    <Compile Include="System/Linq\IOrderedQueryable`1.cs" />
+    <Compile Include="System/Linq\Queryable.cs" />
+    <Compile Include="System/Linq\Enumerable.cs" />
+    <Compile Include="System/Linq\IOrderedEnumerable`1.cs" />
+    <Compile Include="System/Linq\IGrouping`2.cs" />
+    <Compile Include="System/Linq\ILookup`2.cs" />
+    <Compile Include="System/Linq\Lookup`2.cs" />
+    <Compile Include="System/Linq\ParallelEnumerable.cs" />
+    <Compile Include="System/Runtime/CompilerServices\ExecutionScope.cs" />
+    <Compile Include="System/Linq\EnumerableQuery.cs" />
+    <Compile Include="System/Linq\EnumerableQuery`1.cs" />
+    <Compile Include="System/Linq\EnumerableExecutor.cs" />
+    <Compile Include="System/Linq\EnumerableExecutor`1.cs" />
+    <Compile Include="System/Runtime/CompilerServices\DynamicAttribute.cs" />
+    <Compile Include="System/Linq\ParallelMergeOptions.cs" />
+    <Compile Include="System/Linq\ParallelExecutionMode.cs" />
+    <Compile Include="System/Linq\ParallelQuery.cs" />
+    <Compile Include="System/Linq\ParallelQuery`1.cs" />
+    <Compile Include="Microsoft/Win32/SafeHandles\SafeNCryptHandle.cs" />
+    <Compile Include="Microsoft/Win32/SafeHandles\SafeNCryptKeyHandle.cs" />
+    <Compile Include="Microsoft/Win32/SafeHandles\SafeNCryptProviderHandle.cs" />
+    <Compile Include="Microsoft/Win32/SafeHandles\SafeNCryptSecretHandle.cs" />
+    <Compile Include="System/Security\ManifestKinds.cs" />
+    <Compile Include="System/Security/Cryptography\AesCryptoServiceProvider.cs" />
+    <Compile Include="System/Security/Cryptography\AesManaged.cs" />
+    <Compile Include="System/Security/Cryptography\CngAlgorithm.cs" />
+    <Compile Include="System/Security/Cryptography\CngAlgorithmGroup.cs" />
+    <Compile Include="System/Security/Cryptography\CngKeyHandleOpenOptions.cs" />
+    <Compile Include="System/Security/Cryptography\CngKey.cs" />
+    <Compile Include="System/Security/Cryptography\CngKeyBlobFormat.cs" />
+    <Compile Include="System/Security/Cryptography\CngKeyCreationParameters.cs" />
+    <Compile Include="System/Security/Cryptography\CngProperty.cs" />
+    <Compile Include="System/Security/Cryptography\CngPropertyCollection.cs" />
+    <Compile Include="System/Security/Cryptography\CngProvider.cs" />
+    <Compile Include="System/Security/Cryptography\CngUIPolicy.cs" />
+    <Compile Include="System/Security/Cryptography\ECDiffieHellman.cs" />
+    <Compile Include="System/Security/Cryptography\ECDiffieHellmanPublicKey.cs" />
+    <Compile Include="System/Security/Cryptography\ECDiffieHellmanKeyDerivationFunction.cs" />
+    <Compile Include="System/Security/Cryptography\ECDiffieHellmanCng.cs" />
+    <Compile Include="System/Security/Cryptography\ECDiffieHellmanCngPublicKey.cs" />
+    <Compile Include="System/Security/Cryptography\ECDsa.cs" />
+    <Compile Include="System/Security/Cryptography\ECDsaCng.cs" />
+    <Compile Include="System/Security/Cryptography\ECKeyXmlFormat.cs" />
+    <Compile Include="System/Security/Cryptography\ManifestSignatureInformation.cs" />
+    <Compile Include="System/Security/Cryptography\ManifestSignatureInformationCollection.cs" />
+    <Compile Include="System/Security/Cryptography\MD5Cng.cs" />
+    <Compile Include="System/Security/Cryptography\CngExportPolicies.cs" />
+    <Compile Include="System/Security/Cryptography\CngKeyCreationOptions.cs" />
+    <Compile Include="System/Security/Cryptography\CngKeyOpenOptions.cs" />
+    <Compile Include="System/Security/Cryptography\CngKeyUsages.cs" />
+    <Compile Include="System/Security/Cryptography\CngPropertyOptions.cs" />
+    <Compile Include="System/Security/Cryptography\CngUIProtectionLevels.cs" />
+    <Compile Include="System/Security/Cryptography\SHA1Cng.cs" />
+    <Compile Include="System/Security/Cryptography\SHA256Cng.cs" />
+    <Compile Include="System/Security/Cryptography\SHA256CryptoServiceProvider.cs" />
+    <Compile Include="System/Security/Cryptography\SHA384Cng.cs" />
+    <Compile Include="System/Security/Cryptography\SHA384CryptoServiceProvider.cs" />
+    <Compile Include="System/Security/Cryptography\SHA512Cng.cs" />
+    <Compile Include="System/Security/Cryptography\SHA512CryptoServiceProvider.cs" />
+    <Compile Include="System/Security/Cryptography\SignatureVerificationResult.cs" />
+    <Compile Include="System/Security/Cryptography\StrongNameSignatureInformation.cs" />
+    <Compile Include="System/Security/Cryptography/X509Certificates\AuthenticodeSignatureInformation.cs" />
+    <Compile Include="System/Security/Cryptography/X509Certificates\TimestampInformation.cs" />
+    <Compile Include="System/Security/Cryptography/X509Certificates\TrustStatus.cs" />
+    <Compile Include="Microsoft/Win32/SafeHandles\SafePipeHandle.cs" />
+    <Compile Include="System/Runtime/CompilerServices\CallSiteBinder.cs" />
+    <Compile Include="System/Dynamic\DynamicMetaObjectBinder.cs" />
+    <Compile Include="System/Dynamic\BinaryOperationBinder.cs" />
+    <Compile Include="System/Dynamic\BindingRestrictions.cs" />
+    <Compile Include="System/Dynamic\CallInfo.cs" />
+    <Compile Include="System/Runtime/CompilerServices\CallSite.cs" />
+    <Compile Include="System/Runtime/CompilerServices\CallSite`1.cs" />
+    <Compile Include="System/Runtime/CompilerServices\CallSiteHelpers.cs" />
+    <Compile Include="System/Runtime/CompilerServices\CallSiteOps.cs" />
+    <Compile Include="System/Dynamic\ConvertBinder.cs" />
+    <Compile Include="System/Dynamic\CreateInstanceBinder.cs" />
+    <Compile Include="System/Dynamic\DeleteIndexBinder.cs" />
+    <Compile Include="System/Dynamic\DeleteMemberBinder.cs" />
+    <Compile Include="System/Dynamic\DynamicMetaObject.cs" />
+    <Compile Include="System/Dynamic\IDynamicMetaObjectProvider.cs" />
+    <Compile Include="System/Dynamic\DynamicObject.cs" />
+    <Compile Include="System/Dynamic\GetMemberBinder.cs" />
+    <Compile Include="System/Dynamic\ExpandoObject.cs" />
+    <Compile Include="System/Runtime/CompilerServices\RuntimeOps.cs" />
+    <Compile Include="System/Linq/Expressions\ExpressionVisitor.cs" />
+    <Compile Include="System/Runtime/CompilerServices\IRuntimeVariables.cs" />
+    <Compile Include="System/Dynamic\GetIndexBinder.cs" />
+    <Compile Include="System/Dynamic\IInvokeOnGetBinder.cs" />
+    <Compile Include="System/Dynamic\InvokeBinder.cs" />
+    <Compile Include="System/Dynamic\InvokeMemberBinder.cs" />
+    <Compile Include="System/Runtime/CompilerServices\RuleCache`1.cs" />
+    <Compile Include="System/Dynamic\SetIndexBinder.cs" />
+    <Compile Include="System/Dynamic\SetMemberBinder.cs" />
+    <Compile Include="System/Dynamic\UnaryOperationBinder.cs" />
+    <Compile Include="System/Linq/Expressions\Expression.cs" />
+    <Compile Include="System/Linq/Expressions\BinaryExpression.cs" />
+    <Compile Include="System/Linq/Expressions\BlockExpression.cs" />
+    <Compile Include="System/Linq/Expressions\CatchBlock.cs" />
+    <Compile Include="System/Linq/Expressions\ConditionalExpression.cs" />
+    <Compile Include="System/Linq/Expressions\ConstantExpression.cs" />
+    <Compile Include="System/Linq/Expressions\DebugInfoExpression.cs" />
+    <Compile Include="System/Linq/Expressions\DefaultExpression.cs" />
+    <Compile Include="System/Linq/Expressions\DynamicExpression.cs" />
+    <Compile Include="System/Linq/Expressions\ElementInit.cs" />
+    <Compile Include="System/Linq/Expressions\ExpressionType.cs" />
+    <Compile Include="System/Linq/Expressions\DynamicExpressionVisitor.cs" />
+    <Compile Include="System/Linq/Expressions\GotoExpressionKind.cs" />
+    <Compile Include="System/Linq/Expressions\GotoExpression.cs" />
+    <Compile Include="System/Linq/Expressions\IndexExpression.cs" />
+    <Compile Include="System/Linq/Expressions\InvocationExpression.cs" />
+    <Compile Include="System/Linq/Expressions\LabelExpression.cs" />
+    <Compile Include="System/Linq/Expressions\LabelTarget.cs" />
+    <Compile Include="System/Linq/Expressions\LambdaExpression.cs" />
+    <Compile Include="System/Linq/Expressions\Expression`1.cs" />
+    <Compile Include="System/Linq/Expressions\ListInitExpression.cs" />
+    <Compile Include="System/Linq/Expressions\LoopExpression.cs" />
+    <Compile Include="System/Linq/Expressions\MemberBinding.cs" />
+    <Compile Include="System/Linq/Expressions\MemberAssignment.cs" />
+    <Compile Include="System/Linq/Expressions\MemberBindingType.cs" />
+    <Compile Include="System/Linq/Expressions\MemberExpression.cs" />
+    <Compile Include="System/Linq/Expressions\MemberInitExpression.cs" />
+    <Compile Include="System/Linq/Expressions\MemberListBinding.cs" />
+    <Compile Include="System/Linq/Expressions\MemberMemberBinding.cs" />
+    <Compile Include="System/Linq/Expressions\MethodCallExpression.cs" />
+    <Compile Include="System/Linq/Expressions\NewArrayExpression.cs" />
+    <Compile Include="System/Linq/Expressions\NewExpression.cs" />
+    <Compile Include="System/Linq/Expressions\ParameterExpression.cs" />
+    <Compile Include="System/Linq/Expressions\RuntimeVariablesExpression.cs" />
+    <Compile Include="System/Linq/Expressions\SwitchCase.cs" />
+    <Compile Include="System/Linq/Expressions\SwitchExpression.cs" />
+    <Compile Include="System/Linq/Expressions\SymbolDocumentInfo.cs" />
+    <Compile Include="System/Linq/Expressions\TryExpression.cs" />
+    <Compile Include="System/Linq/Expressions\TypeBinaryExpression.cs" />
+    <Compile Include="System/Linq/Expressions\UnaryExpression.cs" />
+    <Compile Include="System/Runtime/CompilerServices\Closure.cs" />
+    <Compile Include="System/Runtime/CompilerServices\DebugInfoGenerator.cs" />
+    <Compile Include="System\Action`9.cs" />
+    <Compile Include="System\Action`10.cs" />
+    <Compile Include="System\Action`11.cs" />
+    <Compile Include="System\Action`12.cs" />
+    <Compile Include="System\Action`13.cs" />
+    <Compile Include="System\Action`14.cs" />
+    <Compile Include="System\Action`15.cs" />
+    <Compile Include="System\Action`16.cs" />
+    <Compile Include="System\Func`10.cs" />
+    <Compile Include="System\Func`11.cs" />
+    <Compile Include="System\Func`12.cs" />
+    <Compile Include="System\Func`13.cs" />
+    <Compile Include="System\Func`14.cs" />
+    <Compile Include="System\Func`15.cs" />
+    <Compile Include="System\Func`16.cs" />
+    <Compile Include="System\Func`17.cs" />
+    <Compile Include="System/Runtime/CompilerServices\ReadOnlyCollectionBuilder`1.cs" />
+    <Compile Include="System/Runtime/CompilerServices\IStrongBox.cs" />
+    <Compile Include="System/Runtime/CompilerServices\StrongBox`1.cs" />
+    <Compile Include="System/Diagnostics\EventSchemaTraceListener.cs" />
+    <Compile Include="System/Diagnostics\TraceLogRetentionOption.cs" />
+    <Compile Include="System/Diagnostics\UnescapedXmlDiagnosticData.cs" />
+    <Compile Include="System/Diagnostics/PerformanceData\CounterData.cs" />
+    <Compile Include="System/Diagnostics/PerformanceData\CounterSetInstanceCounterDataSet.cs" />
+    <Compile Include="System/Diagnostics/PerformanceData\CounterSet.cs" />
+    <Compile Include="System/Diagnostics/PerformanceData\CounterSetInstance.cs" />
+    <Compile Include="System/Diagnostics/PerformanceData\CounterSetInstanceType.cs" />
+    <Compile Include="System/Diagnostics/PerformanceData\CounterType.cs" />
+    <Compile Include="System/Collections/Generic\HashSet`1.cs" />
+    <Compile Include="System/IO\HandleInheritability.cs" />
+    <Compile Include="System/IO/Pipes\PipeDirection.cs" />
+    <Compile Include="System/IO/Pipes\PipeTransmissionMode.cs" />
+    <Compile Include="System/IO/Pipes\PipeOptions.cs" />
+    <Compile Include="System/IO/Pipes\PipeStream.cs" />
+    <Compile Include="System/IO/Pipes\AnonymousPipeServerStream.cs" />
+    <Compile Include="System/IO/Pipes\AnonymousPipeClientStream.cs" />
+    <Compile Include="System/IO/Pipes\PipeStreamImpersonationWorker.cs" />
+    <Compile Include="System/IO/Pipes\NamedPipeServerStream.cs" />
+    <Compile Include="System/IO/Pipes\NamedPipeClientStream.cs" />
+    <Compile Include="System/IO/Pipes\PipeAccessRights.cs" />
+    <Compile Include="System/IO/Pipes\PipeAccessRule.cs" />
+    <Compile Include="System/IO/Pipes\PipeAuditRule.cs" />
+    <Compile Include="System/IO/Pipes\PipeSecurity.cs" />
+    <Compile Include="System/Threading\LockRecursionPolicy.cs" />
+    <Compile Include="System/Threading\ReaderWriterLockSlim.cs" />
+    <Compile Include="System/Threading/Tasks\TaskExtensions.cs" />
+    <Compile Include="Microsoft/Win32/SafeHandles\SafeMemoryMappedFileHandle.cs" />
+    <Compile Include="Microsoft/Win32/SafeHandles\SafeMemoryMappedViewHandle.cs" />
+    <Compile Include="System/IO/MemoryMappedFiles\MemoryMappedFileAccess.cs" />
+    <Compile Include="System/IO/MemoryMappedFiles\MemoryMappedFileOptions.cs" />
+    <Compile Include="System/IO/MemoryMappedFiles\MemoryMappedFile.cs" />
+    <Compile Include="System/IO/MemoryMappedFiles\MemoryMappedViewAccessor.cs" />
+    <Compile Include="System/IO/MemoryMappedFiles\MemoryMappedViewStream.cs" />
+    <Compile Include="System/IO/MemoryMappedFiles\MemoryMappedFileRights.cs" />
+    <Compile Include="System/IO/MemoryMappedFiles\MemoryMappedFileSecurity.cs" />
+    <Compile Include="System/Linq\OrderedParallelQuery`1.cs" />
+    <Compile Include="System/Runtime/InteropServices\ComAwareEventInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
