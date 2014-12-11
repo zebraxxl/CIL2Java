@@ -63,7 +63,7 @@ namespace CIL2Java
 
             Messages.Verbose("  Finding and adding overloading methods...");
             for (int i = 0; i < typesToCompile.Count; i++)
-                typesToCompile[i].CheckOverloadingMethods(this, loadedModules.Where(MD => MD.Name == "corlib.dll").FirstOrDefault());
+                typesToCompile[i].CheckOverloadingMethods(this, loadedModules.Where(MD => MD.Name == "c2j_mscorlib.dll").FirstOrDefault());
 
             Messages.Verbose("  Renaming newslot methods...");
             foreach (InterType type in typesToCompile)
