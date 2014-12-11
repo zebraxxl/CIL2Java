@@ -404,7 +404,7 @@ namespace CIL2Java
 
             var notAddedOverloadMethods = typeDef.Methods.Where(MD =>
             {
-                if (!MD.IsVirtual)
+                if ((!MD.IsVirtual) || (MD.HasGenericParameters))
                     return false;
 
                 MethodSignature ms = new MethodSignature(MD);
@@ -448,11 +448,9 @@ namespace CIL2Java
                 {
                     baseType.Methods.Where(M =>
                     {
-                        MethodDefinition methodDef = M.Body.Method;
-
-                        return methodDef.Name == method.Name &&
-                            methodDef.Parameters.Count == method.Parameters.Count &&
-                            methodDef.GenericParameters.Count == method.GenericParameters.Count;
+                        return M.OriginalName == method.Name &&
+                            M.Parameters.Count == method.Parameters.Count &&
+                            M.GenericArguments.Count == method.GenericParameters.Count;
                     }).ForEach(M => resolver.Resolve(method, M.FullGenericArguments));
 
                     baseType = baseType.baseType;
@@ -462,11 +460,9 @@ namespace CIL2Java
                 {
                     iface.methods.Where(im =>
                     {
-                        MethodDefinition methodDef = im.Body.Method;
-
-                        return methodDef.Name == method.Name &&
-                            methodDef.Parameters.Count == method.Parameters.Count &&
-                            methodDef.GenericParameters.Count == method.GenericParameters.Count;
+                        return im.OriginalName == method.Name &&
+                            im.Parameters.Count == method.Parameters.Count &&
+                            im.GenericArguments.Count == method.GenericParameters.Count;
                     }).ForEach(M => resolver.Resolve(method, M.FullGenericArguments));
                 }
 
@@ -476,11 +472,9 @@ namespace CIL2Java
 
                     mRefDecl.methods.Where(im =>
                     {
-                        MethodDefinition methodDef = im.Body.Method;
-
-                        return methodDef.Name == method.Name &&
-                            methodDef.Parameters.Count == method.Parameters.Count &&
-                            methodDef.GenericParameters.Count == method.GenericParameters.Count;
+                        return im.OriginalName == method.Name &&
+                            im.Parameters.Count == method.Parameters.Count &&
+                            im.GenericArguments.Count == method.GenericParameters.Count;
                     }).ForEach(M => resolver.Resolve(method, M.FullGenericArguments));
                 }
             }

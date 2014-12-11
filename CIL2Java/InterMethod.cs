@@ -10,6 +10,7 @@ namespace CIL2Java
     public class InterMethod
     {
         private InterType declType;
+        private string originalName;
         private string name;
         private string newName = null;
         private List<InterGenericArgument> genericArgs = new List<InterGenericArgument>();
@@ -21,6 +22,7 @@ namespace CIL2Java
         private List<InterParameter> parameters = new List<InterParameter>();
 
         public InterType DeclaringType { get { return declType; } }
+        public string OriginalName { get { return originalName; } }
         public string Name { get { return name; } }
         public string NewName { get { return newName ?? name; } set { newName = value; } }
         public List<InterGenericArgument> GenericArguments { get { return genericArgs; } }
@@ -49,6 +51,8 @@ namespace CIL2Java
 
         public InterMethod(MethodReference methodRef, List<InterGenericArgument> genericArgs, IResolver resolver, Action<InterMethod> onFounded)
         {
+            originalName = methodRef.Name;
+
             genericArgs = genericArgs ?? InterGenericArgument.EmptyGenericArgsList;
 
             MethodDefinition methodDef = methodRef.Resolve();
