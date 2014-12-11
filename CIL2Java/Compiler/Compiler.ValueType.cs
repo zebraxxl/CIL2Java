@@ -160,7 +160,7 @@ namespace CIL2Java
         private void GenerateValueTypeEquals(InterType type)
         {
             if (type.Methods.Where(M => ((M.Name == "Equals") && (M.Parameters.Count == 1) &&
-                (M.Parameters[0].Type.Fullname == ClassNames.ObjectTypeName))).Count() > 0)
+                (M.Parameters[0].Type.Fullname == ClassNames.JavaObject))).Count() > 0)
                 return;
 
             Method result = new Method();
