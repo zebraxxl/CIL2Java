@@ -73,7 +73,7 @@ namespace CIL2Java
                 foreach (ILTryCatchBlock.CatchBlock cblock in block.CatchBlocks)
                 {
                     string catchHandlerStartLabel = handlerStartLabel + (index++).ToString();
-                    int varIndex = GetVarIndex(cblock.ExceptionVariable);
+                    int varIndex = GetVarIndex(cblock.ExceptionVariable ?? new ILVariable { Name = "tmp_Exception", Type = cblock.ExceptionType, IsGenerated = true });
                     InterType catchType = resolver.Resolve(cblock.ExceptionType, thisMethod.FullGenericArguments);
 
                     Java.Constants.Class catchTypeRef = new Java.Constants.Class(namesController.TypeNameToJava(catchType));
