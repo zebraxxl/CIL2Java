@@ -96,6 +96,9 @@ namespace java.lang
     [FromJava]
     public class Character : io.Serializable, Comparable
     {
+        [FromJava]
+        public static readonly Class TYPE;
+
         /**
          * Returns a <tt>Character</tt> instance representing the specified
          * <tt>char</tt> value.

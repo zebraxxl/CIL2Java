@@ -24,6 +24,9 @@ namespace java.lang
     [FromJava]
     public sealed class Float : Number, Comparable
     {
+        [FromJava]
+        public static readonly Class TYPE;
+
         /**
          * Returns a {@code Float} instance representing the specified
          * {@code float} value.

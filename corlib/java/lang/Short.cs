@@ -17,6 +17,9 @@ namespace java.lang
     [FromJava]
     public sealed class Short : Number, Comparable
     {
+        [FromJava]
+        public static readonly Class TYPE;
+
         /// <summary>
         /// Returns a {@code Short} instance representing the specified
         /// {@code short} value.

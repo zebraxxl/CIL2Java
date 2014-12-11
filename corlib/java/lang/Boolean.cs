@@ -22,6 +22,9 @@ namespace java.lang
     [FromJava]
     public sealed class Boolean : io.Serializable, Comparable
     {
+        [FromJava]
+        public static readonly Class TYPE;
+
         /**
          * Returns a {@code Boolean} instance representing the specified
          * {@code boolean} value.  If the specified {@code boolean} value

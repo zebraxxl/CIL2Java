@@ -1,3 +1,4 @@
+using CIL2Java;
 using System.Security;
 
 namespace System
@@ -42,10 +43,14 @@ namespace System
         [SecuritySafeCriticalAttribute()]
         public TypedReference GetNextArg()
         {
-             throw new NotImplementedException();
+            if (current >= arglist.Length)
+                throw new InvalidOperationException(Local.GetText("An attempt was made to read beyond the end of the list."));
+            TypedReference result = new TypedReference(Intrinsics.CreatePointerToArray(arglist, current), Intrinsics.GetClass(typeof(object)));
+            current++;
+            return result;
         }
         
-        
+
         /// <summary>
         /// Returns the next argument in a variable-length argument list that has a 
         /// specified type.</summary>
@@ -57,42 +62,42 @@ namespace System
         [SecuritySafeCriticalAttribute()]
         public TypedReference GetNextArg(RuntimeTypeHandle rth)
         {
-             throw new NotImplementedException();
+            throw new NotImplementedException();
         }
         
         
         public void End()
         {
-             throw new NotImplementedException();
+            current = arglist.Length;
         }
         
         
         [SecuritySafeCriticalAttribute()]
         public int GetRemainingCount()
         {
-             throw new NotImplementedException();
+            return arglist.Length - current;
         }
         
         
         [SecuritySafeCriticalAttribute()]
         public RuntimeTypeHandle GetNextArgType()
         {
-             throw new NotImplementedException();
+            if (current >= arglist.Length)
+                throw new InvalidOperationException(Local.GetText("An attempt was made to read beyond the end of the list."));
+            return new RuntimeTypeHandle(arglist[current].getClass().Unbox());
         }
         
         
         public override int GetHashCode()
         {
-             throw new NotImplementedException();
+            return base.GetHashCode();
         }
         
         
         /// <summary>This method is not supported, and always throws <see cref="T:System.NotSupportedException" />.</summary><returns>This comparison is not supported. No value is returned.</returns><param name="o">An object to be compared to this instance. </param><exception cref="T:System.NotSupportedException">This method is not supported. </exception><filterpriority>2</filterpriority>
         public override bool Equals(object o)
         {
-             throw new NotImplementedException();
+            throw new NotSupportedException();
         }
-        
-        
     }
 }

@@ -24,6 +24,9 @@ namespace java.lang
     [FromJava]
     public sealed class Double : Number, Comparable
     {
+        [FromJava]
+        public static readonly Class TYPE;
+
         /**
          * Returns a {@code Double} instance representing the specified
          * {@code double} value.
