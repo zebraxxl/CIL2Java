@@ -67,6 +67,7 @@ namespace CIL2Java
         private Dictionary<string, int> labels = new Dictionary<string, int>();
 
         public event InstructionAddedEventHandler OnNextInstruction;
+        public int StartOffset { get; set; }
 
         private byte CalculateInterfaceCallArgsCount(string p)
         {
@@ -99,7 +100,7 @@ namespace CIL2Java
 
         private void LinkPass1(Java.ConstantPool pool)
         {
-            int offset = 0;
+            int offset = StartOffset;
 
             bool lastWide = false;
             for (int i = 0; i < outputCode.Count; i++)
@@ -352,6 +353,7 @@ namespace CIL2Java
 
         public JavaBytecodeWriter()
         {
+            StartOffset = 0;
         }
 
         public JavaBytecodeWriter AddInstruction(JavaInstruction i)

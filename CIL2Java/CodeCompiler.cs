@@ -72,12 +72,14 @@ namespace CIL2Java
             else
                 CompileRet(null, ExpectType.None);
 
-            Messages.Verbose("      Linking java bytecode...");
-            byte[] codeBytes = codeGenerator.Link(constsPool);
-            GenerateJavaExceptionTable();
-
             oldCodeGenerator = codeGenerator;
             byte[] prolog = GenerateMethodProlog();
+            codeGenerator = oldCodeGenerator;
+
+            Messages.Verbose("      Linking java bytecode...");
+            codeGenerator.StartOffset = prolog.Length;
+            byte[] codeBytes = codeGenerator.Link(constsPool);
+            GenerateJavaExceptionTable();
 
             resultCode = new Java.Attributes.Code();
             resultCode.CodeBytes = prolog.Concat(codeBytes).ToArray();
