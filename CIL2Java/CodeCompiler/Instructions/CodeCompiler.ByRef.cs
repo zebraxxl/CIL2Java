@@ -187,9 +187,24 @@ namespace CIL2Java
                 CompileExpression(e, expectType);
                 return;
             }
+            else if (!(e.Operand is MethodReference))
+            {
+                CompileExpression(e, ExpectType.Boxed);
+                return;
+            }
 
             InterMethod method = resolver.Resolve((MethodReference)e.Operand, thisMethod.FullGenericArguments);
             InterType operand = method.DeclaringType;
+
+            if (!operand.IsArray)
+            {
+                //Getter
+                if (method.ReturnParameter.Type.IsPrimitive)
+                    CompileExpression(e, ExpectType.Boxed);
+                else
+                    CompileExpression(e, GetExpectType(method.ReturnParameter));
+                return;
+            }
 
             JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand);
 
