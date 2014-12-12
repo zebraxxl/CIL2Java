@@ -91,7 +91,26 @@ namespace CIL2Java
         private void CompileStelem(ILExpression e, ExpectType expect)
         {
             TypeReference typeRef = e.Operand as TypeReference ?? e.InferredType;
-            InterType operand = resolver.Resolve(typeRef, thisMethod.FullGenericArguments);
+
+            InterType operand = null;
+            if (typeRef != null)
+            {
+                operand = resolver.Resolve(typeRef, thisMethod.FullGenericArguments);
+            }
+            else
+            {
+                switch (e.Code)
+                {
+                    case ILCode.Stelem_I: operand = InterType.PrimitiveTypes[(int)(Program.AsX64 ? PrimitiveType.Int64 : PrimitiveType.Int32)]; break;
+                    case ILCode.Stelem_I1: operand = InterType.PrimitiveTypes[(int)PrimitiveType.SByte]; break;
+                    case ILCode.Stelem_I2: operand = InterType.PrimitiveTypes[(int)PrimitiveType.Int16]; break;
+                    case ILCode.Stelem_I4: operand = InterType.PrimitiveTypes[(int)PrimitiveType.Int32]; break;
+                    case ILCode.Stelem_I8: operand = InterType.PrimitiveTypes[(int)PrimitiveType.Int64]; break;
+                    case ILCode.Stelem_R4: operand = InterType.PrimitiveTypes[(int)PrimitiveType.Single]; break;
+                    case ILCode.Stelem_R8: operand = InterType.PrimitiveTypes[(int)PrimitiveType.Double]; break;
+                }
+            }
+
             JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand);
 
             bool needDup = ((e.ExpectedType != null) && (expect != ExpectType.None));
