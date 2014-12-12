@@ -133,7 +133,26 @@ namespace CIL2Java
         private void CompileLdelem(ILExpression e, ExpectType expect)
         {
             TypeReference typeRef = e.Operand as TypeReference ?? e.InferredType;
-            InterType operand = resolver.Resolve(typeRef, thisMethod.FullGenericArguments);
+            InterType operand = null;
+
+            if (typeRef != null)
+                operand = resolver.Resolve(typeRef, thisMethod.FullGenericArguments);
+            else
+            {
+                switch (e.Code)
+                {
+                    case ILCode.Ldelem_I: operand = InterType.PrimitiveTypes[(int)(Program.AsX64 ? PrimitiveType.Int64 : PrimitiveType.Int32)]; break;
+                    case ILCode.Ldelem_I1: operand = InterType.PrimitiveTypes[(int)PrimitiveType.SByte]; break;
+                    case ILCode.Ldelem_I2: operand = InterType.PrimitiveTypes[(int)PrimitiveType.Int16]; break;
+                    case ILCode.Ldelem_I4: operand = InterType.PrimitiveTypes[(int)PrimitiveType.Int32]; break;
+                    case ILCode.Ldelem_I8: operand = InterType.PrimitiveTypes[(int)PrimitiveType.Int64]; break;
+                    case ILCode.Ldelem_R4: operand = InterType.PrimitiveTypes[(int)PrimitiveType.Single]; break;
+                    case ILCode.Ldelem_R8: operand = InterType.PrimitiveTypes[(int)PrimitiveType.Double]; break;
+                    case ILCode.Ldelem_U1: operand = InterType.PrimitiveTypes[(int)PrimitiveType.Byte]; break;
+                    case ILCode.Ldelem_U2: operand = InterType.PrimitiveTypes[(int)PrimitiveType.UInt16]; break;
+                    case ILCode.Ldelem_U4: operand = InterType.PrimitiveTypes[(int)PrimitiveType.UInt32]; break;
+                }
+            }
             JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand);
 
             CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
