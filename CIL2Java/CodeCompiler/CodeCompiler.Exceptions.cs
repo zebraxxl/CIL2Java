@@ -152,9 +152,9 @@ namespace CIL2Java
             {
                 resultCode.ExceptionTable.Add(new Java.Attributes.Code.Exception()
                     {
-                        StartPC = (ushort)(e.StartPC + prologSize),
-                        EncPC = (ushort)(e.EncPC + prologSize),
-                        HandlerPC = (ushort)(e.HandlerPC + prologSize),
+                        StartPC = (ushort)(e.StartPC),
+                        EncPC = (ushort)(e.EncPC),
+                        HandlerPC = (ushort)(e.HandlerPC),
                         CatchType = e.CatchType
                     });
             }
