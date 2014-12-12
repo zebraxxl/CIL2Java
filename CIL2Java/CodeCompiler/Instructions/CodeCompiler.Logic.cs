@@ -491,6 +491,21 @@ namespace CIL2Java
         {
             CompileFlowC(e, Java.OpCodes.if_icmple, Java.OpCodes.if_acmpeq, Java.OpCodes.ifle, true);
         }
+
+        private void CompileClt_Un(ILExpression e, ExpectType expect)
+        {
+            CompileFlowC(e, Java.OpCodes.if_icmplt, Java.OpCodes.if_acmpne, Java.OpCodes.iflt, true);
+        }
+
+        private void CompileCge_Un(ILExpression e, ExpectType expect)
+        {
+            CompileFlowC(e, Java.OpCodes.if_icmpge, Java.OpCodes.if_acmpeq, Java.OpCodes.ifge, true);
+        }
+
+        private void CompileCgt_Un(ILExpression e, ExpectType expect)
+        {
+            CompileFlowC(e, Java.OpCodes.if_icmpgt, Java.OpCodes.if_acmpne, Java.OpCodes.ifgt, true);
+        }
         #endregion
 
         private void CompileBrBool(ILExpression e, ExpectType expect, bool brOnTrue)

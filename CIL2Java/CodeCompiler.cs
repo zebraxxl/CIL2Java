@@ -367,6 +367,9 @@ namespace CIL2Java
                 case ILCode.Cge: CompileCge(e, expectType); break;
                 case ILCode.Cgt: CompileCgt(e, expectType); break;
                 case ILCode.Cle_Un: CompileCle_Un(e, expectType); break;
+                case ILCode.Clt_Un: CompileClt_Un(e, expectType); break;
+                case ILCode.Cge_Un: CompileCge_Un(e, expectType); break;
+                case ILCode.Cgt_Un: CompileCgt_Un(e, expectType); break;
                 #endregion
                 #region Conv
                 case ILCode.Conv_I1:
