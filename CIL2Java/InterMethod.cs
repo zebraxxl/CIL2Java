@@ -204,7 +204,7 @@ namespace CIL2Java
                 IsStatic = !methodRef.HasThis;
             }
 
-            if (!IsConstructor)
+            if ((!IsConstructor) && (!declType.IsDelegate))
             {
                 //TODO: change params in ctors
                 var changedParams = parameters.Where(P => ((P.Type.IsEnum) ||
