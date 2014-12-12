@@ -253,8 +253,8 @@ namespace CIL2Java
 
             if (typeDef.HasGenericParameters)
             {
-                StringBuilder nameBuilder = new StringBuilder(name);
-                nameBuilder.Append("__GIT<");
+                StringBuilder nameBuilder = new StringBuilder();
+                nameBuilder.Append("<");
                 GenericInstanceType git = typeRef as GenericInstanceType;
 
                 foreach (GenericParameter param in typeDef.GenericParameters)
@@ -294,7 +294,7 @@ namespace CIL2Java
                 }
                 nameBuilder.Append('>');
 
-                this.name = nameBuilder.ToString();
+                this.name = this.name + "_GIT_" + resolver.GetGenericsArgsIndex(nameBuilder.ToString()).ToString();
             }
 
             if (this.IsNested)

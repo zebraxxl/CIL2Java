@@ -10,6 +10,9 @@ namespace CIL2Java
 {
     public partial class Compiler
     {
+        private int genericsArgsIndex = 0;
+        private Dictionary<string, int> genericsArgsToIndex = new Dictionary<string, int>();
+
         private void ProcessMethodDecencies(InterMethod method, ILNode node, List<InterGenericArgument> genericArgs)
         {
             if (node is ILBlock)
@@ -268,6 +271,16 @@ namespace CIL2Java
             }
 
             return founded;
+        }
+
+        int IResolver.GetGenericsArgsIndex(string genericsArgsString)
+        {
+            if (genericsArgsToIndex.ContainsKey(genericsArgsString))
+                return genericsArgsToIndex[genericsArgsString];
+
+            int result = genericsArgsIndex++;
+            genericsArgsToIndex.Add(genericsArgsString, result);
+            return result;
         }
     }
 }
