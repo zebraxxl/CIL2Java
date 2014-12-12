@@ -172,6 +172,7 @@ namespace CIL2Java
                 ILExpression loadExp = op.Arguments[0];
 
                 e.Code = LoadVarInvert[loadExp.Code];
+                e.Operand = loadExp.Operand;
                 e.Arguments.AddRange(loadExp.Arguments);
                 e.Arguments.Add(op);
             }
