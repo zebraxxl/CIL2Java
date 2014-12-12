@@ -111,17 +111,19 @@ namespace CIL2Java
                 }
             }
 
-            JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand);
+            JavaPrimitiveType valueJPType = operand != null ? JavaHelpers.InterTypeToJavaPrimitive(operand) : JavaPrimitiveType.Ref;
+            JavaArrayType arrType = JavaHelpers.JavaPrimitiveToArrayType(valueJPType);
+            ExpectType valueExpectType = operand != null ? GetExpectType(operand) : ExpectType.Reference;
 
             bool needDup = ((e.ExpectedType != null) && (expect != ExpectType.None));
 
             CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
             CompileExpression(e.Arguments[1], ExpectType.Primitive);    //index
-            CompileExpression(e.Arguments[2], GetExpectType(operand));  //value
+            CompileExpression(e.Arguments[2], valueExpectType);  //value
 
             if (needDup)
             {
-                if (JavaHelpers.InterTypeToJavaPrimitive(operand).IsDoubleSlot())
+                if (valueJPType.IsDoubleSlot())
                     codeGenerator.Add(Java.OpCodes.dup2_x2, null, e);
                 else
                     codeGenerator.Add(Java.OpCodes.dup_x2, null, e);
@@ -153,21 +155,22 @@ namespace CIL2Java
                     case ILCode.Ldelem_U4: operand = InterType.PrimitiveTypes[(int)PrimitiveType.UInt32]; break;
                 }
             }
-            JavaArrayType arrType = JavaHelpers.InterTypeToJavaArrayType(operand);
+            JavaArrayType arrType = operand != null ? JavaHelpers.InterTypeToJavaArrayType(operand) : JavaArrayType.Ref;
 
             CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
             CompileExpression(e.Arguments[1], ExpectType.Primitive);    //index
 
             codeGenerator.AddArrayLoad(arrType, e);
 
-            if (operand.IsValueType)
+            if ((operand != null) && (operand.IsValueType))
             {
                 MethodRef getCopyRef = new MethodRef(namesController.TypeNameToJava(operand),
                     ClassNames.ValueTypeGetCopy, "()" + namesController.GetFieldDescriptor(operand));
                 codeGenerator.Add(Java.OpCodes.invokevirtual, getCopyRef, e);
             }
 
-            TranslateType(operand, expect, e);
+            if (operand != null)
+                TranslateType(operand, expect, e);
         }
 
         private void CompileNewmultiarray(ILExpression e, ExpectType expect)
