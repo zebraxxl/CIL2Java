@@ -337,7 +337,7 @@ namespace CIL2Java
                 #region Exceptions
                 case ILCode.Throw: CompileThrow(e, expectType); break;
                 case ILCode.Rethrow: CompileRethrow(e, expectType); break;
-                //case ILCode.Endfinally: break;    //endfinally will be removed by ILSpy
+                case ILCode.Endfinally: CompileEndfinally(e, expectType); break;
                 //case ILCode.Leave: CompileLeave(e, expectType); break;    //TODO: leave instruction
                 //case ILCode.Endfilter: CompileEndFilter(e, expectType); break;    //Filter unsupported for now
                 #endregion

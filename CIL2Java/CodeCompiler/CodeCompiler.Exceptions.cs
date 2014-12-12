@@ -17,6 +17,7 @@ namespace CIL2Java
         private List<ExceptionDescription> exceptions = new List<ExceptionDescription>();
         private List<Java.Attributes.Code.Exception> javaExceptions = new List<Java.Attributes.Code.Exception>();
         private Stack<int> exceptionVar = new Stack<int>();
+        private Stack<string> endfinallyLabels = new Stack<string>();
 
         private void CompileTryBlock(ILTryCatchBlock block)
         {
@@ -26,6 +27,7 @@ namespace CIL2Java
             string tryEndLabel = "tryEnd" + labelsSufix;
             string handlerStartLabel = "handler" + labelsSufix;
             string exitLabel = "exit" + labelsSufix;
+            string rethrowLabel = "rethrow" + labelsSufix;
 
             codeGenerator.Label(tryStartLabel);
             CompileBlock(block.TryBlock);
@@ -39,18 +41,23 @@ namespace CIL2Java
             if ((block.FinallyBlock != null) || (block.FaultBlock != null))
             {
                 int handlerExceptionVar = GetNextFreeVar(JavaPrimitiveType.Ref);
-    
+
+                endfinallyLabels.Push(exitLabel);
                 if (block.FinallyBlock != null)
                     CompileBlock(block.FinallyBlock);
+                endfinallyLabels.Pop();
 
                 codeGenerator
                     .Add(Java.OpCodes._goto, exitLabel, block)
                     .Label(handlerStartLabel)
                     .AddStore(JavaPrimitiveType.Ref, handlerExceptionVar, block);
 
+                endfinallyLabels.Push(rethrowLabel);
                 CompileBlock(block.FinallyBlock ?? block.FaultBlock);
+                endfinallyLabels.Pop();
 
                 codeGenerator
+                    .Label(rethrowLabel)
                     .AddLoad(JavaPrimitiveType.Ref, handlerExceptionVar, block)
                     .Add(Java.OpCodes.athrow, null, block)
                     .Label(exitLabel);
