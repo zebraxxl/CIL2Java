@@ -65,6 +65,9 @@ namespace CIL2Java
         #region Check and prepare uninitialized local vars
         private void PreprocessorCheckUninitializedLocalVarsExpression(ILExpression e, List<ILVariable> initializedVars)
         {
+            if (e == null)
+                return;
+
             if (e.Code == ILCode.Stloc)
             {
                 if (!initializedVars.Contains((ILVariable)e.Operand))
