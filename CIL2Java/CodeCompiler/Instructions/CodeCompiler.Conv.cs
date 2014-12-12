@@ -361,7 +361,7 @@ namespace CIL2Java
                     break;
 
                 default:
-                    Messages.Message(MessageCode.CantConvertType, gettedType.Fullname, "sbyte");
+                    Messages.Message(MessageCode.CantConvertType, gettedType.Fullname, "float");
                     return;
             }
 
@@ -397,7 +397,7 @@ namespace CIL2Java
                     break;
 
                 default:
-                    Messages.Message(MessageCode.CantConvertType, gettedType.Fullname, "sbyte");
+                    Messages.Message(MessageCode.CantConvertType, gettedType.Fullname, "double");
                     return;
             }
 

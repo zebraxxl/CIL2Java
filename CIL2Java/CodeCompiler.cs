@@ -412,6 +412,8 @@ namespace CIL2Java
                 case ILCode.Conv_U:
                     CompileConvToNative(e, expectType); break;
 
+                case ILCode.Conv_R4: CompileConvR4(e, expectType); break;
+                case ILCode.Conv_R8: CompileConvR8(e, expectType); break;
                 case ILCode.Conv_R_Un: CompileConvRUn(e, expectType); break;
                 #endregion
                 #region Math
