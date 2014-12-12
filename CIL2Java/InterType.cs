@@ -55,6 +55,7 @@ namespace CIL2Java
         private PrimitiveType primitiveType;
         private string nameSpace;
         private string name;
+        private string fullName = null;
         private string cilBoxType;
         private InterType baseType = null;
         private InterType declType = null;
@@ -81,17 +82,21 @@ namespace CIL2Java
         {
             get
             {
-                if (IsArray)
+                if (fullName == null)
                 {
-                    string result = ElementType.ToString();
-                    for (int i = 0; i < arrayRank; i++)
-                        result += "[" + dimensions[i].ToString() + "]";
-                    return result;
+                    if (IsArray)
+                    {
+                        string result = ElementType.ToString();
+                        for (int i = 0; i < arrayRank; i++)
+                            result += "[" + dimensions[i].ToString() + "]";
+                        fullName = result;
+                    }
+                    else if (IsByRef)
+                        fullName = ElementType.ToString() + "&";
+                    else
+                        fullName = (nameSpace.Length > 0 ? nameSpace + "." : "") + name;
                 }
-                else if (IsByRef)
-                    return ElementType.ToString() + "&";
-                else
-                    return (nameSpace.Length > 0 ? nameSpace + "." : "") + name;
+                return fullName;
             }
         }
         public InterType BaseType { get { return baseType; } }
