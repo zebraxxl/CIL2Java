@@ -253,48 +253,44 @@ namespace CIL2Java
 
             if (typeDef.HasGenericParameters)
             {
-                StringBuilder nameBuilder = new StringBuilder();
-                nameBuilder.Append("<");
                 GenericInstanceType git = typeRef as GenericInstanceType;
 
-                foreach (GenericParameter param in typeDef.GenericParameters)
+                for (int i = 0; i < typeDef.GenericParameters.Count; i++)
                 {
-                    TypeReference genericArgType = param;
-                    InterGenericArgument genericArg = new InterGenericArgument();
+                    GenericParameter gp = typeDef.GenericParameters[i];
 
+                    TypeReference genericArg = null;
                     if (git != null)
+                        genericArg = git.GenericArguments[i];
+
+                    if (genericArg is GenericParameter)
                     {
-                        genericArgType = git.GenericArguments[param.Position];
-                        genericArg = new InterGenericArgument(GenericArgumentOwnerType.Type, this, null, param.Position, null);
+                        gp = (GenericParameter)genericArg;
+                        genericArg = null;
                     }
 
-                    if (genericArgType.IsGenericParameter)
+                    InterType resolvedGenericArg = null;
+                    if (genericArg == null)
                     {
-                        GenericParameter genericParam = (GenericParameter)genericArgType;
-                        genericArg = genericArgs
-                            .Where(G => ((G.Position == genericParam.Position) && (G.Owner == Utils.CecilGenericOwnerToC2JGenericOwner(genericParam.Type))))
-                            .FirstOrDefault();
+                        var resolvedInterGenericArg = genericArgs.Where(G => G.Owner == Utils.CecilGenericOwnerToC2JGenericOwner(gp.Type) &&
+                            G.Position == gp.Position);
+                        if (resolvedInterGenericArg.Count() > 0)
+                            resolvedGenericArg = resolvedInterGenericArg.First().Type;
                     }
 
-                    if (genericArg.Type == null)
+                    if (resolvedGenericArg != null)
+                        this.genericArgs.Add(new InterGenericArgument(GenericArgumentOwnerType.Type, i, resolvedGenericArg));
+                    else if (genericArg != null)
+                        this.genericArgs.Add(new InterGenericArgument(GenericArgumentOwnerType.Type, i, resolver.Resolve(genericArg, genericArgs)));
+                    else
                     {
-                        if (genericArgType.IsGenericParameter)
-                        {
-                            Messages.Message(MessageCode.CantResolveGenericParameter, genericArgType.FullName, typeRef.FullName);
-                            genericArg.Type = resolver.Resolve(ClassNames.ObjectTypeName);
-                        }
-                        else
-                            genericArg.Type = resolver.Resolve(genericArgType, genericArgs);
+                        Messages.Message(MessageCode.CantResolveGenericParameter, gp.ToString(), typeRef.ToString());
+                        this.genericArgs.Add(new InterGenericArgument(GenericArgumentOwnerType.Type, i, resolver.Resolve(ClassNames.ObjectTypeName)));
                     }
-
-                    genericArg = new InterGenericArgument(GenericArgumentOwnerType.Type, this, null, param.Position, genericArg.Type);
-                    this.genericArgs.Add(genericArg);
-                    nameBuilder.Append(',');
-                    nameBuilder.Append(genericArg.Type.Fullname);
                 }
-                nameBuilder.Append('>');
 
-                this.name = this.name + "_GIT_" + resolver.GetGenericsArgsIndex(nameBuilder.ToString()).ToString();
+                string genericsSufix = "<" + string.Join(",", this.genericArgs.Select(G => G.Type.Fullname)) + ">";
+                this.name = this.name + "_GIT_" + resolver.GetGenericsArgsIndex(genericsSufix).ToString();
             }
 
             if (this.IsNested)

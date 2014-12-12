@@ -99,51 +99,44 @@ namespace CIL2Java
             genericArgs.AddRange(declType.GenericArguments);
             if ((methodDef ?? methodRef).HasGenericParameters)
             {
-                StringBuilder nameBuilder = new StringBuilder(name);
-                nameBuilder.Append("__GIM<");
-
                 GenericInstanceMethod gim = methodRef as GenericInstanceMethod;
-                foreach (GenericParameter gParam in methodDef.GenericParameters)
+
+                for (int i = 0; i < (methodDef ?? methodRef).GenericParameters.Count; i++)
                 {
-                    TypeReference genericArgType = gParam;
-                    InterGenericArgument genericArg = new InterGenericArgument();
+                    GenericParameter gp = (methodDef ?? methodRef).GenericParameters[i];
 
-                    if (gParam.Type == GenericParameterType.Method)
+                    TypeReference genericArg = null;
+                    if (gim != null)
+                        genericArg = gim.GenericArguments[i];
+
+                    if (genericArg is GenericParameter)
                     {
-                        if (gim != null)
-                        {
-                            genericArgType = gim.GenericArguments[gParam.Position];
-                            genericArg = new InterGenericArgument(GenericArgumentOwnerType.Method, null, this, gParam.Position, null);
-                        }
-
-                        if (genericArgType.IsGenericParameter)
-                        {
-                            GenericParameter genericParam = (GenericParameter)genericArgType;
-                            genericArg = genericArgs
-                                .Where(G => ((G.Position == gParam.Position) && G.Owner == Utils.CecilGenericOwnerToC2JGenericOwner(genericParam.Type)))
-                                .FirstOrDefault();
-                        }
+                        gp = (GenericParameter)genericArg;
+                        genericArg = null;
                     }
+
+                    InterType resolvedGenericArg = null;
+                    if (genericArg == null)
+                    {
+                        var resolvedInterGenericArg = genericArgs.Where(G => G.Owner == Utils.CecilGenericOwnerToC2JGenericOwner(gp.Type) &&
+                            G.Position == gp.Position);
+                        if (resolvedInterGenericArg.Count() > 0)
+                            resolvedGenericArg = resolvedInterGenericArg.First().Type;
+                    }
+
+                    if (resolvedGenericArg != null)
+                        this.genericArgs.Add(new InterGenericArgument(GenericArgumentOwnerType.Method, i, resolvedGenericArg));
+                    else if (genericArg != null)
+                        this.genericArgs.Add(new InterGenericArgument(GenericArgumentOwnerType.Method, i, resolver.Resolve(genericArg, genericArgs)));
                     else
-                        genericArg = declType.GenericArguments.Where(G => ((G.Position == gParam.Position) && ((G.Owner == GenericArgumentOwnerType.Type)))).FirstOrDefault();
-
-                    if (genericArg.Type == null)
                     {
-                        if ((genericArgType == null) || (genericArgType.IsGenericParameter))
-                        {
-                            Messages.Message(MessageCode.CantResolveGenericParameter, genericArgType.FullName, methodRef.FullName);
-                            genericArg.Type = resolver.Resolve(ClassNames.JavaObject);
-                        }
-                        else
-                            genericArg.Type = resolver.Resolve(genericArgType, InterGenericArgument.EmptyGenericArgsList);
+                        Messages.Message(MessageCode.CantResolveGenericParameter, gp.ToString(), methodRef.ToString());
+                        this.genericArgs.Add(new InterGenericArgument(GenericArgumentOwnerType.Method, i, resolver.Resolve(ClassNames.ObjectTypeName)));
                     }
-
-                    genericArg = new InterGenericArgument(GenericArgumentOwnerType.Method, null, this, gParam.Position, genericArg.Type);
-                    this.genericArgs.Add(genericArg);
-                    nameBuilder.Append(',').Append(genericArg.Type.Fullname);
                 }
-                nameBuilder.Append('>');
-                this.name = nameBuilder.ToString();
+
+                string genericsSufix = "<" + string.Join(",", this.genericArgs.Select(G => G.Type.Fullname)) + ">";
+                this.name = this.name + "_GIM_" + resolver.GetGenericsArgsIndex(genericsSufix).ToString();
             }
 
             if (methodDef != null)
