@@ -26,7 +26,7 @@ namespace CIL2Java
         {
             if (type.IsByRef)
                 return ExpectType.ByRef;
-            else if (type.IsPrimitive)
+            else if ((type.IsPrimitive) || (type.IsEnum))
                 return ExpectType.Primitive;
             else
                 return ExpectType.Reference;
