@@ -17,5 +17,8 @@ namespace CIL2Java
         public static bool IsJavaBoxing() { throw new InvalidOperationException("Direct call to intrinsics unsupported"); }
 
         public static java.lang.Class GetClass(Type t) { throw new InvalidOperationException("Direct call to intrinsics unsupported"); }
+
+        public static java.lang.String ToJavaString(string str) { throw new InvalidOperationException("Direct call to intrinsics unsupported"); }
+        public static string ToCILString(java.lang.String str) { throw new InvalidOperationException("Direct call to intrinsics unsupported"); }
     }
 }

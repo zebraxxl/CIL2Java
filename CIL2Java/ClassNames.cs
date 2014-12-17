@@ -171,6 +171,9 @@ namespace CIL2Java
             public const string IsJavaBoxing = "IsJavaBoxing";
 
             public const string GetClass = "GetClass";
+
+            public const string ToJavaString = "ToJavaString";
+            public const string ToCILString = "ToCILString";
         }
 
         public static class SystemNullable_1
