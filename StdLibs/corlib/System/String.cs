@@ -5,6 +5,8 @@ using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Globalization;
 using CIL2Java.Attributes;
+using javaString = java.lang.String;
+using mapsString = CIL2Java.Maps.String;
 
 namespace System
 {
@@ -16,23 +18,26 @@ namespace System
     public sealed class String : IComparable, ICloneable, IConvertible, IComparable<String>, IEnumerable<Char>, IEquatable<String>
     {
         /// <summary>Represents the empty string. This field is read-only.</summary><filterpriority>1</filterpriority>
-        public static readonly string Empty;
+        public static readonly string Empty = "";
     
         /// <summary>Gets the <see cref="T:System.Char" /> object at a specified position in the current <see cref="T:System.String" /> object.</summary><returns>The object at position <paramref name="index" />.</returns><param name="index">A position in the current string. </param><exception cref="T:System.IndexOutOfRangeException"><paramref name="index" /> is greater than or equal to the length of this object or less than zero. </exception><filterpriority>2</filterpriority>
         public char this[int index]
         {
+            [MethodMap(typeof(javaString), "charAt")]
             get { throw new NotImplementedException(); }
         }
     
         /// <summary>Gets the number of characters in the current <see cref="T:System.String" /> object.</summary><returns>The number of characters in the current string.</returns><filterpriority>1</filterpriority>
         public int Length
         {
+            [MethodMap(typeof(javaString), "length")]
             get { throw new NotImplementedException(); }
         }
     
     
         /// <summary>Concatenates all the elements of a string array, using the specified separator between each element. </summary><returns>A string that consists of the elements in <paramref name="value" /> delimited by the <paramref name="separator" /> string. If <paramref name="value" /> is an empty array, the method returns <see cref="F:System.String.Empty" />.</returns><param name="separator">The string to use as a separator. </param><param name="value">An array that contains the elements to concatenate. </param><exception cref="T:System.ArgumentNullException"><paramref name="value" /> is null. </exception><filterpriority>1</filterpriority>
-        public static string Join(string separator, params  string[] value)
+        [MethodMap(typeof(mapsString), "Join")]
+        public static string Join(string separator, params string[] value)
         {
              throw new NotImplementedException();
         }
@@ -40,13 +45,15 @@ namespace System
         
         /// <summary>Concatenates the elements of an object array, using the specified separator between each element.</summary><returns>A string that consists of the elements of <paramref name="values" /> delimited by the <paramref name="separator" /> string. If <paramref name="values" /> is an empty array, the method returns <see cref="F:System.String.Empty" />.</returns><param name="separator">The string to use as a separator.</param><param name="values">An array that contains the elements to concatenate.</param><exception cref="T:System.ArgumentNullException"><paramref name="values" /> is null. </exception>
         [ComVisibleAttribute(false)]
-        public static string Join(string separator, params  object[] values)
+        [MethodMap(typeof(mapsString), "Join")]
+        public static string Join(string separator, params object[] values)
         {
              throw new NotImplementedException();
         }
         
         
         [ComVisibleAttribute(false)]
+        [MethodMap(typeof(mapsString), "Join")]
         public static string Join<T>(string separator, IEnumerable<T> values)
         {
              throw new NotImplementedException();
@@ -54,6 +61,7 @@ namespace System
         
         
         [ComVisibleAttribute(false)]
+        [MethodMap(typeof(mapsString), "Join")]
         public static string Join(string separator, IEnumerable<string> values)
         {
              throw new NotImplementedException();
@@ -62,6 +70,7 @@ namespace System
         
         /// <summary>Concatenates the specified elements of a string array, using the specified separator between each element. </summary><returns>A string that consists of the strings in <paramref name="value" /> delimited by the <paramref name="separator" /> string. -or-<see cref="F:System.String.Empty" /> if <paramref name="count" /> is zero, <paramref name="value" /> has no elements, or <paramref name="separator" /> and all the elements of <paramref name="value" /> are <see cref="F:System.String.Empty" />.</returns><param name="separator">The string to use as a separator. </param><param name="value">An array that contains the elements to concatenate. </param><param name="startIndex">The first element in <paramref name="value" /> to use. </param><param name="count">The number of elements of <paramref name="value" /> to use. </param><exception cref="T:System.ArgumentNullException"><paramref name="value" /> is null. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="startIndex" /> or <paramref name="count" /> is less than 0.-or- <paramref name="startIndex" /> plus <paramref name="count" /> is greater than the number of elements in <paramref name="value" />. </exception><exception cref="T:System.OutOfMemoryException">Out of memory.</exception><filterpriority>1</filterpriority>
         [SecuritySafeCriticalAttribute()]
+        [MethodMap(typeof(mapsString), "Join")]
         public static string Join(string separator, string[] value, int startIndex, int count)
         {
              throw new NotImplementedException();
@@ -70,6 +79,7 @@ namespace System
         
         /// <summary>Determines whether this instance and a specified object, which must also be a <see cref="T:System.String" /> object, have the same value.</summary><returns>true if <paramref name="obj" /> is a <see cref="T:System.String" /> and its value is the same as this instance; otherwise, false.</returns><param name="obj">The string to compare to this instance. </param><filterpriority>2</filterpriority>
         [ReliabilityContractAttribute(Consistency.WillNotCorruptState, Cer.MayFail)]
+        //will be automaticaly mapped to javaString.Equals
         public override bool Equals(object obj)
         {
              throw new NotImplementedException();
@@ -78,6 +88,7 @@ namespace System
         
         /// <summary>Determines whether this instance and another specified <see cref="T:System.String" /> object have the same value.</summary><returns>true if the value of the <paramref name="value" /> parameter is the same as this instance; otherwise, false.</returns><param name="value">The string to compare to this instance. </param><filterpriority>2</filterpriority>
         [ReliabilityContractAttribute(Consistency.WillNotCorruptState, Cer.MayFail)]
+        [MethodMap(typeof(mapsString), "Equals", true)]
         public bool Equals(string value)
         {
              throw new NotImplementedException();
@@ -86,6 +97,7 @@ namespace System
         
         /// <summary>Determines whether this string and a specified <see cref="T:System.String" /> object have the same value. A parameter specifies the culture, case, and sort rules used in the comparison.</summary><returns>true if the value of the <paramref name="value" /> parameter is the same as this string; otherwise, false.</returns><param name="value">The string to compare to this instance.</param><param name="comparisonType">One of the enumeration values that specifies how the strings will be compared. </param><exception cref="T:System.ArgumentException"><paramref name="comparisonType" /> is not a <see cref="T:System.StringComparison" /> value. </exception><filterpriority>2</filterpriority>
         [SecuritySafeCriticalAttribute()]
+        [MethodMap(typeof(mapsString), "Equals", true)]
         public bool Equals(string value, StringComparison comparisonType)
         {
              throw new NotImplementedException();
@@ -93,6 +105,7 @@ namespace System
         
         
         /// <summary>Determines whether two specified <see cref="T:System.String" /> objects have the same value.</summary><returns>true if the value of <paramref name="a" /> is the same as the value of <paramref name="b" />; otherwise, false. If both <paramref name="a" /> and <paramref name="b" /> are null, the method returns true.</returns><param name="a">The first string to compare, or null. </param><param name="b">The second string to compare, or null. </param><filterpriority>1</filterpriority>
+        [MethodMap(typeof(mapsString), "Equals")]
         public static bool Equals(string a, string b)
         {
              throw new NotImplementedException();
@@ -101,6 +114,7 @@ namespace System
         
         /// <summary>Determines whether two specified <see cref="T:System.String" /> objects have the same value. A parameter specifies the culture, case, and sort rules used in the comparison.</summary><returns>true if the value of the <paramref name="a" /> parameter is equal to the value of the <paramref name="b" /> parameter; otherwise, false.</returns><param name="a">The first string to compare, or null. </param><param name="b">The second string to compare, or null. </param><param name="comparisonType">One of the enumeration values that specifies the rules for the comparison. </param><exception cref="T:System.ArgumentException"><paramref name="comparisonType" /> is not a <see cref="T:System.StringComparison" /> value. </exception><filterpriority>1</filterpriority>
         [SecuritySafeCriticalAttribute()]
+        [MethodMap(typeof(mapsString), "Equals")]
         public static bool Equals(string a, string b, StringComparison comparisonType)
         {
              throw new NotImplementedException();

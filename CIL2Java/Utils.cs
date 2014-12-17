@@ -276,5 +276,36 @@ namespace CIL2Java
 
             return false;
         }
+
+        internal static bool AreSame(TypeReference a, TypeReference b)
+        {
+            if (ReferenceEquals(a, b))
+                return true;
+
+            if (a == null || b == null)
+                return false;
+
+            if (a.Name != b.Name || a.Namespace != b.Namespace)
+                return false;
+
+            return true;
+        }
+
+        internal static bool AreSame(Mono.Collections.Generic.Collection<ParameterDefinition> a, Mono.Collections.Generic.Collection<ParameterDefinition> b, int aStart)
+        {
+            int aIndex = aStart;
+            int bIndex = 0;
+
+            if (a.Count - aIndex != b.Count)
+                return false;
+
+            for (; aIndex < a.Count; aIndex++, bIndex++)
+            {
+                if (!AreSame(a[aIndex].ParameterType, b[bIndex].ParameterType))
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

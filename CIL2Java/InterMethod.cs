@@ -67,26 +67,46 @@ namespace CIL2Java
             }
 
             declType = resolver.Resolve(methodRef.DeclaringType, genericArgs);
+            #region Mapping
             if (methodMapCustomAttr != null)
             {
                 TypeReference realDeclType = methodMapCustomAttr.ConstructorArguments[0].Value as TypeReference;
+                TypeDefinition realDeclTypeDef = realDeclType.Resolve();
 
-                MethodSignature thisMethod = new MethodSignature(methodRef);
-                for (int i = 0; i < methodRef.Parameters.Count; i++)
+                string mappedName = (string)methodMapCustomAttr.ConstructorArguments[1].Value;
+                MethodDefinition md = null;
+                int paramsOffset = 0;
+                if ((methodMapCustomAttr.ConstructorArguments.Count > 2) && ((bool)methodMapCustomAttr.ConstructorArguments[2].Value))
+                    paramsOffset = 1;
+
+                foreach (var method in realDeclTypeDef.Methods)
                 {
-                    if (methodRef.Parameters[i].ParameterType.IsSentinel)
-                        break;
+                    if (method.Name != mappedName)
+                        continue;
+                    if (method.HasGenericParameters != methodRef.HasGenericParameters)
+                        continue;
+                    if (method.HasGenericParameters && method.GenericParameters.Count != methodRef.GenericParameters.Count)
+                        continue;
 
-                    thisMethod.Parameters[i] = resolver.Resolve(methodRef.Parameters[i].ParameterType, genericArgs).Fullname;
+                    if (!Utils.AreSame(method.ReturnType, methodRef.ReturnType))
+                        continue;
+
+                    if (!method.HasParameters)
+                        continue;
+
+                    if (!methodRef.HasParameters)
+                    {
+                        md = method;
+                        break;
+                    }
+
+                    if (!Utils.AreSame(method.Parameters, methodRef.Parameters, paramsOffset))
+                        continue;
+
+                    md = method;
+                    break;
                 }
 
-                if ((methodMapCustomAttr.ConstructorArguments.Count > 2) &&
-                    ((bool)methodMapCustomAttr.ConstructorArguments[2].Value))
-                    thisMethod.Parameters = new string[] { declType.Fullname }.Concat(thisMethod.Parameters).ToArray();
-                thisMethod.Name = methodMapCustomAttr.ConstructorArguments[1].Value as string;
-
-                TypeDefinition realDeclTypeDef = realDeclType.Resolve();
-                MethodDefinition md = realDeclTypeDef.Methods.Where(M => new MethodSignature(M) == thisMethod).FirstOrDefault();
                 if (md == null)
                     throw new Exception();  //TODO: mapping error
 
@@ -94,6 +114,7 @@ namespace CIL2Java
                 return;
             }
             else
+            #endregion
                 name = methodRef.Name;
 
             genericArgs.AddRange(declType.GenericArguments);

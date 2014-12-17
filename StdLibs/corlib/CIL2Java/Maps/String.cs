@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using javaString = java.lang.String;
+using javaStringBuilder = java.lang.StringBuilder;
 
 namespace CIL2Java.Maps
 {
@@ -190,19 +191,137 @@ namespace CIL2Java.Maps
         }
         #endregion
 
-        public static javaString Concat(javaString s1, javaString s2)
+        #region Join
+        public static string Join(string separator, params string[] value)
         {
-            return s1.concat(s2);
+            if (separator == null)
+                throw new ArgumentNullException("separator");
+            return Join(separator, value, 0, value.Length);
         }
 
-        public static bool OperatorEq(javaString a, javaString b)
+        public static string Join(string separator, params object[] values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+            if ((values.Length == 0) || (values[0] == null))
+                return string.Empty;
+            if (separator == null)
+                separator = string.Empty;
+
+            javaStringBuilder resultBuilder = new javaStringBuilder();
+            resultBuilder.append(values[0].ToString() ?? string.Empty);
+
+            for (int i = 1; i < values.Length; i++)
+            {
+                resultBuilder.append(separator);
+                resultBuilder.append(values[i].ToString() ?? string.Empty);
+            }
+
+            return resultBuilder.ToString();
+        }
+
+        public static string Join<T>(string separator, IEnumerable<T> values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+            if (separator == null)
+                separator = string.Empty;
+
+            javaStringBuilder resultBuilder = new javaStringBuilder();
+            bool first = true;
+            foreach (T v in values)
+            {
+                if (first)
+                    first = false;
+                else
+                    resultBuilder.append(separator);
+
+                if (v != null)
+                    resultBuilder.append(v);
+            }
+            return resultBuilder.ToString();
+        }
+
+        public static string Join(string separator, IEnumerable<string> values)
+        {
+            if (values == null)
+                throw new ArgumentNullException("values");
+            if (separator == null)
+                separator = string.Empty;
+
+            javaStringBuilder resultBuilder = new javaStringBuilder();
+            bool first = true;
+            foreach (string v in values)
+            {
+                if (first)
+                    first = false;
+                else
+                    resultBuilder.append(separator);
+
+                if (v != null)
+                    resultBuilder.append(v);
+            }
+            return resultBuilder.ToString();
+        }
+
+        public static string Join(string separator, string[] value, int startIndex, int count)
+        {
+            if (value == null)
+                throw new ArgumentNullException("value");
+            if (startIndex < 0)
+                throw new ArgumentOutOfRangeException("startIndex");
+            if (count < 0)
+                throw new ArgumentOutOfRangeException("count");
+            if (startIndex > value.Length - count)
+                throw new ArgumentOutOfRangeException("startIndex");
+            
+            if (count == 0)
+                return string.Empty;
+            
+            if (separator == null)
+                separator = string.Empty;
+
+            javaStringBuilder resultBuilder = new javaStringBuilder();
+            resultBuilder.append(value[startIndex]);
+
+            int endIndex = startIndex + count;
+            for (int i = startIndex + 1; i < endIndex; i++)
+            {
+                resultBuilder.append(separator);
+                resultBuilder.append(value[i]);
+            }
+
+            return resultBuilder.ToString();
+        }
+        #endregion
+
+        #region Concat
+        public static string Concat(string s1, string s2)
+        {
+            return Intrinsics.ToCILString(Intrinsics.ToJavaString(s1).concat(Intrinsics.ToJavaString(s2)));
+        }
+        #endregion
+
+        #region Equals
+        public static bool Equals(string self, string value)
+        {
+            return self.Equals((object)value);
+        }
+
+        public static bool Equals(string self, string value, StringComparison comparisonType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool OperatorEq(string a, string b)
         {
             return a.Equals(b);
         }
 
-        public static bool OperatorNotEq(javaString a, javaString b)
+        public static bool OperatorNotEq(string a, string b)
         {
             return !a.Equals(b);
         }
+        #endregion
     }
 }
