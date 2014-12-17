@@ -48,7 +48,7 @@ namespace CIL2Java
             if (AllMethodsMapper.ContainsKey(CILName))
                 return AllMethodsMapper[CILName];
 
-            return CILName.Replace(InvalidJavaChars, '_').Replace('.', '_');
+            return CILName.Replace(InvalidJavaChars, '_').Replace('.', '_').Replace('/', '_');
         }
     }
 }
