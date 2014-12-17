@@ -69,12 +69,11 @@ namespace CIL2Java
             if (operand.DeclaringType.Fullname == ClassNames.Intrinsics.ClassName)
             {
                 if (operand.Name.Contains(ClassNames.Intrinsics.CreatePointerToArray))
-                    CompileIntrinsicCreatePointerToArray(e);
+                { CompileIntrinsicCreatePointerToArray(e); return; }
                 if (operand.Name == ClassNames.Intrinsics.GetBoxedDataFromPointer)
-                    CompileIntrinsicGetBoxedDataFromPointer(e);
+                { CompileIntrinsicGetBoxedDataFromPointer(e); return; }
                 if (operand.Name == ClassNames.Intrinsics.GetClass)
-                    CompileIntrinsicGetClass(e);
-                return;
+                { CompileIntrinsicGetClass(e); return; }
             }
 
             if ((Program.BoxType == BoxingType.Java) && (operand.DeclaringType.Fullname == ClassNames.CorlibUtils) &&
