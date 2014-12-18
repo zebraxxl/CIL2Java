@@ -12,6 +12,8 @@ namespace CIL2Java
                 return GetFieldDescriptor(CILName);
             else if (CILName.IsByRef)
                 return TypeNameToJava(GetByRefTypeName(CILName));
+            else if (CILName.IsPrimitive)
+                return TypeNameToJava(CILName.CILBoxType);
             
             return TypeNameToJava(CILName.Fullname);
         }
