@@ -5,12 +5,14 @@ using System.Runtime.ConstrainedExecution;
 using System.Security;
 using System.Collections.Generic;
 using CIL2Java.Attributes;
+using arrayMap = CIL2Java.Maps.Array;
 
 namespace System
 {
     /// <summary>Provides methods for creating, manipulating, searching, and sorting arrays, thereby serving as the base class for all arrays in the common language runtime.</summary><filterpriority>1</filterpriority>
     [Serializable]
     [ComVisibleAttribute(true)]
+    [TypeMap(typeof(object))]
     public abstract class Array : ICloneable, IList, IStructuralComparable, IStructuralEquatable
     {
     
@@ -65,26 +67,10 @@ namespace System
         
         
         [ReliabilityContractAttribute(Consistency.WillNotCorruptState, Cer.MayFail)]
+        [MethodMap(typeof(arrayMap), "Resize")]
         public static void Resize<T>(ref T[] array, int newSize)
         {
-            if (newSize < 0)
-                throw new ArgumentOutOfRangeException("newSize");
-
-            if (array == null)
-            {
-                array = new T[newSize];
-                return;
-            }
-
-            T[] original = array;
-            int originalLength = original.Length;
-            if (originalLength == newSize)
-                return;
-
-            T[] newArray = new T[newSize];
-            if (originalLength != 0)
-                java.lang.System.arraycopy(original, 0, newArray, 0, Math.Min(newSize, originalLength));    //TODO: replace System.Math to java.lang.Math
-            array = newArray;
+            throw new NotSupportedException(Local.GetText("Dierect call to mapped methods not supported"));
         }
         
         
@@ -163,10 +149,10 @@ namespace System
         /// <filterpriority>1</filterpriority>
         [ReliabilityContractAttribute(Consistency.MayCorruptInstance, Cer.MayFail)]
         [SecuritySafeCriticalAttribute()]
+        [MethodMap(typeof(arrayMap), "Copy")]
         public static void Copy(Array sourceArray, int sourceIndex, Array destinationArray, int destinationIndex, int length)
         {
-            //TODO: params checks
-            java.lang.System.arraycopy(sourceArray, sourceIndex, destinationArray, destinationIndex, length);
+            throw new NotSupportedException(Local.GetText("Dierect call to mapped methods not supported"));
         }
         
         
@@ -198,9 +184,10 @@ namespace System
         /// <summary>Sets a range of elements in the <see cref="T:System.Array" /> to zero, to false, or to null, depending on the element type.</summary><param name="array">The <see cref="T:System.Array" /> whose elements need to be cleared.</param><param name="index">The starting index of the range of elements to clear.</param><param name="length">The number of elements to clear.</param><exception cref="T:System.ArgumentNullException"><paramref name="array" /> is null.</exception><exception cref="T:System.IndexOutOfRangeException"><paramref name="index" /> is less than the lower bound of <paramref name="array" />.-or-<paramref name="length" /> is less than zero.-or-The sum of <paramref name="index" /> and <paramref name="length" /> is greater than the size of the <see cref="T:System.Array" />.</exception><filterpriority>1</filterpriority>
         [ReliabilityContractAttribute(Consistency.WillNotCorruptState, Cer.Success)]
         [SecuritySafeCriticalAttribute()]
+        [MethodMap(typeof(arrayMap), "Clear")]
         public static void Clear(Array array, int index, int length)
         {
-             throw new NotImplementedException();
+            throw new NotSupportedException(Local.GetText("Dierect call to mapped methods not supported"));
         }
         
         
