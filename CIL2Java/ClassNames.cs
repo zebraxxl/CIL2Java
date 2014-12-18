@@ -29,6 +29,7 @@ namespace CIL2Java
         public const string AlwaysCompileAttribute = "CIL2Java.Attributes.AlwaysCompileAttribute";
 
         public const string InterfacesMapGetAdapterMethodName = "GetAdapter";
+        public const string ArraysInterfaceAdapterTypeName = "CIL2Java.Maps.Array`1";
 
         public const string VESNamespace = "CIL2Java.VES";
 

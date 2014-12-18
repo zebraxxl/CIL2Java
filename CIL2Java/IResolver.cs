@@ -8,6 +8,7 @@ namespace CIL2Java
     {
         InterType Resolve(TypeReference typeRef, List<InterGenericArgument> genericArgs);
         InterType Resolve(string Fullname);
+        InterType Resolve(string Fullname, List<InterGenericArgument> genericArgs);
         InterField Resolve(FieldReference fldRef, List<InterGenericArgument> genericArgs);
         InterMethod Resolve(MethodReference methodRef, List<InterGenericArgument> genericArgs);
         int GetGenericsArgsIndex(string GenericsArgsString);

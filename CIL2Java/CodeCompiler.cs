@@ -487,6 +487,17 @@ namespace CIL2Java
                         ClassNames.InterfacesMapGetAdapterMethodName,
                         "(" + namesController.GetFieldDescriptor(inferred) + ")" + namesController.GetFieldDescriptor(ifaceMap)), e);
                 }
+
+                if ((expected.IsInterface) && (inferred.IsArray))
+                {
+                    InterType mapType = resolver.Resolve(ClassNames.ArraysInterfaceAdapterTypeName,
+                        new List<InterGenericArgument>() { new InterGenericArgument(GenericArgumentOwnerType.Type, 0, inferred.ElementType) });
+
+                    codeGenerator.Add(OpCodes.invokestatic, new MethodRef(
+                        namesController.TypeNameToJava(mapType),
+                        ClassNames.InterfacesMapGetAdapterMethodName,
+                        "(" + namesController.GetFieldDescriptor(inferred) + ")" + namesController.GetFieldDescriptor(mapType)), e);
+                }
             }
         }
 

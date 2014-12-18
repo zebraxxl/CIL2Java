@@ -115,8 +115,15 @@ namespace CIL2Java
                     }
                 }
 
-                if (e.ExpectedType != null) ((IResolver)this).Resolve(e.ExpectedType, genericArgs);
-                if (e.InferredType != null) ((IResolver)this).Resolve(e.InferredType, genericArgs);
+                InterType expected = null;
+                InterType inferred = null;
+
+                if (e.ExpectedType != null) expected = ((IResolver)this).Resolve(e.ExpectedType, genericArgs);
+                if (e.InferredType != null) inferred = ((IResolver)this).Resolve(e.InferredType, genericArgs);
+
+                if ((expected != null) && (expected.IsInterface) && (inferred != null) && (inferred.IsArray))
+                    ((IResolver)this).Resolve(ClassNames.ArraysInterfaceAdapterTypeName,
+                        new List<InterGenericArgument>() { new InterGenericArgument(GenericArgumentOwnerType.Type, 0, inferred.ElementType) });
             }
             else if (node is ILWhileLoop)
             {
@@ -215,16 +222,21 @@ namespace CIL2Java
             return toReturn;
         }
 
-        InterType IResolver.Resolve(string fullname)
+        InterType IResolver.Resolve(string fullname, List<InterGenericArgument> genericArgs)
         {
             foreach (ModuleDefinition m in loadedModules)
             {
                 TypeDefinition typeDef = m.GetType(fullname);
                 if (typeDef != null)
-                    return ((IResolver)this).Resolve(typeDef, null);
+                    return ((IResolver)this).Resolve(typeDef, genericArgs);
             }
 
             return null;
+        }
+
+        InterType IResolver.Resolve(string fullname)
+        {
+            return ((IResolver)this).Resolve(fullname, InterGenericArgument.EmptyGenericArgsList);
         }
 
         InterField IResolver.Resolve(FieldReference fldRef, List<InterGenericArgument> genericArgs)
