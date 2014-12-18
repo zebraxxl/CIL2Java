@@ -171,6 +171,7 @@ namespace CIL2Java
             //  pop
             //  aconst_null
             //:end
+            //  checkcast operand
 
             string endLabel = rnd.Next().ToString() + "end";
 
@@ -182,7 +183,8 @@ namespace CIL2Java
                 .Add(Java.OpCodes.ifne, endLabel, e)
                 .Add(Java.OpCodes.pop, null, e)
                 .Add(Java.OpCodes.aconst_null, null, e)
-                .Label(endLabel);
+                .Label(endLabel)
+                .Add(Java.OpCodes.checkcast, operandRef, e);
         }
 
         private void CompileBox(ILExpression e, ExpectType expect)
