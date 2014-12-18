@@ -70,5 +70,10 @@ namespace CIL2Java
 
             return self;
         }
+
+        public static class EmptyArray<T>
+        {
+            public static T[] value = new T[0];
+        }
     }
 }

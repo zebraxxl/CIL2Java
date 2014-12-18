@@ -77,6 +77,7 @@
     <Compile Include="java\lang\StringBuffer.cs" />
     <Compile Include="java\lang\StringBuilder.cs" />
     <Compile Include="java\lang\Thread.cs" />
+    <Compile Include="java\text\Normalizer.cs" />
     <Compile Include="java\util\Collection.cs" />
     <Compile Include="java\util\concurrent\Callable.cs" />
     <Compile Include="java\util\concurrent\Executor.cs" />
@@ -1580,6 +1581,7 @@
     <Compile Include="System/Runtime/Versioning\TargetFrameworkAttribute.cs" />
     <Compile Include="System/Runtime/DesignerServices\WindowsRuntimeDesignerContext.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
