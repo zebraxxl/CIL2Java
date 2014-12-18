@@ -83,24 +83,35 @@ namespace CIL2Java
                 {
                     if (method.Name != mappedName)
                         continue;
-                    if (method.HasGenericParameters != methodRef.HasGenericParameters)
+                    if (method.HasGenericParameters != methodDef.HasGenericParameters)
                         continue;
-                    if (method.HasGenericParameters && method.GenericParameters.Count != methodRef.GenericParameters.Count)
-                        continue;
-
-                    if (!Utils.AreSame(method.ReturnType, methodRef.ReturnType))
+                    if (method.HasGenericParameters && method.GenericParameters.Count != methodDef.GenericParameters.Count)
                         continue;
 
-                    if (!method.HasParameters)
+                    if (!Utils.AreSame(method.ReturnType, methodDef.ReturnType))
                         continue;
 
-                    if (!methodRef.HasParameters)
+                    if (paramsOffset == 0)
                     {
-                        md = method;
-                        break;
+                        if ((!method.HasParameters) && (methodDef.HasParameters))
+                        {
+                            md = method;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (!method.HasParameters)
+                            continue;
+
+                        if ((!methodRef.HasParameters) && (method.Parameters.Count == 1))
+                        {
+                            md = method;
+                            break;
+                        }
                     }
 
-                    if (!Utils.AreSame(method.Parameters, methodRef.Parameters, paramsOffset))
+                    if (!Utils.AreSame(method.Parameters, methodDef.Parameters, paramsOffset))
                         continue;
 
                     md = method;
@@ -110,7 +121,17 @@ namespace CIL2Java
                 if (md == null)
                     throw new Exception();  //TODO: mapping error
 
-                onFounded(resolver.Resolve(md, genericArgs));
+                MethodReference newMethodRef = md;
+                if (methodRef is GenericInstanceMethod)
+                {
+                    GenericInstanceMethod oldGIM = (GenericInstanceMethod)methodRef;
+                    GenericInstanceMethod newGIM = new GenericInstanceMethod(newMethodRef);
+
+                    oldGIM.GenericArguments.ForEach(T => newGIM.GenericArguments.Add(T));
+                    newMethodRef = newGIM;
+                }
+
+                onFounded(resolver.Resolve(newMethodRef, genericArgs));
                 return;
             }
             else
