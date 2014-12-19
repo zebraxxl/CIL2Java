@@ -21,6 +21,13 @@ namespace CIL2Java
                 return;
             }
 
+            if ((operandType.IsPrimitive) && (expectType == ExpectType.Reference))
+            {
+                codeGenerator.AddLoad(JavaHelpers.InterTypeToJavaPrimitive(operandType), varIndex, e);
+                TranslateType(operandType, ExpectType.Boxed, e);
+                return;
+            }
+
             string localByRefName = byRefController.GetLocalByRefTypeName(operandType);
             Java.Constants.Class localByRefNameClass =
                 new Java.Constants.Class(namesController.TypeNameToJava(localByRefName));
@@ -61,12 +68,15 @@ namespace CIL2Java
         {
             InterField operand = resolver.Resolve((FieldReference)e.Operand, thisMethod.FullGenericArguments);
 
-            if (operand.FieldType.IsValueType)
+            if ((operand.FieldType.IsValueType) || ((operand.FieldType.IsPrimitive) && (expectType == ExpectType.Reference)))
             {
                 if (e.Code == ILCode.Ldflda)
                     CompileExpression(e.Arguments[0], ExpectType.Reference);
 
                 CompileFieldLoad(operand, e);
+
+                if (operand.FieldType.IsPrimitive)
+                    TranslateType(operand.FieldType, ExpectType.Boxed, e);
 
                 return;
             }
@@ -107,6 +117,15 @@ namespace CIL2Java
 
                 codeGenerator.Add(OpCodes.aaload, null, e);
                 return;
+            }
+
+            if ((operand.IsPrimitive) && (expectType == ExpectType.Reference))
+            {
+                CompileExpression(e.Arguments[0], ExpectType.Reference);    //array
+                CompileExpression(e.Arguments[1], ExpectType.Primitive);    //index
+
+                codeGenerator.AddArrayLoad(arrType);
+                TranslateType(operand, ExpectType.Boxed, e);
             }
 
             string arrayByRefName = byRefController.GetArrayByRefTypeName(operand);
