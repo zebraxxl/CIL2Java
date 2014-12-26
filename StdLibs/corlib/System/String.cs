@@ -18,6 +18,7 @@ namespace System
     public sealed class String : IComparable, ICloneable, IConvertible, IComparable<String>, IEnumerable<Char>, IEquatable<String>
     {
         /// <summary>Represents the empty string. This field is read-only.</summary><filterpriority>1</filterpriority>
+        [FieldMap(typeof(stringMap))]
         public static readonly string Empty = "";
     
         /// <summary>Gets the <see cref="T:System.Char" /> object at a specified position in the current <see cref="T:System.String" /> object.</summary><returns>The object at position <paramref name="index" />.</returns><param name="index">A position in the current string. </param><exception cref="T:System.IndexOutOfRangeException"><paramref name="index" /> is greater than or equal to the length of this object or less than zero. </exception><filterpriority>2</filterpriority>

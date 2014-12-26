@@ -10,6 +10,8 @@ namespace CIL2Java.Maps
 {
     public class String : IComparable, ICloneable, IConvertible, IComparable<javaString>, IEnumerable<char>, IEquatable<javaString>
     {
+        public static readonly string Empty = "";
+
         #region Interfaces methods
         private javaString self;
 

@@ -29,7 +29,7 @@ namespace CIL2Java
         public object Constatnt { get { return constant; } }
         public byte[] InitialValue { get { return initialValue; } }
 
-        public InterField(FieldReference fldRef, List<InterGenericArgument> genericArgs, IResolver resolver)
+        public InterField(FieldReference fldRef, List<InterGenericArgument> genericArgs, IResolver resolver, Action<InterField> onMapped)
         {
             genericArgs = genericArgs ?? InterGenericArgument.EmptyGenericArgsList;
 
@@ -38,6 +38,32 @@ namespace CIL2Java
             this.name = fldRef.Name;
 
             FieldDefinition fldDef = fldRef.Resolve();
+
+            CustomAttribute mappedAttr = fldDef.CustomAttributes.Where(C => C.AttributeType.FullName == ClassNames.FieldMapAttribute).FirstOrDefault();
+            if (mappedAttr != null)
+            {
+                TypeReference mappedToType = mappedAttr.ConstructorArguments[0].Value as TypeReference;
+                if (mappedToType != null)
+                {
+                    string mappedToName = null;
+                    if (mappedAttr.ConstructorArguments.Count > 1)
+                        mappedToName = mappedAttr.ConstructorArguments[1].Value as string;
+                    mappedToName = mappedToName ?? this.name;
+
+                    TypeDefinition mappedToTypeDef = mappedToType.Resolve();
+                    if (mappedToTypeDef != null)
+                    {
+                        FieldReference newFldRef = mappedToTypeDef.Fields.Where(F => F.Name == mappedToName).FirstOrDefault();
+
+                        if (newFldRef != null)
+                        {
+                            onMapped(resolver.Resolve(newFldRef, genericArgs));
+                            return;
+                        }
+                    }
+                }
+            }
+
             this.IsPublic = fldDef.IsPublic || fldDef.IsAssembly;
             this.IsProtected = fldDef.IsFamily || fldDef.IsFamilyAndAssembly || fldDef.IsFamilyOrAssembly;
             this.IsPrivate = fldDef.IsPrivate;

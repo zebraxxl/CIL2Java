@@ -246,7 +246,12 @@ namespace CIL2Java
 
             if (result == null)
             {
-                result = new InterField(fldRef, genericArgs, this);
+                InterField mapped = null;
+
+                result = new InterField(fldRef, genericArgs, this, F => mapped = F);
+                if (mapped != null)
+                    return mapped;
+
                 Messages.Verbose("Adding field {0} to compile...", result.ToString());
                 declType.Fields.Add(result);
             }

@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="CIL2Java\Attributes\AlwaysCompileAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\BoxedAttribute.cs" />
+    <Compile Include="CIL2Java\Attributes\FieldMapAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\FromJavaAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\InterfacesMapAttribute.cs" />
     <Compile Include="CIL2Java\Attributes\JavaBoxedAttribute.cs" />
