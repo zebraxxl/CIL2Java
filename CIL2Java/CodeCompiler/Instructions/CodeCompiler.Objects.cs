@@ -253,7 +253,6 @@ namespace CIL2Java
 
         private void CompileUnbox_Any(ILExpression e, ExpectType expect)
         {
-            CompileExpression(e.Arguments[0], ExpectType.Boxed);
 
             InterType operand = resolver.Resolve((TypeReference)e.Operand, thisMethod.FullGenericArguments);
             InterType nullableType = null;
@@ -264,10 +263,11 @@ namespace CIL2Java
                 operand = operand.GenericArguments[0].Type;
 
                 codeGenerator
-                    .Add(OpCodes._new, new Java.Constants.Class(namesController.TypeNameToJava(operand)), e)
+                    .Add(OpCodes._new, new Java.Constants.Class(namesController.TypeNameToJava(nullableType)), e)
                     .Add(OpCodes.dup, null, e);
             }
 
+            CompileExpression(e.Arguments[0], ExpectType.Boxed);
 
             string boxType = GetBoxType(operand);
 
