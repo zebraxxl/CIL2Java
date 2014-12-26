@@ -82,7 +82,8 @@ namespace CIL2Java
             if (((expected == ExpectType.Boxed) || (expected == ExpectType.Reference))
                 && ((type.IsPrimitive) || (type.IsEnum) || (type.IsValueType)))
             {
-                BoxType(type, tag);
+                if ((!type.IsNullable) || (expected != ExpectType.Reference))
+                    BoxType(type, tag);
             }
         }
     }
