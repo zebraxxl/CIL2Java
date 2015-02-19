@@ -126,6 +126,7 @@ namespace CIL2Java
 
                 codeGenerator.AddArrayLoad(arrType);
                 TranslateType(operand, ExpectType.Boxed, e);
+                return;
             }
 
             string arrayByRefName = byRefController.GetArrayByRefTypeName(operand);
