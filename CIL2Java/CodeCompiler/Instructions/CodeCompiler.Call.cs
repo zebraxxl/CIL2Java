@@ -226,6 +226,20 @@ namespace CIL2Java
                     codeGenerator.AddDefaultValue(JavaHelpers.InterTypeToJavaPrimitive(returnType));
                 else
                     CompileExpression(e.Arguments[0], returnExpect);
+
+                if ((returnType.IsPrimitive) || (returnType.IsEnum))
+                {
+                    if (returnType.IsEnum)
+                        returnType = returnType.ElementType;
+
+                    if ((returnType.PrimitiveType == PrimitiveType.Byte) || (returnType.PrimitiveType == PrimitiveType.SByte) || (returnType.PrimitiveType == PrimitiveType.Bool))
+                        codeGenerator.Add(OpCodes.i2b, null, e);
+                    else if (returnType.PrimitiveType == PrimitiveType.Char)
+                        codeGenerator.Add(OpCodes.i2c, null, e);
+                    else if ((returnType.PrimitiveType == PrimitiveType.UInt16) || (returnType.PrimitiveType == PrimitiveType.Int16))
+                        codeGenerator.Add(OpCodes.i2s, null, e);
+                }
+
                 codeGenerator.AddReturn(JavaHelpers.InterTypeToJavaPrimitive(returnType), e);
             }
         }
