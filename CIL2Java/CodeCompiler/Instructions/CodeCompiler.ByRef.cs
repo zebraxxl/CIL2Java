@@ -157,7 +157,7 @@ namespace CIL2Java
 
             codeGenerator.Add(OpCodes.invokevirtual, getMethodRef, e);
 
-            if (!operand.ElementType.IsPrimitive)
+            if ((!operand.ElementType.IsPrimitive) && (!operand.ElementType.IsEnum))
                 codeGenerator.Add(OpCodes.checkcast, loadedTypeRef, e);
         }
 
