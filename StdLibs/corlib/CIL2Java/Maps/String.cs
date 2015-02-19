@@ -854,7 +854,7 @@ namespace CIL2Java.Maps
         #endregion
 
         #region LastIndexOf
-        public int LastIndexOf(string self, char value)
+        public static int LastIndexOf(string self, char value)
         {
             return Intrinsics.ToJavaString(self).lastIndexOf(value);
         }
