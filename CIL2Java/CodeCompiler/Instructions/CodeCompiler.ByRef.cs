@@ -52,7 +52,7 @@ namespace CIL2Java
                     .AddLocalVarInstruction(LocalVarInstruction.Load, JavaPrimitiveType.Ref, localRefTempVar, e)
                     .Add(OpCodes.invokevirtual, getValueMethodRef, e);
 
-                if (!operandType.IsPrimitive)
+                if ((!operandType.IsPrimitive) && (!operandType.IsEnum))
                     codeGenerator.Add(OpCodes.checkcast,
                         new Java.Constants.Class(namesController.TypeNameToJava(operandType)), e);
 
