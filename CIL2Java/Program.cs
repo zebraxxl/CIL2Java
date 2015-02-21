@@ -162,6 +162,11 @@ namespace CIL2Java
             compiler.Compile();
         }
 
+        public static void main(string[] args)
+        {
+            Main(args);
+        }
+
         public static void Main(string[] args)
         {
             Input = new List<string>();
