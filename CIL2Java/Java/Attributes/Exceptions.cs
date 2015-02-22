@@ -36,6 +36,13 @@ namespace CIL2Java.Java.Attributes
             return Result;
         }
 
+        public override void Dump(System.IO.StreamWriter writer, string indent)
+        {
+            writer.WriteLine("{0}Table (count: {1})", indent, ExceptionsTable.Count);
+            foreach (string e in ExceptionsTable)
+                writer.WriteLine("{0}    {1}", indent, e);
+        }
+
         protected override void Read(uint Length, System.IO.BinaryReader Reader, ConstantPool Pool)
         {
             ushort Count = Reader.ReadUInt16BE();

@@ -46,6 +46,16 @@ namespace CIL2Java.Java.Attributes
             return Result;
         }
 
+        public override void Dump(StreamWriter writer, string indent)
+        {
+            writer.WriteLine("{0}Count: {1}", indent, Annotations.Count);
+            for (int i = 0; i < Annotations.Count; i++)
+            {
+                writer.WriteLine("{0}{1,6G}:", i);
+                Annotations[i].Dump(writer, indent + "      ");
+            }
+        }
+
         protected override void Read(uint Length, BinaryReader Reader, ConstantPool Pool)
         {
             ushort Count = Reader.ReadUInt16BE();

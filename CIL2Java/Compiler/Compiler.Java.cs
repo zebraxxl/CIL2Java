@@ -17,6 +17,21 @@ namespace CIL2Java
 
             Directory.CreateDirectory(outputDir);
 
+            if (Program.Dump)
+            {
+                //try
+                //{
+                string dumpFileName = Path.Combine(Program.Out, javaClass.ThisClass + ".jbc");
+
+                using (FileStream output = new FileStream(dumpFileName, FileMode.Create))
+                    Java.Dumper.Dump(javaClass, output);
+                //}
+                //catch (Exception e)
+                //{
+                //    //TODO: Error message
+                //}
+            }
+
             try
             {
                 using (FileStream outputStream = new FileStream(outputPath, FileMode.Create))
@@ -25,21 +40,6 @@ namespace CIL2Java
             catch (Exception e)
             {
                 Messages.Message(MessageCode.CantWriteJavaClassFile, classFileName, e.Message);
-            }
-
-            if (Program.Dump)
-            {
-                try
-                {
-                    string dumpFileName = Path.Combine(Program.Out, javaClass.ThisClass + ".jbc");
-
-                    using (FileStream output = new FileStream(dumpFileName, FileMode.Create))
-                        Java.Dumper.Dump(javaClass, output);
-                }
-                catch (Exception e)
-                {
-                    //TODO: Error message
-                }
             }
         }
     }

@@ -110,5 +110,14 @@ namespace CIL2Java.Java
 
             return Result;
         }
+
+        public void Dump(StreamWriter writer, string indent)
+        {
+            writer.WriteLine("{0}Anntotation: {1}", indent, Type);
+            foreach (var e in ValuePairs)
+            {
+                writer.WriteLine("{0}    {1} : {2}", indent, e.Key.ToString(), e.Value.ToString());
+            }
+        }
     }
 }

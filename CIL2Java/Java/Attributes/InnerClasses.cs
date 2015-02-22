@@ -76,6 +76,18 @@ namespace CIL2Java.Java.Attributes
             return Result;
         }
 
+        public override void Dump(System.IO.StreamWriter writer, string indent)
+        {
+            writer.WriteLine("{0}Classes (count: {1}):", indent, Classes.Count);
+            for (int i = 0; i < Classes.Count; i++)
+            {
+                writer.WriteLine("{0}{1,6:G}: InnerClass: {2}", indent, i, Classes[i].InnerClassInfo ?? "null");
+                writer.WriteLine("{0}       OutterClass: {1}", indent, Classes[i].OuterClassInfo ?? "null");
+                writer.WriteLine("{0}         InnerName: {1}", indent, Classes[i].InnerName ?? "null");
+                writer.WriteLine("{0}       AccessFlags: {1}", indent, Classes[i].AccessFlags.ToString());
+            }
+        }
+
         protected override void Read(uint Length, System.IO.BinaryReader Reader, ConstantPool Pool)
         {
             ushort Count = Reader.ReadUInt16BE();

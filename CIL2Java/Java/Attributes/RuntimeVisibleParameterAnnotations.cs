@@ -112,6 +112,20 @@ namespace CIL2Java.Java.Attributes
             return Result;
         }
 
+        public override void Dump(StreamWriter writer, string indent)
+        {
+            writer.WriteLine("{0}Count: {1}", indent, ParamsAnnotations.Length);
+            for (int i = 0; i < ParamsAnnotations.Length; i++)
+            {
+                writer.WriteLine("{0}{1,6:G} Count: {1}", indent, i, ParamsAnnotations[i].Count);
+                for (int j = 0; j < ParamsAnnotations[i].Count; j++)
+                {
+                    writer.WriteLine("{0}      {1,6:G}:", indent, j);
+                    ParamsAnnotations[i][j].Dump(writer, indent + "            ");
+                }
+            }
+        }
+
         protected override void Read(uint Length, BinaryReader Reader, ConstantPool Pool)
         {
             for (int i = 0; i < ParamsAnnotations.Length; i++)

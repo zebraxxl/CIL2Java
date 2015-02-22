@@ -28,6 +28,11 @@ namespace CIL2Java.Java.Attributes
             return base.ToString() + System.Environment.NewLine + "Signature value: " + Value + System.Environment.NewLine;
         }
 
+        public override void Dump(System.IO.StreamWriter writer, string indent)
+        {
+            writer.WriteLine("{0}Value: {1}", indent, Value);
+        }
+
         protected override void Read(uint Length, System.IO.BinaryReader Reader, ConstantPool Pool)
         {
             Value = ((Constants.Utf8)Pool[Reader.ReadUInt16BE()]).Value;

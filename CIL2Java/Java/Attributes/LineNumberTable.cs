@@ -49,6 +49,14 @@ namespace CIL2Java.Java.Attributes
             return Result;
         }
 
+        public override void Dump(System.IO.StreamWriter writer, string indent)
+        {
+            writer.WriteLine("{0}Line Numbers (count: {1}):", indent, Table.Count);
+            writer.WriteLine("{0}    StartPC  LineNumber", indent);
+            foreach (var l in Table)
+                writer.WriteLine("{0}      {1,4:X}   {2}", indent, l.StartPC, l.LineNumberInFile);
+        }
+
         protected override void Read(uint Length, System.IO.BinaryReader Reader, ConstantPool Pool)
         {
             ushort Count = Reader.ReadUInt16BE();

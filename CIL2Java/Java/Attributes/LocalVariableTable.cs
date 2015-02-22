@@ -49,6 +49,14 @@ namespace CIL2Java.Java.Attributes
             return Result;
         }
 
+        public override void Dump(System.IO.StreamWriter writer, string indent)
+        {
+            writer.WriteLine("{0}Local Vars (count: {1}): ", indent, Table.Count);
+            writer.WriteLine("{0}    Index  StartPC  Length  Name  Descriptor", indent);
+            foreach (var v in Table)
+                writer.WriteLine("{0}    {1,5:G}    {2,4:X}     {3,4:X}  {4}  {5}", indent, v.Index, v.StartPC, v.Length, v.Name, v.Descriptor);
+        }
+
         protected override void Read(uint Length, System.IO.BinaryReader Reader, ConstantPool Pool)
         {
             ushort Count = Reader.ReadUInt16BE();

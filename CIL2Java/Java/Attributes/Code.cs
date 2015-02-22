@@ -94,6 +94,32 @@ namespace CIL2Java.Java.Attributes
             return Result;
         }
 
+        public override void Dump(StreamWriter writer, string indent)
+        {
+            writer.WriteLine("{0}Max stack: {1}", indent, MaxStack);
+            writer.WriteLine("{0}Max locals: {1}", indent, MaxLocals);
+            writer.WriteLine("{0}Code size: {1}", indent, CodeBytes.Length);
+            writer.WriteLine("{0}Exceptions (count: {1}):", indent, ExceptionTable.Count);
+            if (ExceptionTable.Count == 0)
+                writer.WriteLine("{0}    NONE", indent);
+            else
+            {
+                writer.WriteLine("{0}    from  to  target type", indent);
+                foreach (Exception e in ExceptionTable)
+                    writer.WriteLine("{0}    {1,4:X} {2,4:X}   {3,4:X}  {4}", indent, e.StartPC, e.EncPC, e.HandlerPC, e.CatchType == 0 ? "any" : e.CatchType.ToString());
+            }
+
+            if (Attributes.Count > 0)
+            {
+                writer.WriteLine("{0}Attributes (count: {1}):", indent, Attributes.Count);
+                for (int i = 0; i < Attributes.Count; i++)
+                {
+                    writer.WriteLine("{0}    {1,6:G}: {2}", indent, i, Attributes[i].Name);
+                    Attributes[i].Dump(writer, "                  ");
+                }
+            }
+        }
+
         protected override void Read(uint Length, BinaryReader Reader, ConstantPool Pool)
         {
             MaxStack = Reader.ReadUInt16BE();
