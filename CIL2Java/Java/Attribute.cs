@@ -38,6 +38,10 @@ namespace CIL2Java.Java
             return "Name: " + Name;
         }
 
+        public virtual void Dump(StreamWriter writer, string indent)
+        {
+        }
+
         public static Attribute ReadAttribute(BinaryReader Reader, ConstantPool Pool)
         {
             string Name = ((Constants.Utf8)Pool[Reader.ReadUInt16BE()]).Value;

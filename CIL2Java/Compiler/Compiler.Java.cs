@@ -26,6 +26,21 @@ namespace CIL2Java
             {
                 Messages.Message(MessageCode.CantWriteJavaClassFile, classFileName, e.Message);
             }
+
+            if (Program.Dump)
+            {
+                try
+                {
+                    string dumpFileName = Path.Combine(Program.Out, javaClass.ThisClass + ".jbc");
+
+                    using (FileStream output = new FileStream(dumpFileName, FileMode.Create))
+                        Java.Dumper.Dump(javaClass, output);
+                }
+                catch (Exception e)
+                {
+                    //TODO: Error message
+                }
+            }
         }
     }
 }

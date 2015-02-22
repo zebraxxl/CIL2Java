@@ -29,6 +29,7 @@ namespace CIL2Java
         public static bool Unsigned { get; private set; }
         public static bool OverflowCheck { get; private set; }
         public static bool Debug { get; private set; }
+        public static bool Dump { get; private set; }
         public static bool CompileBreak { get; private set; }
 
         public static Dictionary<string, string> ReplacedAssemblies { get; private set; }
@@ -52,6 +53,8 @@ namespace CIL2Java
                     AsX64 = true;
                 else if (args[i] == "-debug")
                     Debug = true;
+                else if (args[i] == "-dump")
+                    Dump = true;
                 else if (args[i] == "-unsigned")
                     Unsigned = true;
                 else if (args[i] == "-overflow_check")
@@ -106,6 +109,7 @@ namespace CIL2Java
                 Console.WriteLine("    -unsigned              - compile with unsigned types support");
                 Console.WriteLine("    -overflow_check        - compile with overlow checks (*ovf instructions)");
                 Console.WriteLine("    -debug                 - add debug information");
+                Console.WriteLine("    -dump                  - dump resulted class file info");
                 Console.WriteLine("    -compile_break         - compile `break` instruction");
             }
 
@@ -177,6 +181,7 @@ namespace CIL2Java
             Unsigned = false;
             OverflowCheck = false;
             Debug = false;
+            Dump = false;
             CompileBreak = false;
             ReplacedAssemblies = new Dictionary<string, string>();
 

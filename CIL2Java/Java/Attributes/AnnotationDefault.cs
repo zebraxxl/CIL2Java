@@ -39,6 +39,11 @@ namespace CIL2Java.Java.Attributes
             return base.ToString() + System.Environment.NewLine + "DefaultValue: " + DefaultValue.ToString();
         }
 
+        public override void Dump(StreamWriter writer, string indent)
+        {
+            writer.WriteLine(indent + "DefaultValue: " + DefaultValue.ToString());
+        }
+
         protected override void Read(uint Length, BinaryReader Reader, ConstantPool Pool)
         {
             DefaultValue = Annotation.ElementValue.Read(Reader, Pool);
