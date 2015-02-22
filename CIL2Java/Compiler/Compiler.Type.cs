@@ -140,9 +140,14 @@ namespace CIL2Java
                 currentJavaClass.Attributes.Add(currentJavaInnerClasses);
 
             if ((Program.Debug) && (sourceFileNameCounter != null) && (sourceFileNameCounter.IsStarted))
-                currentJavaClass.Attributes.Add(new Java.Attributes.SourceFile(
-                    System.IO.Path.GetFileName(sourceFileNameCounter.MostUsed)));
+            {
+                string fileName = sourceFileNameCounter.MostUsed;
+                if (!Program.FullPathInSourceFileName)
+                    fileName = System.IO.Path.GetFileName(fileName);
 
+                currentJavaClass.Attributes.Add(new Java.Attributes.SourceFile(fileName));
+
+            }
             return currentJavaClass;
         }
 

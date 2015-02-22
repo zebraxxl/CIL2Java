@@ -30,6 +30,7 @@ namespace CIL2Java
         public static bool OverflowCheck { get; private set; }
         public static bool Debug { get; private set; }
         public static bool Dump { get; private set; }
+        public static bool FullPathInSourceFileName { get; private set; }
         public static bool CompileBreak { get; private set; }
 
         public static Dictionary<string, string> ReplacedAssemblies { get; private set; }
@@ -55,6 +56,8 @@ namespace CIL2Java
                     Debug = true;
                 else if (args[i] == "-dump")
                     Dump = true;
+                else if (args[i] == "-fpisfn")
+                    FullPathInSourceFileName = true;
                 else if (args[i] == "-unsigned")
                     Unsigned = true;
                 else if (args[i] == "-overflow_check")
@@ -110,6 +113,7 @@ namespace CIL2Java
                 Console.WriteLine("    -overflow_check        - compile with overlow checks (*ovf instructions)");
                 Console.WriteLine("    -debug                 - add debug information");
                 Console.WriteLine("    -dump                  - dump resulted class file info");
+                Console.WriteLine("    -fpisfn                - add full path in source file name");
                 Console.WriteLine("    -compile_break         - compile `break` instruction");
             }
 
@@ -182,6 +186,7 @@ namespace CIL2Java
             OverflowCheck = false;
             Debug = false;
             Dump = false;
+            FullPathInSourceFileName = false;
             CompileBreak = false;
             ReplacedAssemblies = new Dictionary<string, string>();
 
