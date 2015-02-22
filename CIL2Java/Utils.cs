@@ -3,6 +3,7 @@ using ICSharpCode.Decompiler.ILAst;
 using Mono.Cecil;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace CIL2Java
 {
@@ -23,6 +24,16 @@ namespace CIL2Java
             foreach (T v in self)
                 a(v);
             return self;
+        }
+
+        public static string[] ReadAllLines(this StreamReader r)
+        {
+            List<string> result = new List<string>();
+            result.Add("[ZERO LINE]");
+
+            while (!r.EndOfStream)
+                result.Add(r.ReadLine());
+            return result.ToArray();
         }
 
         public static GenericArgumentOwnerType CecilGenericOwnerToC2JGenericOwner(GenericParameterType cecilOwner)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 namespace CIL2Java.Java
 {
@@ -39,15 +40,37 @@ namespace CIL2Java.Java
             /* 11 */ "T_LONG"
         };
 
-        private static void Disasm(Attributes.Code codeAttr, ConstantPool pool, StreamWriter writer)
+        private static void Disasm(Attributes.Code codeAttr, ConstantPool pool, StreamWriter writer, string[] sourceFile)
         {
             byte[] code = codeAttr.CodeBytes;
 
             int i = 0;
             bool lastWide = false;
 
+            Attributes.LineNumberTable lnt = codeAttr.Attributes.Where(A => A is Attributes.LineNumberTable).FirstOrDefault() as Attributes.LineNumberTable;
+            int lastLine = 0;
+
             while (i < code.Length)
             {
+                if ((lnt != null) && (sourceFile != null))
+                {
+                    try
+                    {
+                        var lns = lnt.Table.Where(ln => ln.StartPC <= i);
+                        if (lns.Count() > 0)
+                        {
+                            int currLine = lns.Aggregate((i1, i2) => i1.StartPC > i2.StartPC ? i1 : i2).LineNumberInFile;
+
+                            if (lastLine != currLine)
+                                writer.WriteLine("              ## {0}", sourceFile[currLine]);
+                            lastLine = currLine;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+
                 OpCodes op = (OpCodes)code[i];
 
                 if (!lastWide)
@@ -163,6 +186,8 @@ namespace CIL2Java.Java
 
         public static void Dump(Java.Class value, Stream output)
         {
+            string[] sourceFile = null;
+
             CountingStreamWriter writer = new CountingStreamWriter(output);
 
             writer.WriteLine("Class file version: {0}.{1}", value.MajorVersion, value.MinorVersion);
@@ -177,6 +202,12 @@ namespace CIL2Java.Java
             {
                 writer.WriteLine("{0,6:G}: {1}", i, value.Attributes[i].Name);
                 value.Attributes[i].Dump(writer, "      ");
+
+                if ((value.Attributes[i] is Attributes.SourceFile) && (Program.FullPathInSourceFileName))
+                {
+                    using (StreamReader r = new StreamReader(((Attributes.SourceFile)value.Attributes[i]).Value))
+                        sourceFile = r.ReadAllLines();
+                }
             }
 
             writer.WriteLine("Fields (count: {0}):", value.Fields.Count);
@@ -186,7 +217,7 @@ namespace CIL2Java.Java
                 writer.WriteLine("        Descriptor: {0}", value.Fields[i].Descriptor);
                 writer.WriteLine("        Access Flags: {0}", value.Fields[i].AccessFlags.ToString());
 
-                writer.WriteLine("        Attributes (count: {0}):", value.Attributes.Count);
+                writer.WriteLine("        Attributes (count: {0}):", value.Fields[i].Attributes.Count);
                 for (int j = 0; j < value.Fields[i].Attributes.Count; j++)
                 {
                     writer.WriteLine("        {0,6:G}: {1}", j, value.Fields[i].Attributes[j].Name);
@@ -217,7 +248,7 @@ namespace CIL2Java.Java
                 if (code != null)
                 {
                     writer.WriteLine();
-                    Disasm(code, value.ConstantPool, writer);
+                    Disasm(code, value.ConstantPool, writer, sourceFile);
                 };
 
                 writer.WriteLine();
