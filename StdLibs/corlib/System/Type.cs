@@ -13,6 +13,11 @@ namespace System
     [ComVisibleAttribute(true)]
     public abstract class Type : MemberInfo, _Type, IReflect
     {
+        internal Type(java.lang.Class javaClass)
+            : base(javaClass)
+        {
+        }
+
         /// <summary>Represents the member filter used on attributes. This field is read-only.</summary><filterpriority>1</filterpriority>
         public static readonly MemberFilter FilterAttribute;
         /// <summary>Represents the case-sensitive member filter used on names. This field is read-only.</summary><filterpriority>1</filterpriority>
@@ -1014,7 +1019,7 @@ namespace System
         
         public override string ToString()
         {
-             throw new NotImplementedException();
+            return javaClass.ToString();
         }
         
         

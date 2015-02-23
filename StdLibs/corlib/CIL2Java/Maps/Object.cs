@@ -6,7 +6,7 @@ namespace CIL2Java.Maps
 {
     public static class Object
     {
-        public static bool Equals(object objA, object objB)
+        public new static bool Equals(object objA, object objB)
         {
             if (objA == objB)
                 return true;
@@ -17,15 +17,14 @@ namespace CIL2Java.Maps
             return objA.Equals(objB);
         }
 
-        public static bool ReferenceEquals(object objA, object objB)
+        public new static bool ReferenceEquals(object objA, object objB)
         {
             return (objA == objB);
         }
 
         public static Type GetType(object self)
         {
-            //TODO: Object.GetType()
-            return null;
+            return VES.Types.GetTypeForJavaClass(self.getClass());
         }
 
         public static object MemberwiseClone(object self)

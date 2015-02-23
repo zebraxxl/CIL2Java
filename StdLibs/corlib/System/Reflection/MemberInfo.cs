@@ -11,6 +11,13 @@ namespace System.Reflection
     [ComDefaultInterfaceAttribute(typeof(_MemberInfo))]
     public abstract class MemberInfo : ICustomAttributeProvider, _MemberInfo
     {
+        protected java.lang.Class javaClass;
+
+        internal MemberInfo(java.lang.Class javaClass)
+        {
+            this.javaClass = javaClass;
+        }
+
         /// <summary>When overridden in a derived class, gets a <see cref="T:System.Reflection.MemberTypes" /> value indicating the type of the member — method, constructor, event, and so on.</summary><returns>A <see cref="T:System.Reflection.MemberTypes" /> value indicating the type of member.</returns>
         public abstract MemberTypes MemberType
         {
