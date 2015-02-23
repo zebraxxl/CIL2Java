@@ -15,5 +15,8 @@ namespace java.lang
 
         [FromJava]
         public static void arraycopy(object src, int srcPos, object dest, int destPos, int length) { }
+
+
+        [FromJava] public static string getProperty(string key) { return null; }
     }
 }
