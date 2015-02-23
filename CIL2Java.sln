@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "c2j_System", "StdLibs\Syste
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "c2j_System.Core", "StdLibs\System.Core\c2j_System.Core.csproj", "{5BCD209E-F75E-4B31-8984-010446CE0BBA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mscorlib", "StdLibs\corlib\src\mscorlib\mscorlib.csproj", "{3DA06C3A-2E7B-4CB7-80ED-9B12916013F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{5BCD209E-F75E-4B31-8984-010446CE0BBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BCD209E-F75E-4B31-8984-010446CE0BBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BCD209E-F75E-4B31-8984-010446CE0BBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DA06C3A-2E7B-4CB7-80ED-9B12916013F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DA06C3A-2E7B-4CB7-80ED-9B12916013F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DA06C3A-2E7B-4CB7-80ED-9B12916013F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DA06C3A-2E7B-4CB7-80ED-9B12916013F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,5 +88,6 @@ Global
 		{8559DD7F-A16F-46D0-A05A-9139FAEBA8FD} = {1D352BB2-B49A-4FB2-9259-FAEEBC217C13}
 		{26B44D3A-9A7C-4F85-8085-AEE6466EFD6B} = {99FD8B5C-669D-4D2A-B886-9B0621EEAF11}
 		{5BCD209E-F75E-4B31-8984-010446CE0BBA} = {99FD8B5C-669D-4D2A-B886-9B0621EEAF11}
+		{3DA06C3A-2E7B-4CB7-80ED-9B12916013F9} = {99FD8B5C-669D-4D2A-B886-9B0621EEAF11}
 	EndGlobalSection
 EndGlobal
