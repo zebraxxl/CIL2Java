@@ -31,6 +31,7 @@ namespace CIL2Java
         public static bool Debug { get; private set; }
         public static bool Dump { get; private set; }
         public static bool FullPathInSourceFileName { get; private set; }
+        public static bool DebugBytecode { get; private set; }
         public static bool CompileBreak { get; private set; }
 
         public static Dictionary<string, string> ReplacedAssemblies { get; private set; }
@@ -58,6 +59,8 @@ namespace CIL2Java
                     Dump = true;
                 else if (args[i] == "-fpisfn")
                     FullPathInSourceFileName = true;
+                else if (args[i] == "-dbc")
+                    DebugBytecode = true;
                 else if (args[i] == "-unsigned")
                     Unsigned = true;
                 else if (args[i] == "-overflow_check")
@@ -114,6 +117,7 @@ namespace CIL2Java
                 Console.WriteLine("    -debug                 - add debug information");
                 Console.WriteLine("    -dump                  - dump resulted class file info");
                 Console.WriteLine("    -fpisfn                - add full path in source file name");
+                Console.WriteLine("    -dbc                   - connect dump with bytecode to debug it");
                 Console.WriteLine("    -compile_break         - compile `break` instruction");
             }
 
@@ -187,6 +191,7 @@ namespace CIL2Java
             Debug = false;
             Dump = false;
             FullPathInSourceFileName = false;
+            DebugBytecode = false;
             CompileBreak = false;
             ReplacedAssemblies = new Dictionary<string, string>();
 

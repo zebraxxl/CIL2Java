@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace CIL2Java
 {
@@ -25,6 +26,16 @@ namespace CIL2Java
 
                     using (FileStream output = new FileStream(dumpFileName, FileMode.Create))
                         Java.Dumper.Dump(javaClass, output);
+
+                    if (Program.DebugBytecode)
+                    {
+                        Java.Attribute sourceAttr = javaClass.Attributes.Where(A => A is Java.Attributes.SourceFile).FirstOrDefault();
+                        if (sourceAttr != null)
+                            javaClass.Attributes.Remove(sourceAttr);
+
+                        sourceAttr = new Java.Attributes.SourceFile(Path.GetFileName(dumpFileName));
+                        javaClass.Attributes.Add(sourceAttr);
+                    }
                 }
                 catch (Exception)
                 {

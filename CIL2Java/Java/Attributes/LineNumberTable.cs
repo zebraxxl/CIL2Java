@@ -49,7 +49,7 @@ namespace CIL2Java.Java.Attributes
             return Result;
         }
 
-        public override void Dump(System.IO.StreamWriter writer, string indent)
+        public override void Dump(System.IO.TextWriter writer, string indent)
         {
             writer.WriteLine("{0}Line Numbers (count: {1}):", indent, Table.Count);
             writer.WriteLine("{0}    StartPC  LineNumber", indent);

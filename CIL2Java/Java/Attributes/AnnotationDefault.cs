@@ -39,7 +39,7 @@ namespace CIL2Java.Java.Attributes
             return base.ToString() + System.Environment.NewLine + "DefaultValue: " + DefaultValue.ToString();
         }
 
-        public override void Dump(StreamWriter writer, string indent)
+        public override void Dump(TextWriter writer, string indent)
         {
             writer.WriteLine(indent + "DefaultValue: " + DefaultValue.ToString());
         }

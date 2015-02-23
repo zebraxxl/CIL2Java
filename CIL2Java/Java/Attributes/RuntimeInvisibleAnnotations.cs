@@ -46,7 +46,7 @@ namespace CIL2Java.Java.Attributes
             return Result;
         }
 
-        public override void Dump(StreamWriter writer, string indent)
+        public override void Dump(TextWriter writer, string indent)
         {
             writer.WriteLine("{0}Count: {1}", indent, Annotations.Count);
             for (int i = 0; i < Annotations.Count; i++)

@@ -24,7 +24,7 @@ namespace CIL2Java.Java.Attributes
             Writer.WriteBE(Pool.AddConstant(Value));
         }
 
-        public override void Dump(System.IO.StreamWriter writer, string indent)
+        public override void Dump(System.IO.TextWriter writer, string indent)
         {
             writer.WriteLine("{0}Value: {1}", indent, Value.ToString());
         }

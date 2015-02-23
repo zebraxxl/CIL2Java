@@ -38,7 +38,7 @@ namespace CIL2Java.Java
             return "Name: " + Name;
         }
 
-        public virtual void Dump(StreamWriter writer, string indent)
+        public virtual void Dump(TextWriter writer, string indent)
         {
         }
 

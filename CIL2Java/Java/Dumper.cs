@@ -7,21 +7,42 @@ namespace CIL2Java.Java
 {
     public static class Dumper
     {
-        private class CountingStreamWriter : StreamWriter
+        private class CountingStreamWriter : TextWriter
         {
+            private StreamWriter writer;
+            private bool lastWasCR;
+
             public int CurrLine { get; private set; }
 
             public CountingStreamWriter(Stream i)
-                : base(i)
             {
                 CurrLine = 1;
+                writer = new StreamWriter(i);
             }
 
-            public override void WriteLine()
+            public override Encoding Encoding
             {
-                CurrLine++;
-                base.WriteLine();
-            } 
+                get { return writer.Encoding; }
+            }
+
+            public override void Write(char value)
+            {
+                if (value == '\r')
+                {
+                    CurrLine++;
+                    lastWasCR = true;
+                }
+                else if (value == '\n')
+                {
+                    if (!lastWasCR)
+                        CurrLine++;
+                    lastWasCR = false;
+                }
+                else
+                    lastWasCR = false;
+
+                writer.Write(value);
+            }
         }
 
         private static string[] ArrayTypes = new string[]
@@ -40,7 +61,7 @@ namespace CIL2Java.Java
             /* 11 */ "T_LONG"
         };
 
-        private static void Disasm(Attributes.Code codeAttr, ConstantPool pool, StreamWriter writer, string[] sourceFile)
+        private static void Disasm(Attributes.Code codeAttr, ConstantPool pool, CountingStreamWriter writer, string[] sourceFile)
         {
             byte[] code = codeAttr.CodeBytes;
 
@@ -48,6 +69,7 @@ namespace CIL2Java.Java
             bool lastWide = false;
 
             Attributes.LineNumberTable lnt = codeAttr.Attributes.Where(A => A is Attributes.LineNumberTable).FirstOrDefault() as Attributes.LineNumberTable;
+            Attributes.LineNumberTable newLnt = new Attributes.LineNumberTable();
             int lastLine = 0;
 
             while (i < code.Length)
@@ -70,6 +92,8 @@ namespace CIL2Java.Java
                     {
                     }
                 }
+
+                newLnt.Table.Add(new Attributes.LineNumberTable.LineNumber((ushort)i, (ushort)writer.CurrLine));
 
                 OpCodes op = (OpCodes)code[i];
 
@@ -181,6 +205,13 @@ namespace CIL2Java.Java
 
                 writer.WriteLine(" {0}", operandStr);
                 i += 1 + operandSize;
+            }
+
+            if (Program.DebugBytecode)
+            {
+                if (lnt != null)
+                    codeAttr.Attributes.Remove(lnt);
+                codeAttr.Attributes.Add(newLnt);
             }
         }
 

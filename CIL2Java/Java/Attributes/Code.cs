@@ -94,7 +94,7 @@ namespace CIL2Java.Java.Attributes
             return Result;
         }
 
-        public override void Dump(StreamWriter writer, string indent)
+        public override void Dump(TextWriter writer, string indent)
         {
             writer.WriteLine("{0}Max stack: {1}", indent, MaxStack);
             writer.WriteLine("{0}Max locals: {1}", indent, MaxLocals);
