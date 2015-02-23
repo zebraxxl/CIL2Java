@@ -127,7 +127,7 @@ namespace System
         /// <summary>Gets the newline string defined for this environment.</summary><returns>A string containing "\r\n" for non-Unix platforms, or a string containing "\n" for Unix platforms.</returns><filterpriority>1</filterpriority>
         public static string NewLine
         {
-            get { throw new NotImplementedException(); }
+            get { return java.lang.System.getProperty("line.separator"); }
         }
     
         /// <summary>Gets a <see cref="T:System.Version" /> object that describes the major, minor, build, and revision numbers of the common language runtime.</summary><returns>An object that displays the version of the common language runtime.</returns><filterpriority>1</filterpriority>
