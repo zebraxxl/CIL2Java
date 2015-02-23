@@ -122,6 +122,7 @@
     <Compile Include="System/Runtime/Serialization\ISerializable.cs" />
     <Compile Include="System/Runtime/InteropServices\_Exception.cs" />
     <Compile Include="System\Exception.cs" />
+    <Compile Include="System\ThrowHelper.cs" />
     <Compile Include="System\ValueType.cs" />
     <Compile Include="System\IComparable.cs" />
     <Compile Include="System\IFormattable.cs" />
