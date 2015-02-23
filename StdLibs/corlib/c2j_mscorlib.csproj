@@ -63,6 +63,7 @@
     <Compile Include="java\lang\Boolean.cs" />
     <Compile Include="java\lang\Byte.cs" />
     <Compile Include="java\lang\Character.cs" />
+    <Compile Include="java\lang\Cloneable.cs" />
     <Compile Include="java\lang\Double.cs" />
     <Compile Include="java\lang\Exception.cs" />
     <Compile Include="java\lang\Float.cs" />
@@ -79,6 +80,10 @@
     <Compile Include="java\lang\StringBuffer.cs" />
     <Compile Include="java\lang\StringBuilder.cs" />
     <Compile Include="java\lang\Thread.cs" />
+    <Compile Include="java\util\AbstractMap.cs" />
+    <Compile Include="java\util\Collections.cs" />
+    <Compile Include="java\util\HashMap.cs" />
+    <Compile Include="java\util\Set.cs" />
     <Compile Include="java\text\Normalizer.cs" />
     <Compile Include="java\util\Collection.cs" />
     <Compile Include="java\util\concurrent\Callable.cs" />
@@ -90,6 +95,7 @@
     <Compile Include="java\util\concurrent\TimeUnit.cs" />
     <Compile Include="java\util\List.cs" />
     <Compile Include="java\util\ListIterator.cs" />
+    <Compile Include="java\util\Map.cs" />
     <Compile Include="Local.cs" />
     <Compile Include="CIL2Java\Maps\Object.cs" />
     <Compile Include="CIL2Java\Maps\String.cs" />
