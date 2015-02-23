@@ -19,17 +19,17 @@ namespace CIL2Java
 
             if (Program.Dump)
             {
-                //try
-                //{
-                string dumpFileName = Path.Combine(Program.Out, javaClass.ThisClass + ".jbc");
+                try
+                {
+                    string dumpFileName = Path.Combine(Program.Out, javaClass.ThisClass + ".jbc");
 
-                using (FileStream output = new FileStream(dumpFileName, FileMode.Create))
-                    Java.Dumper.Dump(javaClass, output);
-                //}
-                //catch (Exception e)
-                //{
-                //    //TODO: Error message
-                //}
+                    using (FileStream output = new FileStream(dumpFileName, FileMode.Create))
+                        Java.Dumper.Dump(javaClass, output);
+                }
+                catch (Exception)
+                {
+                    //TODO: Error message
+                }
             }
 
             try
