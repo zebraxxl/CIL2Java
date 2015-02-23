@@ -1582,6 +1582,7 @@
     <Compile Include="System/Runtime/Versioning\VersioningHelper.cs" />
     <Compile Include="System/Runtime/Versioning\TargetFrameworkAttribute.cs" />
     <Compile Include="System/Runtime/DesignerServices\WindowsRuntimeDesignerContext.cs" />
+    <Compile Include="System\__HResults.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
