@@ -61,7 +61,7 @@ namespace CIL2Java
         public static void Message(MessageCode Code, params string[] MessageParams)
         {
 #if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (System.Diagnostics.Debugger.IsAttached && false)
                 System.Diagnostics.Debugger.Break();
 #endif
 
