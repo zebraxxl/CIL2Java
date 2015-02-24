@@ -194,6 +194,11 @@ namespace System
         {
             return key;
         }
+
+        internal static String GetResourceString(String key, params object[] p)
+        {
+            return key;
+        }
     
         /// <summary>Gets a unique identifier for the current managed thread.</summary>
         /// <returns>An integer that represents a unique identifier for this managed thread.</returns>

@@ -73,15 +73,10 @@ namespace System {
             throw new ArgumentOutOfRangeException(GetArgumentName(argument));
         }
 
-        internal static void ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource) {
-                
-            if (CompatibilitySwitches.IsAppEarlierThanWindowsPhone8) {
-                // Dev11 474369 quirk: Mango had an empty message string:
-                throw new ArgumentOutOfRangeException(GetArgumentName(argument), String.Empty);                                                  
-            } else {
+        internal static void ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
+        {
                 throw new ArgumentOutOfRangeException(GetArgumentName(argument),
-                                                      Environment.GetResourceString(GetResourceName(resource)));
-            }            
+                                                      Environment.GetResourceString(GetResourceName(resource)));    
         }
 
         internal static void ThrowInvalidOperationException(ExceptionResource resource) {
