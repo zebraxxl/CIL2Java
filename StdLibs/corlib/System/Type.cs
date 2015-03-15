@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Security;
 using System.Globalization;
 using System.Diagnostics;
+using CIL2Java.VES;
 
 namespace System
 {
@@ -592,7 +593,7 @@ namespace System
         [SecuritySafeCriticalAttribute()]
         public static Type GetTypeFromHandle(RuntimeTypeHandle handle)
         {
-             throw new NotImplementedException();
+            return Types.GetTypeForJavaClass(handle.klass);
         }
         
         
@@ -1033,14 +1034,19 @@ namespace System
         /// <summary>Determines if the underlying system type of the current <see cref="T:System.Type" /> is the same as the underlying system type of the specified <see cref="T:System.Object" />.</summary><returns>true if the underlying system type of <paramref name="o" /> is the same as the underlying system type of the current <see cref="T:System.Type" />; otherwise, false. This method also returns false if the object specified by the <paramref name="o" /> parameter is not a Type.</returns><param name="o">The object whose underlying system type is to be compared with the underlying system type of the current <see cref="T:System.Type" />. </param><filterpriority>2</filterpriority>
         public override bool Equals(object o)
         {
-             throw new NotImplementedException();
+            if (o == null)
+                return false;
+            return Equals(o as Type);
         }
         
         
         /// <summary>Determines if the underlying system type of the current <see cref="T:System.Type" /> is the same as the underlying system type of the specified <see cref="T:System.Type" />.</summary><returns>true if the underlying system type of <paramref name="o" /> is the same as the underlying system type of the current <see cref="T:System.Type" />; otherwise, false.</returns><param name="o">The object whose underlying system type is to be compared with the underlying system type of the current <see cref="T:System.Type" />. </param><filterpriority>2</filterpriority>
         public virtual bool Equals(Type o)
         {
-             throw new NotImplementedException();
+            if ((object)o == null)
+                return false;
+
+            return (this.javaClass == o.javaClass);     //TODO: System.Type may be need to be rewrited
         }
         
         
@@ -1049,7 +1055,7 @@ namespace System
         [SecuritySafeCriticalAttribute()]
         public static bool operator ==(Type left, Type right)
         {
-             throw new NotImplementedException();
+            return left.Equals(right);
         }
         
         
@@ -1058,13 +1064,13 @@ namespace System
         [SecuritySafeCriticalAttribute()]
         public static bool operator !=(Type left, Type right)
         {
-             throw new NotImplementedException();
+            return !left.Equals(right);
         }
         
         
         public override int GetHashCode()
         {
-             throw new NotImplementedException();
+            return javaClass.GetHashCode();
         }
         
         
