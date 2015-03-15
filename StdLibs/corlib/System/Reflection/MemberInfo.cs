@@ -12,10 +12,18 @@ namespace System.Reflection
     public abstract class MemberInfo : ICustomAttributeProvider, _MemberInfo
     {
         protected java.lang.Class javaClass;
+        protected java.lang.reflect.Member javaMember;
 
         internal MemberInfo(java.lang.Class javaClass)
         {
             this.javaClass = javaClass;
+            this.javaMember = null;
+        }
+
+        internal MemberInfo(java.lang.reflect.Member javaMember)
+        {
+            this.javaClass = null;
+            this.javaMember = javaMember;
         }
 
         /// <summary>When overridden in a derived class, gets a <see cref="T:System.Reflection.MemberTypes" /> value indicating the type of the member — method, constructor, event, and so on.</summary><returns>A <see cref="T:System.Reflection.MemberTypes" /> value indicating the type of member.</returns>
@@ -60,79 +68,48 @@ namespace System.Reflection
             get { throw new NotImplementedException(); }
         }
     
-    
         protected MemberInfo()
         {
              throw new NotImplementedException();
         }
         
-        
         /// <summary>When overridden in a derived class, returns an array of all custom attributes applied to this member. </summary><returns>An array that contains all the custom attributes applied to this member, or an array with zero elements if no attributes are defined.</returns><param name="inherit">true to search this member's inheritance chain to find the attributes; otherwise, false. This parameter is ignored for properties and events; see Remarks.</param><exception cref="T:System.InvalidOperationException">This member belongs to a type that is loaded into the reflection-only context. See How to: Load Assemblies into the Reflection-Only Context.</exception><exception cref="T:System.TypeLoadException">A custom attribute type could not be loaded. </exception>
         public abstract object[] GetCustomAttributes(bool inherit);
-        
         
         /// <summary>When overridden in a derived class, returns an array of custom attributes applied to this member and identified by <see cref="T:System.Type" />.</summary><returns>An array of custom attributes applied to this member, or an array with zero elements if no attributes assignable to <paramref name="attributeType" /> have been applied.</returns><param name="attributeType">The type of attribute to search for. Only attributes that are assignable to this type are returned. </param><param name="inherit">true to search this member's inheritance chain to find the attributes; otherwise, false. This parameter is ignored for properties and events; see Remarks. </param><exception cref="T:System.TypeLoadException">A custom attribute type cannot be loaded. </exception><exception cref="T:System.ArgumentNullException">If <paramref name="attributeType" /> is null.</exception><exception cref="T:System.InvalidOperationException">This member belongs to a type that is loaded into the reflection-only context. See How to: Load Assemblies into the Reflection-Only Context.</exception>
         public abstract object[] GetCustomAttributes(Type attributeType, bool inherit);
         
-        
         /// <summary>When overridden in a derived class, indicates whether one or more attributes of the specified type or of its derived types is applied to this member.</summary><returns>true if one or more instances of <paramref name="attributeType" /> or any of its derived types is applied to this member; otherwise, false.</returns><param name="attributeType">The type of custom attribute to search for. The search includes derived types. </param><param name="inherit">true to search this member's inheritance chain to find the attributes; otherwise, false. This parameter is ignored for properties and events; see Remarks.</param>
         public abstract bool IsDefined(Type attributeType, bool inherit);
-        
         
         public virtual IList<CustomAttributeData> GetCustomAttributesData()
         {
              throw new NotImplementedException();
         }
         
-        
         /// <summary>Indicates whether two <see cref="T:System.Reflection.MemberInfo" /> objects are equal.</summary><returns>true if <paramref name="left" /> is equal to <paramref name="right" />; otherwise false.</returns><param name="left">The <see cref="T:System.Reflection.MemberInfo" /> to compare to <paramref name="right" />.</param><param name="right">The <see cref="T:System.Reflection.MemberInfo" /> to compare to <paramref name="left" />.</param>
         /// <summary>Indicates whether two <see cref="T:System.Reflection.MemberInfo" /> objects are equal.</summary><returns>true if <paramref name="left" /> is equal to <paramref name="right" />; otherwise false.</returns><param name="left">The <see cref="T:System.Reflection.MemberInfo" /> to compare to <paramref name="right" />.</param><param name="right">The <see cref="T:System.Reflection.MemberInfo" /> to compare to <paramref name="left" />.</param>
         public static bool operator ==(MemberInfo left, MemberInfo right)
         {
-             throw new NotImplementedException();
+            return left.Equals(right);
         }
-        
         
         /// <summary>Indicates whether two <see cref="T:System.Reflection.MemberInfo" /> objects are not equal.</summary><returns>true if <paramref name="left" /> is not equal to <paramref name="right" />; otherwise false.</returns><param name="left">The <see cref="T:System.Reflection.MemberInfo" /> to compare to <paramref name="right" />.</param><param name="right">The <see cref="T:System.Reflection.MemberInfo" /> to compare to <paramref name="left" />.</param>
         /// <summary>Indicates whether two <see cref="T:System.Reflection.MemberInfo" /> objects are not equal.</summary><returns>true if <paramref name="left" /> is not equal to <paramref name="right" />; otherwise false.</returns><param name="left">The <see cref="T:System.Reflection.MemberInfo" /> to compare to <paramref name="right" />.</param><param name="right">The <see cref="T:System.Reflection.MemberInfo" /> to compare to <paramref name="left" />.</param>
         public static bool operator !=(MemberInfo left, MemberInfo right)
         {
-             throw new NotImplementedException();
+            return !left.Equals(right);
         }
-        
         
         /// <summary>Returns a value that indicates whether this instance is equal to a specified object.</summary><returns>true if <paramref name="obj" /> equals the type and value of this instance; otherwise, false.</returns><param name="obj">An object to compare with this instance, or null.</param>
         public override bool Equals(object obj)
         {
-             throw new NotImplementedException();
-        }
-        
+            return base.Equals(obj);
+        }        
         
         public override int GetHashCode()
         {
-             throw new NotImplementedException();
-        }
-
-
-
-        MemberTypes _MemberInfo.MemberType
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        string _MemberInfo.Name
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        Type _MemberInfo.DeclaringType
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        Type _MemberInfo.ReflectedType
-        {
-            get { throw new NotImplementedException(); }
+            return base.GetHashCode();
         }
 
         void _MemberInfo.GetTypeInfoCount(ref uint pcTInfo)
@@ -145,47 +122,12 @@ namespace System.Reflection
             throw new NotImplementedException();
         }
 
-        void _MemberInfo.GetIDsOfNames(ref Guid riid, IntPtr rgszNames, uint cNames, uint lcid, IntPtr rgDispId)
-        {
-            throw new NotImplementedException();
-        }
-
         void _MemberInfo.Invoke(uint dispIdMember, ref Guid riid, uint lcid, short wFlags, IntPtr pDispParams, IntPtr pVarResult, IntPtr pExcepInfo, IntPtr puArgErr)
         {
             throw new NotImplementedException();
         }
 
-        string _MemberInfo.ToString()
-        {
-            throw new NotImplementedException();
-        }
-
-        bool _MemberInfo.Equals(object other)
-        {
-            throw new NotImplementedException();
-        }
-
-        int _MemberInfo.GetHashCode()
-        {
-            throw new NotImplementedException();
-        }
-
-        Type _MemberInfo.GetType()
-        {
-            throw new NotImplementedException();
-        }
-
-        object[] _MemberInfo.GetCustomAttributes(Type attributeType, bool inherit)
-        {
-            throw new NotImplementedException();
-        }
-
-        object[] _MemberInfo.GetCustomAttributes(bool inherit)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool _MemberInfo.IsDefined(Type attributeType, bool inherit)
+        void _MemberInfo.GetIDsOfNames(ref Guid riid, IntPtr rgszNames, uint cNames, uint lcid, IntPtr rgDispId)
         {
             throw new NotImplementedException();
         }
