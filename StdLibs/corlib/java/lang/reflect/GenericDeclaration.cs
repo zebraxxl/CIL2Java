@@ -7,5 +7,6 @@ namespace java.lang.reflect
     [FromJava]
     public interface GenericDeclaration
     {
+        [FromJava] TypeVariable[] getTypeParameters();
     }
 }
