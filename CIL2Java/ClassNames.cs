@@ -176,6 +176,8 @@ namespace CIL2Java
 
             public const string ToJavaString = "ToJavaString";
             public const string ToCILString = "ToCILString";
+
+            public const string UnsafeTypeConvert = "UnsafeTypeConvert";
         }
 
         public static class SystemNullable_1

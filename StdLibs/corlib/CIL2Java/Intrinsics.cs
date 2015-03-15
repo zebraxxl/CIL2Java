@@ -20,5 +20,7 @@ namespace CIL2Java
 
         public static java.lang.String ToJavaString(string str) { throw new InvalidOperationException("Direct call to intrinsics unsupported"); }
         public static string ToCILString(java.lang.String str) { throw new InvalidOperationException("Direct call to intrinsics unsupported"); }
+
+        public static object UnsafeTypeConvert(object v) { throw new InvalidOperationException("Direct call to intrinsics unsupported"); }
     }
 }

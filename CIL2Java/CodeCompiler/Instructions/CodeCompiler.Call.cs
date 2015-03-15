@@ -66,6 +66,7 @@ namespace CIL2Java
                 }
             }
 
+            // Intrinsics that not poping real arguments
             if (operand.DeclaringType.Fullname == ClassNames.Intrinsics.ClassName)
             {
                 if (operand.Name.Contains(ClassNames.Intrinsics.CreatePointerToArray))
@@ -148,6 +149,7 @@ namespace CIL2Java
                 }
             }
 
+            // Intrinsics that poping real arguments
             if (operand.DeclaringType.Fullname == ClassNames.Intrinsics.ClassName)
             {
                 if (operand.Name == ClassNames.Intrinsics.monitorenter)
@@ -158,6 +160,9 @@ namespace CIL2Java
                     codeGenerator.Add(Java.OpCodes.lshr, null, e);
                 if (operand.Name == ClassNames.Intrinsics.lushr)
                     codeGenerator.Add(Java.OpCodes.lushr, null, e);
+
+                // UnsafeTypeConvert skip because:
+                // Not any compiling. Just push argument, and it will auto became object type
                 return;
             }
 
