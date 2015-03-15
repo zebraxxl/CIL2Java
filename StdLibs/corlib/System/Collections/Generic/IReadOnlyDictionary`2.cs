@@ -25,7 +25,7 @@ namespace System.Collections.Generic
         bool ContainsKey(TKey key);
         
         
-        bool TryGetValue(TKey key, ref TValue value);
+        bool TryGetValue(TKey key, out TValue value);
         
         
     }

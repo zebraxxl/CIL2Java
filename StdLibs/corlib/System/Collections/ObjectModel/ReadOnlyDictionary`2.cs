@@ -232,7 +232,7 @@ namespace System.Collections.ObjectModel
         }
         
         
-        public bool TryGetValue(TKey key, ref TValue value)
+        public bool TryGetValue(TKey key, out TValue value)
         {
              throw new NotImplementedException();
         }
@@ -282,7 +282,7 @@ namespace System.Collections.ObjectModel
             throw new NotImplementedException();
         }
 
-        bool IDictionary<TKey, TValue>.TryGetValue(TKey key, ref TValue value)
+        bool IDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
         {
             throw new NotImplementedException();
         }
@@ -429,7 +429,7 @@ namespace System.Collections.ObjectModel
             throw new NotImplementedException();
         }
 
-        bool IReadOnlyDictionary<TKey, TValue>.TryGetValue(TKey key, ref TValue value)
+        bool IReadOnlyDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
         {
             throw new NotImplementedException();
         }

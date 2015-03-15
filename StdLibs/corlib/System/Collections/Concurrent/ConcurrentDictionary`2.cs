@@ -198,7 +198,7 @@ namespace System.Collections.Concurrent
             throw new NotImplementedException();
         }
 
-        bool IDictionary<TKey, TValue>.TryGetValue(TKey key, ref TValue value)
+        bool IDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)
         {
             throw new NotImplementedException();
         }
