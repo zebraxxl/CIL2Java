@@ -7,5 +7,6 @@ namespace java.lang.reflect
     [FromJava]
     public interface AnnotatedElement
     {
+        [FromJava] bool isAnnotationPresent(Class annotationClass);
     }
 }
