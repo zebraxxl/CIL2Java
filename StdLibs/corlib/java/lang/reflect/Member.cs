@@ -7,5 +7,9 @@ namespace java.lang.reflect
     [FromJava]
     public interface Member
     {
+        [FromJava] java.lang.Class getDeclaringClass();
+        [FromJava] string getName();
+        [FromJava] int getModifiers();
+        [FromJava] bool isSynthetic();
     }
 }
