@@ -21,5 +21,11 @@ namespace java.lang
 
         [FromJava]
         public object newInstance() { return null; }
+
+        [FromJava]
+        public reflect.TypeVariable[] getTypeParameters() { return null; }
+
+        [FromJava]
+        public bool isAnnotationPresent(Class annotationClass) { return false; }
     }
 }
