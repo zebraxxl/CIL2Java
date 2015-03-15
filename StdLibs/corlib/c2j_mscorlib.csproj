@@ -60,6 +60,7 @@
     <Compile Include="CIL2Java\VES\Types.cs" />
     <Compile Include="java\io\PrintWriter.cs" />
     <Compile Include="java\lang\AbstractStringBuilder.cs" />
+    <Compile Include="java\lang\annotation\Annotation.cs" />
     <Compile Include="java\lang\Appendable.cs" />
     <Compile Include="java\lang\ArithmeticException.cs" />
     <Compile Include="java\lang\Boolean.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="java\lang\reflect\Array.cs" />
     <Compile Include="java\lang\reflect\Field.cs" />
     <Compile Include="java\lang\reflect\Method.cs" />
+    <Compile Include="java\lang\reflect\TypeVariable.cs" />
     <Compile Include="java\lang\Runnable.cs" />
     <Compile Include="java\lang\RuntimeException.cs" />
     <Compile Include="java\lang\Short.cs" />
