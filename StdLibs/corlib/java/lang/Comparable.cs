@@ -7,5 +7,6 @@ namespace java.lang
     [FromJava]
     public interface Comparable
     {
+        [FromJava] int compareTo(object obj);
     }
 }

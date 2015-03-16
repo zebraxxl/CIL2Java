@@ -1,45 +1,30 @@
 ﻿using CIL2Java.Attributes;
 using System;
 using System.Collections.Generic;
+using boolean = System.Boolean;
 
 namespace java.lang
 {
-    /**
-     * The Boolean class wraps a value of the primitive type
-     * {@code boolean} in an object. An object of type
-     * {@code Boolean} contains a single field whose type is
-     * {@code boolean}.
-     * <p>
-     * In addition, this class provides many methods for
-     * converting a {@code boolean} to a {@code String} and a
-     * {@code String} to a {@code boolean}, as well as other
-     * constants and methods useful when dealing with a
-     * {@code boolean}.
-     *
-     * @author  Arthur van Hoff
-     * @since   JDK1.0
-     */
     [FromJava]
     public sealed class Boolean : io.Serializable, Comparable
     {
-        [FromJava]
-        public static readonly Class TYPE;
+        [FromJava] public static sealed Boolean TRUE;
+        [FromJava] public static sealed Boolean FALSE;
+        [FromJava] public static readonly Class TYPE;
 
-        /**
-         * Returns a {@code Boolean} instance representing the specified
-         * {@code boolean} value.  If the specified {@code boolean} value
-         * is {@code true}, this method returns {@code Boolean.TRUE};
-         * if it is {@code false}, this method returns {@code Boolean.FALSE}.
-         * If a new {@code Boolean} instance is not required, this method
-         * should generally be used in preference to the constructor
-         * {@link #Boolean(boolean)}, as this method is likely to yield
-         * significantly better space and time performance.
-         *
-         * @param  b a boolean value.
-         * @return a {@code Boolean} instance representing {@code b}.
-         * @since  1.4
-         */
-        [FromJava]
-        public static Boolean valueOf(bool b) { return null; }
+
+        [FromJava] public Boolean(boolean value) { }
+        [FromJava] public Boolean(string s) { }
+        [FromJava] public static boolean parseBoolean(string s) { return false; }
+        [FromJava] public boolean booleanValue() { return false; }
+        [FromJava] public static Boolean valueOf(boolean b) { return null; }
+        [FromJava] public static Boolean valueOf(string s) { return null; }
+        [FromJava] public static string toString(boolean b) { return null; }
+        [FromJava] public override string ToString() { return null; }
+        [FromJava] public override int GetHashCode() { return 0; }
+        [FromJava] public override boolean Equals(object obj) { return false; }
+        [FromJava] public static boolean getBoolean(string name) { return false; }
+        [FromJava] public int compareTo(object b) { return 0; }
+        [FromJava] public static int compare(boolean x, boolean y) { return 0; }
     }
 }
