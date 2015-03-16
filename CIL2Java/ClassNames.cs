@@ -27,6 +27,7 @@ namespace CIL2Java
         public const string FieldMapAttribute = "CIL2Java.Attributes.FieldMapAttribute";
         public const string JavaExceptionMapAttribute = "CIL2Java.Attributes.JavaExceptionMapAttribute";
         public const string InterfacesMapAttribute = "CIL2Java.Attributes.InterfacesMapAttribute";
+        public const string JavaBoxedInterfacesMapAttribute = "CIL2Java.Attributes.JavaBoxedInterfacesMapAttribute";
         public const string AlwaysCompileAttribute = "CIL2Java.Attributes.AlwaysCompileAttribute";
 
         public const string InterfacesMapGetAdapterMethodName = "GetAdapter";

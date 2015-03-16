@@ -215,6 +215,9 @@ namespace CIL2Java
             CustomAttribute javaBoxTypeMapCustomAttr = typeDef.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.JavaBoxTypeMapAttribute).FirstOrDefault();
             CustomAttribute interfacesMapCustomAttr = typeDef.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.InterfacesMapAttribute).FirstOrDefault();
 
+            if ((interfacesMapCustomAttr == null) && (Program.BoxType == BoxingType.Java))
+                interfacesMapCustomAttr = typeDef.CustomAttributes.Where(A => A.AttributeType.FullName == ClassNames.JavaBoxedInterfacesMapAttribute).FirstOrDefault();
+
             if ((typeMapCustomAttr == null) && (javaBoxTypeMapCustomAttr != null) && (Program.BoxType == BoxingType.Java))
                 typeMapCustomAttr = javaBoxTypeMapCustomAttr;
 
