@@ -38,9 +38,6 @@ namespace java.lang
         public string substring(int beginIndex, int endIndex) { return null; }
 
         [FromJava]
-        public int compareTo(string anotherString) { return 0; }
-
-        [FromJava]
         public int compareToIgnoreCase(string str) { return 0; }
 
         [FromJava]
@@ -99,5 +96,8 @@ namespace java.lang
 
         [FromJava]
         public string intern() { return null; }
+
+        [FromJava]
+        public int compareTo(object obj) { return 0; }
     }
 }

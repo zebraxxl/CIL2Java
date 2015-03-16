@@ -72,5 +72,8 @@ namespace java.lang
          * @since  1.5
          */
         public static Integer valueOf(int i) { return null; }
+
+        [FromJava]
+        public int compareTo(object obj) { return 0; }
     }
 }

@@ -48,5 +48,8 @@ namespace java.lang
 
         [FromJava]
         public static bool isInfinite(float v) { return false; }
+
+        [FromJava]
+        public int compareTo(object obj) { return 0; }
     }
 }

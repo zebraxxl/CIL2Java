@@ -8,8 +8,8 @@ namespace java.lang
     [FromJava]
     public sealed class Boolean : io.Serializable, Comparable
     {
-        [FromJava] public static sealed Boolean TRUE;
-        [FromJava] public static sealed Boolean FALSE;
+        [FromJava] public static Boolean TRUE;
+        [FromJava] public static Boolean FALSE;
         [FromJava] public static readonly Class TYPE;
 
 

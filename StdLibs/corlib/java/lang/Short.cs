@@ -36,5 +36,8 @@ namespace java.lang
         /// <returns>{@code Short} instance representing {@code s}.</returns>
         [FromJava]
         public static Short valueOf(short s) { return null; }
+
+        [FromJava]
+        public int compareTo(object obj) { return 0; }
     }
 }

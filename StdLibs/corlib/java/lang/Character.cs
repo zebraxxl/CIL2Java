@@ -118,5 +118,8 @@ namespace java.lang
          */
         [FromJava]
         public static Character valueOf(char c) { return null; }
+
+        [FromJava]
+        public int compareTo(object obj) { return 0; }
     }
 }

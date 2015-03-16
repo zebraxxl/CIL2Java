@@ -33,5 +33,8 @@ namespace java.lang
         /// <returns>{@code Byte} instance representing {@code b}.</returns>
         [FromJava]
         public static Byte valueOf(byte b) { return null; }
+
+        [FromJava]
+        public int compareTo(object obj) { return 0; }
     }
 }

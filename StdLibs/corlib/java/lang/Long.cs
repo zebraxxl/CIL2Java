@@ -52,5 +52,8 @@ namespace java.lang
          */
         [FromJava]
         public static Long valueOf(long l) { return null; }
+
+        [FromJava]
+        public int compareTo(object obj) { return 0; }
     }
 }

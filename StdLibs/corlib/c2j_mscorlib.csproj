@@ -54,6 +54,7 @@
     <Compile Include="CIL2Java\Maps\Array.cs" />
     <Compile Include="CIL2Java\Maps\Array`1.cs" />
     <Compile Include="CIL2Java\InternalTypes\InternalType.cs" />
+    <Compile Include="CIL2Java\Maps\BooleanMap.cs" />
     <Compile Include="CIL2Java\Utils.cs" />
     <Compile Include="CIL2Java\VES\Instructions.cs" />
     <Compile Include="CIL2Java\VES\MethodPointers\Global.cs" />
