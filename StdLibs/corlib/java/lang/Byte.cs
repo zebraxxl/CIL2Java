@@ -36,5 +36,8 @@ namespace java.lang
 
         [FromJava]
         public int compareTo(object obj) { return 0; }
+
+        [FromJava]
+        public sbyte byteValue() { return 0; }
     }
 }

@@ -218,6 +218,29 @@ namespace System.Globalization
             get { throw new NotImplementedException(); }
             set { throw new NotImplementedException(); }
         }
+
+        private const NumberStyles InvalidNumberStyles = ~(NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite
+                                                           | NumberStyles.AllowLeadingSign | NumberStyles.AllowTrailingSign
+                                                           | NumberStyles.AllowParentheses | NumberStyles.AllowDecimalPoint
+                                                           | NumberStyles.AllowThousands | NumberStyles.AllowExponent
+                                                           | NumberStyles.AllowCurrencySymbol | NumberStyles.AllowHexSpecifier);
+
+        internal static void ValidateParseStyleInteger(NumberStyles style)
+        {
+            // Check for undefined flags
+            if ((style & InvalidNumberStyles) != 0)
+            {
+                throw new ArgumentException(Environment.GetResourceString("Argument_InvalidNumberStyles"), "style");
+            }
+            
+            if ((style & NumberStyles.AllowHexSpecifier) != 0)
+            { // Check for hex number
+                if ((style & ~NumberStyles.HexNumber) != 0)
+                {
+                    throw new ArgumentException(Environment.GetResourceString("Arg_InvalidHexStyle"));
+                }
+            }
+        }
     
     
         public NumberFormatInfo()

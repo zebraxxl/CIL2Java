@@ -55,6 +55,7 @@
     <Compile Include="CIL2Java\Maps\Array`1.cs" />
     <Compile Include="CIL2Java\InternalTypes\InternalType.cs" />
     <Compile Include="CIL2Java\Maps\BooleanMap.cs" />
+    <Compile Include="CIL2Java\Maps\ByteMap.cs" />
     <Compile Include="CIL2Java\Utils.cs" />
     <Compile Include="CIL2Java\VES\Instructions.cs" />
     <Compile Include="CIL2Java\VES\MethodPointers\Global.cs" />
@@ -72,9 +73,11 @@
     <Compile Include="java\lang\Double.cs" />
     <Compile Include="java\lang\Exception.cs" />
     <Compile Include="java\lang\Float.cs" />
+    <Compile Include="java\lang\IllegalArgumentException.cs" />
     <Compile Include="java\lang\Iterable.cs" />
     <Compile Include="java\lang\Iterator.cs" />
     <Compile Include="java\lang\Long.cs" />
+    <Compile Include="java\lang\NumberFormatException.cs" />
     <Compile Include="java\lang\reflect\Array.cs" />
     <Compile Include="java\lang\reflect\Field.cs" />
     <Compile Include="java\lang\reflect\Method.cs" />
@@ -122,6 +125,7 @@
     <Compile Include="java\lang\String.cs" />
     <Compile Include="java\lang\System.cs" />
     <Compile Include="java\lang\Throwable.cs" />
+    <Compile Include="System\Number.cs" />
     <Compile Include="System\Object.cs" />
     <Compile Include="System/Runtime/Serialization\ISerializable.cs" />
     <Compile Include="System/Runtime/InteropServices\_Exception.cs" />
