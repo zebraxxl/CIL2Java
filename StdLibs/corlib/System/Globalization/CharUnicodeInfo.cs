@@ -5,6 +5,10 @@ namespace System.Globalization
     /// <summary>Retrieves information about a Unicode character. This class cannot be inherited.</summary>
     public static class CharUnicodeInfo
     {
+        internal const char HIGH_SURROGATE_START = '\ud800';
+        internal const char HIGH_SURROGATE_END = '\udbff';
+        internal const char LOW_SURROGATE_START = '\udc00';
+        internal const char LOW_SURROGATE_END = '\udfff';
     
         /// <summary>Gets the numeric value associated with the specified character.</summary><returns>The numeric value associated with the specified character.-or- -1, if the specified character is not a numeric character.</returns><param name="ch">The Unicode character for which to get the numeric value. </param>
         public static double GetNumericValue(char ch)
