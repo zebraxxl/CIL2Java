@@ -55,5 +55,14 @@ namespace java.lang
 
         [FromJava]
         public int compareTo(object obj) { return 0; }
+
+        [FromJava]
+        public long longValue() { return 0L; }
+
+        [FromJava]
+        public static string ToString(long i) { return null; }
+
+        [FromJava]
+        public static long parseLong(string s) { return 0; }
     }
 }

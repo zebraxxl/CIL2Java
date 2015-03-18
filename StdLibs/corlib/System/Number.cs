@@ -47,5 +47,39 @@ namespace System {
             //TODO: FormatUInt32 as .NET (with culture info)
             return java.lang.Integer.ToString((int)temp);
         }
+
+        internal static string FormatInt64(long value, String format, NumberFormatInfo info)
+        {
+            //TODO: FormatInt64 as .NET (with cilture info)
+            return java.lang.Long.ToString(value);
+        }
+
+        internal static long ParseInt64(string s, NumberStyles numberStyles, NumberFormatInfo numberFormatInfo)
+        {
+            //TODO: ParseInt64 as .NET (with cilture info)
+            try
+            {
+                return java.lang.Long.parseLong(s);
+            }
+            catch (Exception)
+            {
+                throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+            }
+        }
+
+        internal static bool TryParseInt64(string s, NumberStyles numberStyles, NumberFormatInfo numberFormatInfo, out long result)
+        {
+            //TODO: TryParseInt64 as .NET (with cilture info)
+            result = 0L;
+            try
+            {
+                result = java.lang.Long.parseLong(s);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
