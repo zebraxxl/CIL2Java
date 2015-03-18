@@ -24,5 +24,8 @@ namespace java.lang
 
         [FromJava]
         public static int parseInt(string s) { return 0; }
+
+        [FromJava]
+        public int intValue() { return 0; }
     }
 }
