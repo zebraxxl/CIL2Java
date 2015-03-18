@@ -33,7 +33,7 @@ namespace System
         public const short MinValue = -32768;
     
         /// <summary>Compares this instance to a specified object and returns an integer that indicates whether the value of this instance is less than, equal to, or greater than the value of the object.</summary><returns>A signed number indicating the relative values of this instance and <paramref name="value" />.Return Value Description Less than zero This instance is less than <paramref name="value" />. Zero This instance is equal to <paramref name="value" />. Greater than zero This instance is greater than <paramref name="value" />.-or- <paramref name="value" /> is null. </returns><param name="value">An object to compare, or null. </param><exception cref="T:System.ArgumentException"><paramref name="value" /> is not an <see cref="T:System.Int16" />. </exception><filterpriority>2</filterpriority>
-        [JavaBoxMethodMap(typeof(mapShort), "CompareTo")]
+        [JavaBoxMethodMap(typeof(mapShort), "CompareTo", true)]
         public int CompareTo(object value)
         {
             if (value == null)
@@ -50,7 +50,7 @@ namespace System
         }
         
         /// <summary>Compares this instance to a specified 16-bit signed integer and returns an integer that indicates whether the value of this instance is less than, equal to, or greater than the value of the specified 16-bit signed integer.</summary><returns>A signed number indicating the relative values of this instance and <paramref name="value" />.Return Value Description Less than zero This instance is less than <paramref name="value" />. Zero This instance is equal to <paramref name="value" />. Greater than zero This instance is greater than <paramref name="value" />. </returns><param name="value">An integer to compare. </param><filterpriority>2</filterpriority>
-        [JavaBoxMethodMap(typeof(mapShort), "CompareTo")]
+        [JavaBoxMethodMap(typeof(mapShort), "CompareTo", true)]
         public int CompareTo(short value)
         {
             return m_value - value;
@@ -68,7 +68,7 @@ namespace System
         }
         
         /// <summary>Returns a value indicating whether this instance is equal to a specified <see cref="T:System.Int16" /> value.</summary><returns>true if <paramref name="obj" /> has the same value as this instance; otherwise, false.</returns><param name="obj">An <see cref="T:System.Int16" /> value to compare to this instance.</param><filterpriority>2</filterpriority>
-        [JavaBoxMethodMap(typeof(mapShort), "equals")]
+        [JavaBoxMethodMap(typeof(mapShort), "equals", true)]
         public bool Equals(short obj)
         {
             return m_value == obj;
@@ -81,7 +81,7 @@ namespace System
         }
         
         [SecuritySafeCriticalAttribute()]
-        [JavaBoxMethodMap(typeof(mapShort), "toString")]
+        [JavaBoxMethodMap(typeof(mapShort), "toString", true)]
         public override string ToString()
         {
             return Number.FormatInt32(m_value, null, NumberFormatInfo.CurrentInfo);
@@ -89,21 +89,21 @@ namespace System
         
         /// <summary>Converts the numeric value of this instance to its equivalent string representation using the specified culture-specific format information.</summary><returns>The string representation of the value of this instance as specified by <paramref name="provider" />.</returns><param name="provider">An <see cref="T:System.IFormatProvider" /> that supplies culture-specific formatting information. </param><filterpriority>1</filterpriority>
         [SecuritySafeCriticalAttribute()]
-        [JavaBoxMethodMap(typeof(mapShort), "toString")]
+        [JavaBoxMethodMap(typeof(mapShort), "toString", true)]
         public string ToString(IFormatProvider provider)
         {
             return Number.FormatInt32(m_value, null, NumberFormatInfo.GetInstance(provider));
         }
         
         /// <summary>Converts the numeric value of this instance to its equivalent string representation, using the specified format.</summary><returns>The string representation of the value of this instance as specified by <paramref name="format" />.</returns><param name="format">A numeric format string.</param><filterpriority>1</filterpriority>
-        [JavaBoxMethodMap(typeof(mapShort), "toString")]
+        [JavaBoxMethodMap(typeof(mapShort), "toString", true)]
         public string ToString(string format)
         {
             return ToString(format, NumberFormatInfo.CurrentInfo);
         }
         
         /// <summary>Converts the numeric value of this instance to its equivalent string representation using the specified format and culture-specific formatting information.</summary><returns>The string representation of the value of this instance as specified by <paramref name="format" /> and <paramref name="provider" />.</returns><param name="format">A numeric format string.</param><param name="provider">An object that supplies culture-specific formatting information. </param><filterpriority>1</filterpriority>
-        [JavaBoxMethodMap(typeof(mapShort), "toString")]
+        [JavaBoxMethodMap(typeof(mapShort), "toString", true)]
         public string ToString(string format, IFormatProvider provider)
         {
             return ToString(format, NumberFormatInfo.GetInstance(provider));
@@ -222,7 +222,7 @@ namespace System
         }
 
 
-        [JavaBoxMethodMap(typeof(mapShort), "GetTypeCode")]
+        [JavaBoxMethodMap(typeof(mapShort), "GetTypeCode", true)]
         public TypeCode GetTypeCode()
         {
             return TypeCode.Int16;
