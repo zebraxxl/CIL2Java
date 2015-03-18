@@ -41,5 +41,11 @@ namespace System {
             //TODO: FormatInt32 as .NET (with culture info)
             return java.lang.Integer.ToString(m_value);
         }
+
+        internal static string FormatUInt32(uint temp, string format, NumberFormatInfo info)
+        {
+            //TODO: FormatUInt32 as .NET (with culture info)
+            return java.lang.Integer.ToString((int)temp);
+        }
     }
 }

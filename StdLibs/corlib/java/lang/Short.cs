@@ -39,5 +39,8 @@ namespace java.lang
 
         [FromJava]
         public int compareTo(object obj) { return 0; }
+
+        [FromJava]
+        public short shortValue() { return 0; }
     }
 }
