@@ -81,5 +81,37 @@ namespace System {
                 return false;
             }
         }
+
+        internal static uint ParseUInt32(string value, NumberStyles options, NumberFormatInfo numfmt)
+        {
+            //TODO: ParseUInt32 as .NET (with cilture info)
+            try
+            {
+                long result = java.lang.Long.parseLong(value);
+
+                if ((result < 0) || (result > uint.MaxValue))
+                    throw new Exception();
+
+                return (uint)result;
+            }
+            catch (Exception)
+            {
+                throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+            }
+        }
+
+        internal static Boolean TryParseUInt32(string s, NumberStyles style, NumberFormatInfo info, out uint result)
+        {
+            result = 0;
+            try
+            {
+                result = ParseUInt32(s, style, info);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
