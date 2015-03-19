@@ -113,5 +113,21 @@ namespace System {
                 return false;
             }
         }
+
+        public static string FormatUInt64(ulong value, string format, NumberFormatInfo info)
+        {
+            //TODO: FormatUInt64 as .NET (with cilture info)
+            return java.lang.Long.ToString((long)value);
+        }
+
+        internal static ulong ParseUInt64(string s, NumberStyles numberStyles, NumberFormatInfo numberFormatInfo)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static bool TryParseUInt64(string s, NumberStyles numberStyles, NumberFormatInfo numberFormatInfo, out ulong result)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
