@@ -57,6 +57,7 @@
     <Compile Include="CIL2Java\Maps\BooleanMap.cs" />
     <Compile Include="CIL2Java\Maps\ByteMap.cs" />
     <Compile Include="CIL2Java\Maps\CharMap.cs" />
+    <Compile Include="CIL2Java\Maps\DoubleMap.cs" />
     <Compile Include="CIL2Java\Maps\Int16Map.cs" />
     <Compile Include="CIL2Java\Maps\Int32Map.cs" />
     <Compile Include="CIL2Java\Maps\Int64Map.cs" />

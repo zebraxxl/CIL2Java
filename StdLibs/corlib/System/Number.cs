@@ -162,5 +162,38 @@ namespace System {
                 return false;
             }
         }
+
+        public static string FormatDouble(double value, string format, NumberFormatInfo info)
+        {
+            //TODO: FormatDouble - as .NET
+            return java.lang.Double.ToString(value);
+        }
+
+        internal static double ParseDouble(string s, NumberStyles style, NumberFormatInfo info)
+        {
+            //TDOO: ParseDouble - as .NET
+            try
+            {
+                return java.lang.Double.parseDouble(s);
+            }
+            catch (Exception)
+            {
+                throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+            }
+        }
+
+        internal static bool TryParseDouble(string s, NumberStyles style, NumberFormatInfo info, out double result)
+        {
+            result = 0.0;
+            try
+            {
+                result = ParseDouble(s, style, info);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

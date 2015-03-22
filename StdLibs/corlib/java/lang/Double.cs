@@ -51,5 +51,17 @@ namespace java.lang
 
         [FromJava]
         public int compareTo(object obj) { return 0; }
+
+        [FromJava]
+        public static long doubleToLongBits(double value) { return 0L; }
+
+        [FromJava]
+        public static string ToString(double d) { return null; }
+
+        [FromJava]
+        public static double parseDouble(string s) { return 0.0; }
+
+        [FromJava]
+        public double doubleValue() { return 0.0; }
     }
 }
