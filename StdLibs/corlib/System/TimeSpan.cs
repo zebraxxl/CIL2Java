@@ -18,6 +18,10 @@ namespace System
         public const long TicksPerHour = 36000000000;
         /// <summary>Represents the number of ticks in 1 day. This field is constant.</summary><filterpriority>1</filterpriority>
         public const long TicksPerDay = 864000000000;
+
+        internal const long MaxSeconds = Int64.MaxValue / TicksPerSecond;
+        internal const long MinSeconds = Int64.MinValue / TicksPerSecond;
+
         /// <summary>Represents the zero <see cref="T:System.TimeSpan" /> value. This field is read-only.</summary><filterpriority>1</filterpriority>
         public static readonly TimeSpan Zero;
         /// <summary>Represents the maximum <see cref="T:System.TimeSpan" /> value. This field is read-only.</summary><filterpriority>1</filterpriority>
@@ -89,6 +93,16 @@ namespace System
         public double TotalSeconds
         {
             get { throw new NotImplementedException(); }
+        }
+
+        internal static long TimeToTicks(int hour, int minute, int second)
+        {
+            // totalSeconds is bounded by 2^31 * 2^12 + 2^31 * 2^8 + 2^31,
+            // which is less than 2^44, meaning we won't overflow totalSeconds.
+            long totalSeconds = (long)hour * 3600 + (long)minute * 60 + (long)second;
+            if (totalSeconds > MaxSeconds || totalSeconds < MinSeconds)
+                throw new ArgumentOutOfRangeException(null, Environment.GetResourceString("Overflow_TimeSpanTooLong"));
+            return totalSeconds * TicksPerSecond;
         }
     
     

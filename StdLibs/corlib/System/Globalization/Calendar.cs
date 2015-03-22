@@ -9,286 +9,856 @@ namespace System.Globalization
     [ComVisibleAttribute(true)]
     public abstract class Calendar : ICloneable
     {
-        /// <summary>Represents the current era of the current calendar. </summary>
-        public const int CurrentEra = 0;
-    
-        /// <summary>Gets the earliest date and time supported by this <see cref="T:System.Globalization.Calendar" /> object.</summary><returns>The earliest date and time supported by this calendar. The default is <see cref="F:System.DateTime.MinValue" />.</returns>
-        [ComVisibleAttribute(false)]
+        // Number of 100ns (10E-7 second) ticks per time unit
+        internal const long TicksPerMillisecond = 10000;
+        internal const long TicksPerSecond = TicksPerMillisecond * 1000;
+        internal const long TicksPerMinute = TicksPerSecond * 60;
+        internal const long TicksPerHour = TicksPerMinute * 60;
+        internal const long TicksPerDay = TicksPerHour * 24;
+
+        // Number of milliseconds per time unit
+        internal const int MillisPerSecond = 1000;
+        internal const int MillisPerMinute = MillisPerSecond * 60;
+        internal const int MillisPerHour = MillisPerMinute * 60;
+        internal const int MillisPerDay = MillisPerHour * 24;
+
+        // Number of days in a non-leap year
+        internal const int DaysPerYear = 365;
+        // Number of days in 4 years
+        internal const int DaysPer4Years = DaysPerYear * 4 + 1;
+        // Number of days in 100 years
+        internal const int DaysPer100Years = DaysPer4Years * 25 - 1;
+        // Number of days in 400 years
+        internal const int DaysPer400Years = DaysPer100Years * 4 + 1;
+
+        // Number of days from 1/1/0001 to 1/1/10000
+        internal const int DaysTo10000 = DaysPer400Years * 25 - 366;
+
+        internal const long MaxMillis = (long)DaysTo10000 * MillisPerDay;
+
+        //
+        //  Calendar ID Values.  This is used to get data from calendar.nlp.
+        //  The order of calendar ID means the order of data items in the table.
+        //
+
+        internal const int CAL_GREGORIAN = 1;     // Gregorian (localized) calendar
+        internal const int CAL_GREGORIAN_US = 2;     // Gregorian (U.S.) calendar
+        internal const int CAL_JAPAN = 3;     // Japanese Emperor Era calendar
+        internal const int CAL_TAIWAN = 4;     // Taiwan Era calendar
+        internal const int CAL_KOREA = 5;     // Korean Tangun Era calendar
+        internal const int CAL_HIJRI = 6;     // Hijri (Arabic Lunar) calendar
+        internal const int CAL_THAI = 7;     // Thai calendar
+        internal const int CAL_HEBREW = 8;     // Hebrew (Lunar) calendar
+        internal const int CAL_GREGORIAN_ME_FRENCH = 9;     // Gregorian Middle East French calendar
+        internal const int CAL_GREGORIAN_ARABIC = 10;     // Gregorian Arabic calendar
+        internal const int CAL_GREGORIAN_XLIT_ENGLISH = 11;     // Gregorian Transliterated English calendar
+        internal const int CAL_GREGORIAN_XLIT_FRENCH = 12;
+        internal const int CAL_JULIAN = 13;
+        internal const int CAL_JAPANESELUNISOLAR = 14;
+        internal const int CAL_CHINESELUNISOLAR = 15;
+        internal const int CAL_SAKA = 16;     // reserved to match Office but not implemented in our code
+        internal const int CAL_LUNAR_ETO_CHN = 17;     // reserved to match Office but not implemented in our code
+        internal const int CAL_LUNAR_ETO_KOR = 18;     // reserved to match Office but not implemented in our code
+        internal const int CAL_LUNAR_ETO_ROKUYOU = 19;     // reserved to match Office but not implemented in our code
+        internal const int CAL_KOREANLUNISOLAR = 20;
+        internal const int CAL_TAIWANLUNISOLAR = 21;
+        internal const int CAL_PERSIAN = 22;
+        internal const int CAL_UMALQURA = 23;
+
+        internal int m_currentEraValue = -1;
+
+        [System.Runtime.Serialization.OptionalField(VersionAdded = 2)]
+        private bool m_isReadOnly = false;
+
+        // The minimum supported DateTime range for the calendar.
+
+        [System.Runtime.InteropServices.ComVisible(false)]
         public virtual DateTime MinSupportedDateTime
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return (DateTime.MinValue);
+            }
         }
-    
-        /// <summary>Gets the latest date and time supported by this <see cref="T:System.Globalization.Calendar" /> object.</summary><returns>The latest date and time supported by this calendar. The default is <see cref="F:System.DateTime.MaxValue" />.</returns>
-        [ComVisibleAttribute(false)]
+
+        // The maximum supported DateTime range for the calendar.
+
+        [System.Runtime.InteropServices.ComVisible(false)]
         public virtual DateTime MaxSupportedDateTime
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return (DateTime.MaxValue);
+            }
         }
-    
-        /// <summary>Gets a value indicating whether the current calendar is solar-based, lunar-based, or a combination of both.</summary><returns>One of the <see cref="T:System.Globalization.CalendarAlgorithmType" /> values.</returns>
-        [ComVisibleAttribute(false)]
+
+
+
+
+        protected Calendar()
+        {
+            //Do-nothing constructor.
+        }
+
+        ///
+        // This can not be abstract, otherwise no one can create a subclass of Calendar.
+        //
+        internal virtual int ID
+        {
+            get
+            {
+                return (-1);
+            }
+        }
+
+        ///
+        // Return the Base calendar ID for calendars that didn't have defined data in calendarData
+        //
+
+        internal virtual int BaseCalendarID
+        {
+            get { return ID; }
+        }
+
+        // Returns  the type of the calendar.
+        //
+        [System.Runtime.InteropServices.ComVisible(false)]
         public virtual CalendarAlgorithmType AlgorithmType
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return CalendarAlgorithmType.Unknown;
+            }
         }
-    
-        /// <summary>Gets a value indicating whether this <see cref="T:System.Globalization.Calendar" /> object is read-only.</summary><returns>true if this <see cref="T:System.Globalization.Calendar" /> object is read-only; otherwise, false.</returns>
-        [ComVisibleAttribute(false)]
+
+        ////////////////////////////////////////////////////////////////////////
+        //
+        //  IsReadOnly
+        //
+        //  Detect if the object is readonly.
+        //
+        ////////////////////////////////////////////////////////////////////////
+        [System.Runtime.InteropServices.ComVisible(false)]
         public bool IsReadOnly
         {
-            get { throw new NotImplementedException(); }
+            get { return (m_isReadOnly); }
         }
-    
-        /// <summary>When overridden in a derived class, gets the list of eras in the current calendar.</summary><returns>An array of integers that represents the eras in the current calendar.</returns>
+
+        ////////////////////////////////////////////////////////////////////////
+        //
+        //  Clone
+        //
+        //  Is the implementation of IColnable.
+        //
+        ////////////////////////////////////////////////////////////////////////
+        [System.Runtime.InteropServices.ComVisible(false)]
+        public virtual Object Clone()
+        {
+            object o = MemberwiseClone();
+            ((Calendar)o).SetReadOnlyState(false);
+            return (o);
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        //
+        //  ReadOnly
+        //
+        //  Create a cloned readonly instance or return the input one if it is 
+        //  readonly.
+        //
+        ////////////////////////////////////////////////////////////////////////
+        [System.Runtime.InteropServices.ComVisible(false)]
+        public static Calendar ReadOnly(Calendar calendar)
+        {
+            if (calendar == null) { throw new ArgumentNullException("calendar"); }
+            if (calendar.IsReadOnly) { return (calendar); }
+
+            Calendar clonedCalendar = (Calendar)(calendar.MemberwiseClone());
+            clonedCalendar.SetReadOnlyState(true);
+
+            return (clonedCalendar);
+        }
+
+        internal void VerifyWritable()
+        {
+            if (m_isReadOnly)
+            {
+                throw new InvalidOperationException(Environment.GetResourceString("InvalidOperation_ReadOnly"));
+            }
+        }
+
+        internal void SetReadOnlyState(bool readOnly)
+        {
+            m_isReadOnly = readOnly;
+        }
+
+
+        /*=================================CurrentEraValue==========================
+        **Action: This is used to convert CurretEra(0) to an appropriate era value.
+        **Returns:
+        **Arguments:
+        **Exceptions:
+        **Notes:
+        ** The value is from calendar.nlp.
+        ============================================================================*/
+
+        //internal virtual int CurrentEraValue
+        //{
+        //    get
+        //    {
+        //        // The following code assumes that the current era value can not be -1.
+        //        if (m_currentEraValue == -1)
+        //        {
+        //            m_currentEraValue = CalendarData.GetCalendarData(BaseCalendarID).iCurrentEra;
+        //        }
+        //        return (m_currentEraValue);
+        //    }
+        //}
+
+        // The current era for a calendar.
+
+        public const int CurrentEra = 0;
+
+        internal int twoDigitYearMax = -1;
+
+        internal static void CheckAddResult(long ticks, DateTime minValue, DateTime maxValue)
+        {
+            if (ticks < minValue.Ticks || ticks > maxValue.Ticks)
+            {
+                throw new ArgumentException(
+                    String.Format(CultureInfo.InvariantCulture, Environment.GetResourceString("Argument_ResultCalendarRange"),
+                        minValue, maxValue));
+            }
+        }
+
+        internal DateTime Add(DateTime time, double value, int scale)
+        {
+            // From ECMA CLI spec, Partition III, section 3.27:
+            //
+            // If overflow occurs converting a floating-point type to an integer, or if the floating-point value 
+            // being converted to an integer is a NaN, the value returned is unspecified. 
+            //
+            // Based upon this, this method should be performing the comparison against the double
+            // before attempting a cast. Otherwise, the result is undefined.
+            double tempMillis = (value * scale + (value >= 0 ? 0.5 : -0.5));
+            if (!((tempMillis > -(double)MaxMillis) && (tempMillis < (double)MaxMillis)))
+            {
+                throw new ArgumentOutOfRangeException("value", Environment.GetResourceString("ArgumentOutOfRange_AddValue"));
+            }
+
+            long millis = (long)tempMillis;
+            long ticks = time.Ticks + millis * TicksPerMillisecond;
+            CheckAddResult(ticks, MinSupportedDateTime, MaxSupportedDateTime);
+            return (new DateTime(ticks));
+        }
+
+        // Returns the DateTime resulting from adding the given number of
+        // milliseconds to the specified DateTime. The result is computed by rounding
+        // the number of milliseconds given by value to the nearest integer,
+        // and adding that interval to the specified DateTime. The value
+        // argument is permitted to be negative.
+        //
+
+        public virtual DateTime AddMilliseconds(DateTime time, double milliseconds)
+        {
+            return (Add(time, milliseconds, 1));
+        }
+
+
+        // Returns the DateTime resulting from adding a fractional number of
+        // days to the specified DateTime. The result is computed by rounding the
+        // fractional number of days given by value to the nearest
+        // millisecond, and adding that interval to the specified DateTime. The
+        // value argument is permitted to be negative.
+        //
+
+        public virtual DateTime AddDays(DateTime time, int days)
+        {
+            return (Add(time, days, MillisPerDay));
+        }
+
+        // Returns the DateTime resulting from adding a fractional number of
+        // hours to the specified DateTime. The result is computed by rounding the
+        // fractional number of hours given by value to the nearest
+        // millisecond, and adding that interval to the specified DateTime. The
+        // value argument is permitted to be negative.
+        //
+
+        public virtual DateTime AddHours(DateTime time, int hours)
+        {
+            return (Add(time, hours, MillisPerHour));
+        }
+
+
+        // Returns the DateTime resulting from adding a fractional number of
+        // minutes to the specified DateTime. The result is computed by rounding the
+        // fractional number of minutes given by value to the nearest
+        // millisecond, and adding that interval to the specified DateTime. The
+        // value argument is permitted to be negative.
+        //
+
+        public virtual DateTime AddMinutes(DateTime time, int minutes)
+        {
+            return (Add(time, minutes, MillisPerMinute));
+        }
+
+
+        // Returns the DateTime resulting from adding the given number of
+        // months to the specified DateTime. The result is computed by incrementing
+        // (or decrementing) the year and month parts of the specified DateTime by
+        // value months, and, if required, adjusting the day part of the
+        // resulting date downwards to the last day of the resulting month in the
+        // resulting year. The time-of-day part of the result is the same as the
+        // time-of-day part of the specified DateTime.
+        //
+        // In more precise terms, considering the specified DateTime to be of the
+        // form y / m / d + t, where y is the
+        // year, m is the month, d is the day, and t is the
+        // time-of-day, the result is y1 / m1 / d1 + t,
+        // where y1 and m1 are computed by adding value months
+        // to y and m, and d1 is the largest value less than
+        // or equal to d that denotes a valid day in month m1 of year
+        // y1.
+        //
+
+        public abstract DateTime AddMonths(DateTime time, int months);
+
+        // Returns the DateTime resulting from adding a number of
+        // seconds to the specified DateTime. The result is computed by rounding the
+        // fractional number of seconds given by value to the nearest
+        // millisecond, and adding that interval to the specified DateTime. The
+        // value argument is permitted to be negative.
+        //
+
+        public virtual DateTime AddSeconds(DateTime time, int seconds)
+        {
+            return Add(time, seconds, MillisPerSecond);
+        }
+
+        // Returns the DateTime resulting from adding a number of
+        // weeks to the specified DateTime. The
+        // value argument is permitted to be negative.
+        //
+
+        public virtual DateTime AddWeeks(DateTime time, int weeks)
+        {
+            return (AddDays(time, weeks * 7));
+        }
+
+
+        // Returns the DateTime resulting from adding the given number of
+        // years to the specified DateTime. The result is computed by incrementing
+        // (or decrementing) the year part of the specified DateTime by value
+        // years. If the month and day of the specified DateTime is 2/29, and if the
+        // resulting year is not a leap year, the month and day of the resulting
+        // DateTime becomes 2/28. Otherwise, the month, day, and time-of-day
+        // parts of the result are the same as those of the specified DateTime.
+        //
+
+        public abstract DateTime AddYears(DateTime time, int years);
+
+        // Returns the day-of-month part of the specified DateTime. The returned
+        // value is an integer between 1 and 31.
+        //
+
+        public abstract int GetDayOfMonth(DateTime time);
+
+        // Returns the day-of-week part of the specified DateTime. The returned value
+        // is an integer between 0 and 6, where 0 indicates Sunday, 1 indicates
+        // Monday, 2 indicates Tuesday, 3 indicates Wednesday, 4 indicates
+        // Thursday, 5 indicates Friday, and 6 indicates Saturday.
+        //
+
+        public abstract DayOfWeek GetDayOfWeek(DateTime time);
+
+        // Returns the day-of-year part of the specified DateTime. The returned value
+        // is an integer between 1 and 366.
+        //
+
+        public abstract int GetDayOfYear(DateTime time);
+
+        // Returns the number of days in the month given by the year and
+        // month arguments.
+        //
+
+        public virtual int GetDaysInMonth(int year, int month)
+        {
+            return (GetDaysInMonth(year, month, CurrentEra));
+        }
+
+        // Returns the number of days in the month given by the year and
+        // month arguments for the specified era.
+        //
+
+        public abstract int GetDaysInMonth(int year, int month, int era);
+
+        // Returns the number of days in the year given by the year argument for the current era.
+        //
+
+        public virtual int GetDaysInYear(int year)
+        {
+            return (GetDaysInYear(year, CurrentEra));
+        }
+
+        // Returns the number of days in the year given by the year argument for the current era.
+        //
+
+        public abstract int GetDaysInYear(int year, int era);
+
+        // Returns the era for the specified DateTime value.
+
+        public abstract int GetEra(DateTime time);
+
+        /*=================================Eras==========================
+        **Action: Get the list of era values.
+        **Returns: The int array of the era names supported in this calendar.
+        **      null if era is not used.
+        **Arguments: None.
+        **Exceptions: None.
+        ============================================================================*/
+
+
         public abstract int[] Eras
         {
             get;
         }
-    
-        /// <summary>Gets the number of days in the year that precedes the year that is specified by the <see cref="P:System.Globalization.Calendar.MinSupportedDateTime" /> property.</summary><returns>The number of days in the year that precedes the year specified by <see cref="P:System.Globalization.Calendar.MinSupportedDateTime" />.</returns>
-        protected virtual int DaysInYearBeforeMinSupportedYear
-        {
-            get { throw new NotImplementedException(); }
-        }
-    
-        /// <summary>Gets or sets the last year of a 100-year range that can be represented by a 2-digit year.</summary><returns>The last year of a 100-year range that can be represented by a 2-digit year.</returns><exception cref="T:System.InvalidOperationException">The current <see cref="T:System.Globalization.Calendar" /> object is read-only.</exception>
-        public virtual int TwoDigitYearMax
-        {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
-    
-    
-        protected Calendar()
-        {
-             throw new NotImplementedException();
-        }
-        
-        
-        [ComVisibleAttribute(false)]
-        public virtual object Clone()
-        {
-             throw new NotImplementedException();
-        }
-        
-        
-        /// <summary>Returns a read-only version of the specified <see cref="T:System.Globalization.Calendar" /> object.</summary><returns>The <see cref="T:System.Globalization.Calendar" /> object specified by the <paramref name="calendar" /> parameter, if <paramref name="calendar" /> is read-only.-or-A read-only memberwise clone of the <see cref="T:System.Globalization.Calendar" /> object specified by <paramref name="calendar" />, if <paramref name="calendar" /> is not read-only.</returns><param name="calendar">A <see cref="T:System.Globalization.Calendar" /> object.</param><exception cref="T:System.ArgumentNullException"><paramref name="calendar" /> is null.</exception>
-        [ComVisibleAttribute(false)]
-        public static Calendar ReadOnly(Calendar calendar)
-        {
-             throw new NotImplementedException();
-        }
-        
-        
-        /// <summary>Returns a <see cref="T:System.DateTime" /> that is the specified number of milliseconds away from the specified <see cref="T:System.DateTime" />.</summary><returns>The <see cref="T:System.DateTime" /> that results from adding the specified number of milliseconds to the specified <see cref="T:System.DateTime" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to add milliseconds to. </param><param name="milliseconds">The number of milliseconds to add.</param><exception cref="T:System.ArgumentException">The resulting <see cref="T:System.DateTime" /> is outside the supported range of this calendar. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="milliseconds" /> is outside the supported range of the <see cref="T:System.DateTime" /> return value. </exception>
-        public virtual DateTime AddMilliseconds(DateTime time, double milliseconds)
-        {
-             throw new NotImplementedException();
-        }
-        
-        
-        /// <summary>Returns a <see cref="T:System.DateTime" /> that is the specified number of days away from the specified <see cref="T:System.DateTime" />.</summary><returns>The <see cref="T:System.DateTime" /> that results from adding the specified number of days to the specified <see cref="T:System.DateTime" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to which to add days. </param><param name="days">The number of days to add. </param><exception cref="T:System.ArgumentException">The resulting <see cref="T:System.DateTime" /> is outside the supported range of this calendar. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="days" /> is outside the supported range of the <see cref="T:System.DateTime" /> return value. </exception>
-        public virtual DateTime AddDays(DateTime time, int days)
-        {
-             throw new NotImplementedException();
-        }
-        
-        
-        /// <summary>Returns a <see cref="T:System.DateTime" /> that is the specified number of hours away from the specified <see cref="T:System.DateTime" />.</summary><returns>The <see cref="T:System.DateTime" /> that results from adding the specified number of hours to the specified <see cref="T:System.DateTime" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to which to add hours. </param><param name="hours">The number of hours to add. </param><exception cref="T:System.ArgumentException">The resulting <see cref="T:System.DateTime" /> is outside the supported range of this calendar. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="hours" /> is outside the supported range of the <see cref="T:System.DateTime" /> return value. </exception>
-        public virtual DateTime AddHours(DateTime time, int hours)
-        {
-             throw new NotImplementedException();
-        }
-        
-        
-        /// <summary>Returns a <see cref="T:System.DateTime" /> that is the specified number of minutes away from the specified <see cref="T:System.DateTime" />.</summary><returns>The <see cref="T:System.DateTime" /> that results from adding the specified number of minutes to the specified <see cref="T:System.DateTime" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to which to add minutes. </param><param name="minutes">The number of minutes to add. </param><exception cref="T:System.ArgumentException">The resulting <see cref="T:System.DateTime" /> is outside the supported range of this calendar. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="minutes" /> is outside the supported range of the <see cref="T:System.DateTime" /> return value. </exception>
-        public virtual DateTime AddMinutes(DateTime time, int minutes)
-        {
-             throw new NotImplementedException();
-        }
-        
-        
-        /// <summary>When overridden in a derived class, returns a <see cref="T:System.DateTime" /> that is the specified number of months away from the specified <see cref="T:System.DateTime" />.</summary><returns>The <see cref="T:System.DateTime" /> that results from adding the specified number of months to the specified <see cref="T:System.DateTime" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to which to add months. </param><param name="months">The number of months to add. </param><exception cref="T:System.ArgumentException">The resulting <see cref="T:System.DateTime" /> is outside the supported range of this calendar. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="months" /> is outside the supported range of the <see cref="T:System.DateTime" /> return value. </exception>
-        public abstract DateTime AddMonths(DateTime time, int months);
-        
-        
-        /// <summary>Returns a <see cref="T:System.DateTime" /> that is the specified number of seconds away from the specified <see cref="T:System.DateTime" />.</summary><returns>The <see cref="T:System.DateTime" /> that results from adding the specified number of seconds to the specified <see cref="T:System.DateTime" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to which to add seconds. </param><param name="seconds">The number of seconds to add. </param><exception cref="T:System.ArgumentException">The resulting <see cref="T:System.DateTime" /> is outside the supported range of this calendar. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="seconds" /> is outside the supported range of the <see cref="T:System.DateTime" /> return value. </exception>
-        public virtual DateTime AddSeconds(DateTime time, int seconds)
-        {
-             throw new NotImplementedException();
-        }
-        
-        
-        /// <summary>Returns a <see cref="T:System.DateTime" /> that is the specified number of weeks away from the specified <see cref="T:System.DateTime" />.</summary><returns>The <see cref="T:System.DateTime" /> that results from adding the specified number of weeks to the specified <see cref="T:System.DateTime" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to which to add weeks. </param><param name="weeks">The number of weeks to add. </param><exception cref="T:System.ArgumentException">The resulting <see cref="T:System.DateTime" /> is outside the supported range of this calendar. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="weeks" /> is outside the supported range of the <see cref="T:System.DateTime" /> return value. </exception>
-        public virtual DateTime AddWeeks(DateTime time, int weeks)
-        {
-             throw new NotImplementedException();
-        }
-        
-        
-        /// <summary>When overridden in a derived class, returns a <see cref="T:System.DateTime" /> that is the specified number of years away from the specified <see cref="T:System.DateTime" />.</summary><returns>The <see cref="T:System.DateTime" /> that results from adding the specified number of years to the specified <see cref="T:System.DateTime" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to which to add years. </param><param name="years">The number of years to add. </param><exception cref="T:System.ArgumentException">The resulting <see cref="T:System.DateTime" /> is outside the supported range of this calendar. </exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="years" /> is outside the supported range of the <see cref="T:System.DateTime" /> return value. </exception>
-        public abstract DateTime AddYears(DateTime time, int years);
-        
-        
-        /// <summary>When overridden in a derived class, returns the day of the month in the specified <see cref="T:System.DateTime" />.</summary><returns>A positive integer that represents the day of the month in the <paramref name="time" /> parameter.</returns><param name="time">The <see cref="T:System.DateTime" /> to read. </param>
-        public abstract int GetDayOfMonth(DateTime time);
-        
-        
-        /// <summary>When overridden in a derived class, returns the day of the week in the specified <see cref="T:System.DateTime" />.</summary><returns>A <see cref="T:System.DayOfWeek" /> value that represents the day of the week in the <paramref name="time" /> parameter.</returns><param name="time">The <see cref="T:System.DateTime" /> to read. </param>
-        public abstract DayOfWeek GetDayOfWeek(DateTime time);
-        
-        
-        /// <summary>When overridden in a derived class, returns the day of the year in the specified <see cref="T:System.DateTime" />.</summary><returns>A positive integer that represents the day of the year in the <paramref name="time" /> parameter.</returns><param name="time">The <see cref="T:System.DateTime" /> to read. </param>
-        public abstract int GetDayOfYear(DateTime time);
-        
-        
-        /// <summary>Returns the number of days in the specified month and year of the current era.</summary><returns>The number of days in the specified month in the specified year in the current era.</returns><param name="year">An integer that represents the year. </param><param name="month">A positive integer that represents the month. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar.-or- <paramref name="month" /> is outside the range supported by the calendar. </exception>
-        public virtual int GetDaysInMonth(int year, int month)
-        {
-             throw new NotImplementedException();
-        }
-        
-        
-        /// <summary>When overridden in a derived class, returns the number of days in the specified month, year, and era.</summary><returns>The number of days in the specified month in the specified year in the specified era.</returns><param name="year">An integer that represents the year. </param><param name="month">A positive integer that represents the month. </param><param name="era">An integer that represents the era. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar.-or- <paramref name="month" /> is outside the range supported by the calendar.-or- <paramref name="era" /> is outside the range supported by the calendar. </exception>
-        public abstract int GetDaysInMonth(int year, int month, int era);
-        
-        
-        /// <summary>Returns the number of days in the specified year of the current era.</summary><returns>The number of days in the specified year in the current era.</returns><param name="year">An integer that represents the year. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar. </exception>
-        public virtual int GetDaysInYear(int year)
-        {
-             throw new NotImplementedException();
-        }
-        
-        
-        /// <summary>When overridden in a derived class, returns the number of days in the specified year and era.</summary><returns>The number of days in the specified year in the specified era.</returns><param name="year">An integer that represents the year. </param><param name="era">An integer that represents the era. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar.-or- <paramref name="era" /> is outside the range supported by the calendar. </exception>
-        public abstract int GetDaysInYear(int year, int era);
-        
-        
-        /// <summary>When overridden in a derived class, returns the era in the specified <see cref="T:System.DateTime" />.</summary><returns>An integer that represents the era in <paramref name="time" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to read. </param>
-        public abstract int GetEra(DateTime time);
-        
-        
-        /// <summary>Returns the hours value in the specified <see cref="T:System.DateTime" />.</summary><returns>An integer from 0 to 23 that represents the hour in <paramref name="time" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to read. </param>
+
+
+        // Returns the hour part of the specified DateTime. The returned value is an
+        // integer between 0 and 23.
+        //
+
         public virtual int GetHour(DateTime time)
         {
-             throw new NotImplementedException();
+            return ((int)((time.Ticks / TicksPerHour) % 24));
         }
-        
-        
-        /// <summary>Returns the milliseconds value in the specified <see cref="T:System.DateTime" />.</summary><returns>A double-precision floating-point number from 0 to 999 that represents the milliseconds in the <paramref name="time" /> parameter.</returns><param name="time">The <see cref="T:System.DateTime" /> to read. </param>
+
+        // Returns the millisecond part of the specified DateTime. The returned value
+        // is an integer between 0 and 999.
+        //
+
         public virtual double GetMilliseconds(DateTime time)
         {
-             throw new NotImplementedException();
+            return (double)((time.Ticks / TicksPerMillisecond) % 1000);
         }
-        
-        
-        /// <summary>Returns the minutes value in the specified <see cref="T:System.DateTime" />.</summary><returns>An integer from 0 to 59 that represents the minutes in <paramref name="time" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to read. </param>
+
+        // Returns the minute part of the specified DateTime. The returned value is
+        // an integer between 0 and 59.
+        //
+
         public virtual int GetMinute(DateTime time)
         {
-             throw new NotImplementedException();
+            return ((int)((time.Ticks / TicksPerMinute) % 60));
         }
-        
-        
-        /// <summary>When overridden in a derived class, returns the month in the specified <see cref="T:System.DateTime" />.</summary><returns>A positive integer that represents the month in <paramref name="time" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to read. </param>
+
+        // Returns the month part of the specified DateTime. The returned value is an
+        // integer between 1 and 12.
+        //
+
         public abstract int GetMonth(DateTime time);
-        
-        
-        /// <summary>Returns the number of months in the specified year in the current era.</summary><returns>The number of months in the specified year in the current era.</returns><param name="year">An integer that represents the year. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar. </exception>
+
+        // Returns the number of months in the specified year in the current era.
+
         public virtual int GetMonthsInYear(int year)
         {
-             throw new NotImplementedException();
+            return (GetMonthsInYear(year, CurrentEra));
         }
-        
-        
-        /// <summary>When overridden in a derived class, returns the number of months in the specified year in the specified era.</summary><returns>The number of months in the specified year in the specified era.</returns><param name="year">An integer that represents the year. </param><param name="era">An integer that represents the era. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar.-or- <paramref name="era" /> is outside the range supported by the calendar. </exception>
+
+        // Returns the number of months in the specified year and era.
+
         public abstract int GetMonthsInYear(int year, int era);
-        
-        
-        /// <summary>Returns the seconds value in the specified <see cref="T:System.DateTime" />.</summary><returns>An integer from 0 to 59 that represents the seconds in <paramref name="time" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to read. </param>
+
+        // Returns the second part of the specified DateTime. The returned value is
+        // an integer between 0 and 59.
+        //
+
         public virtual int GetSecond(DateTime time)
         {
-             throw new NotImplementedException();
+            return ((int)((time.Ticks / TicksPerSecond) % 60));
         }
-        
-        
-        /// <summary>Returns the week of the year that includes the date in the specified <see cref="T:System.DateTime" /> value.</summary><returns>A positive integer that represents the week of the year that includes the date in the <paramref name="time" /> parameter.</returns><param name="time">A date and time value. </param><param name="rule">An enumeration value that defines a calendar week. </param><param name="firstDayOfWeek">An enumeration value that represents the first day of the week. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="time" /> is earlier than <see cref="P:System.Globalization.Calendar.MinSupportedDateTime" /> or later than <see cref="P:System.Globalization.Calendar.MaxSupportedDateTime" />.-or-<paramref name="firstDayOfWeek" /> is not a valid <see cref="T:System.DayOfWeek" /> value.-or- <paramref name="rule" /> is not a valid <see cref="T:System.Globalization.CalendarWeekRule" /> value. </exception>
+
+        /*=================================GetFirstDayWeekOfYear==========================
+        **Action: Get the week of year using the FirstDay rule.
+        **Returns:  the week of year.
+        **Arguments:
+        **  time
+        **  firstDayOfWeek  the first day of week (0=Sunday, 1=Monday, ... 6=Saturday)
+        **Notes:
+        **  The CalendarWeekRule.FirstDay rule: Week 1 begins on the first day of the year.
+        **  Assume f is the specifed firstDayOfWeek,
+        **  and n is the day of week for January 1 of the specified year.
+        **  Assign offset = n - f;
+        **  Case 1: offset = 0
+        **      E.g.
+        **                     f=1
+        **          weekday 0  1  2  3  4  5  6  0  1
+        **          date       1/1
+        **          week#      1                    2
+        **      then week of year = (GetDayOfYear(time) - 1) / 7 + 1
+        **
+        **  Case 2: offset < 0
+        **      e.g.
+        **                     n=1   f=3
+        **          weekday 0  1  2  3  4  5  6  0
+        **          date       1/1
+        **          week#      1     2
+        **      This means that the first week actually starts 5 days before 1/1.
+        **      So week of year = (GetDayOfYear(time) + (7 + offset) - 1) / 7 + 1
+        **  Case 3: offset > 0
+        **      e.g.
+        **                  f=0   n=2
+        **          weekday 0  1  2  3  4  5  6  0  1  2
+        **          date          1/1
+        **          week#         1                    2
+        **      This means that the first week actually starts 2 days before 1/1.
+        **      So Week of year = (GetDayOfYear(time) + offset - 1) / 7 + 1
+        ============================================================================*/
+
+        internal int GetFirstDayWeekOfYear(DateTime time, int firstDayOfWeek)
+        {
+            int dayOfYear = GetDayOfYear(time) - 1;   // Make the day of year to be 0-based, so that 1/1 is day 0.
+            // Calculate the day of week for the first day of the year.
+            // dayOfWeek - (dayOfYear % 7) is the day of week for the first day of this year.  Note that
+            // this value can be less than 0.  It's fine since we are making it positive again in calculating offset.
+            int dayForJan1 = (int)GetDayOfWeek(time) - (dayOfYear % 7);
+            int offset = (dayForJan1 - firstDayOfWeek + 14) % 7;
+            return ((dayOfYear + offset) / 7 + 1);
+        }
+
+        private int GetWeekOfYearFullDays(DateTime time, int firstDayOfWeek, int fullDays)
+        {
+            int dayForJan1;
+            int offset;
+            int day;
+
+            int dayOfYear = GetDayOfYear(time) - 1; // Make the day of year to be 0-based, so that 1/1 is day 0.
+            //
+            // Calculate the number of days between the first day of year (1/1) and the first day of the week.
+            // This value will be a positive value from 0 ~ 6.  We call this value as "offset".
+            //
+            // If offset is 0, it means that the 1/1 is the start of the first week.
+            //     Assume the first day of the week is Monday, it will look like this:
+            //     Sun      Mon     Tue     Wed     Thu     Fri     Sat
+            //     12/31    1/1     1/2     1/3     1/4     1/5     1/6
+            //              +--> First week starts here.
+            //
+            // If offset is 1, it means that the first day of the week is 1 day ahead of 1/1.
+            //     Assume the first day of the week is Monday, it will look like this:
+            //     Sun      Mon     Tue     Wed     Thu     Fri     Sat
+            //     1/1      1/2     1/3     1/4     1/5     1/6     1/7
+            //              +--> First week starts here.
+            //
+            // If offset is 2, it means that the first day of the week is 2 days ahead of 1/1.
+            //     Assume the first day of the week is Monday, it will look like this:
+            //     Sat      Sun     Mon     Tue     Wed     Thu     Fri     Sat
+            //     1/1      1/2     1/3     1/4     1/5     1/6     1/7     1/8
+            //                      +--> First week starts here.
+
+
+
+            // Day of week is 0-based.
+            // Get the day of week for 1/1.  This can be derived from the day of week of the target day.
+            // Note that we can get a negative value.  It's ok since we are going to make it a positive value when calculating the offset.
+            dayForJan1 = (int)GetDayOfWeek(time) - (dayOfYear % 7);
+
+            // Now, calculate the offset.  Subtract the first day of week from the dayForJan1.  And make it a positive value.
+            offset = (firstDayOfWeek - dayForJan1 + 14) % 7;
+            if (offset != 0 && offset >= fullDays)
+            {
+                //
+                // If the offset is greater than the value of fullDays, it means that
+                // the first week of the year starts on the week where Jan/1 falls on.
+                //
+                offset -= 7;
+            }
+            //
+            // Calculate the day of year for specified time by taking offset into account.
+            //
+            day = dayOfYear - offset;
+            if (day >= 0)
+            {
+                //
+                // If the day of year value is greater than zero, get the week of year.
+                //
+                return (day / 7 + 1);
+            }
+            //
+            // Otherwise, the specified time falls on the week of previous year.
+            // Call this method again by passing the last day of previous year.
+            //
+            // the last day of the previous year may "underflow" to no longer be a valid date time for
+            // this calendar if we just subtract so we need the subclass to provide us with 
+            // that information
+            if (time <= MinSupportedDateTime.AddDays(dayOfYear))
+            {
+                return GetWeekOfYearOfMinSupportedDateTime(firstDayOfWeek, fullDays);
+            }
+            return (GetWeekOfYearFullDays(time.AddDays(-(dayOfYear + 1)), firstDayOfWeek, fullDays));
+        }
+
+        private int GetWeekOfYearOfMinSupportedDateTime(int firstDayOfWeek, int minimumDaysInFirstWeek)
+        {
+            int dayOfYear = GetDayOfYear(MinSupportedDateTime) - 1;  // Make the day of year to be 0-based, so that 1/1 is day 0.
+            int dayOfWeekOfFirstOfYear = (int)GetDayOfWeek(MinSupportedDateTime) - dayOfYear % 7;
+
+            // Calculate the offset (how many days from the start of the year to the start of the week)
+            int offset = (firstDayOfWeek + 7 - dayOfWeekOfFirstOfYear) % 7;
+            if (offset == 0 || offset >= minimumDaysInFirstWeek)
+            {
+                // First of year falls in the first week of the year
+                return 1;
+            }
+
+            int daysInYearBeforeMinSupportedYear = DaysInYearBeforeMinSupportedYear - 1; // Make the day of year to be 0-based, so that 1/1 is day 0.
+            int dayOfWeekOfFirstOfPreviousYear = dayOfWeekOfFirstOfYear - 1 - (daysInYearBeforeMinSupportedYear % 7);
+
+            // starting from first day of the year, how many days do you have to go forward
+            // before getting to the first day of the week?
+            int daysInInitialPartialWeek = (firstDayOfWeek - dayOfWeekOfFirstOfPreviousYear + 14) % 7;
+            int day = daysInYearBeforeMinSupportedYear - daysInInitialPartialWeek;
+            if (daysInInitialPartialWeek >= minimumDaysInFirstWeek)
+            {
+                // If the offset is greater than the minimum Days in the first week, it means that
+                // First of year is part of the first week of the year even though it is only a partial week
+                // add another week
+                day += 7;
+            }
+
+            return (day / 7 + 1);
+        }
+
+        // it would be nice to make this abstract but we can't since that would break previous implementations
+        protected virtual int DaysInYearBeforeMinSupportedYear
+        {
+            get
+            {
+                return 365;
+            }
+        }
+
+
+        // Returns the week of year for the specified DateTime. The returned value is an
+        // integer between 1 and 53.
+        //
+
         public virtual int GetWeekOfYear(DateTime time, CalendarWeekRule rule, DayOfWeek firstDayOfWeek)
         {
-             throw new NotImplementedException();
+            if ((int)firstDayOfWeek < 0 || (int)firstDayOfWeek > 6)
+            {
+                throw new ArgumentOutOfRangeException(
+                    "firstDayOfWeek", Environment.GetResourceString("ArgumentOutOfRange_Range",
+                    DayOfWeek.Sunday, DayOfWeek.Saturday));
+            }
+            switch (rule)
+            {
+                case CalendarWeekRule.FirstDay:
+                    return (GetFirstDayWeekOfYear(time, (int)firstDayOfWeek));
+                case CalendarWeekRule.FirstFullWeek:
+                    return (GetWeekOfYearFullDays(time, (int)firstDayOfWeek, 7));
+                case CalendarWeekRule.FirstFourDayWeek:
+                    return (GetWeekOfYearFullDays(time, (int)firstDayOfWeek, 4));
+            }
+            throw new ArgumentOutOfRangeException(
+                "rule", Environment.GetResourceString("ArgumentOutOfRange_Range",
+                CalendarWeekRule.FirstDay, CalendarWeekRule.FirstFourDayWeek));
+
         }
-        
-        
-        /// <summary>When overridden in a derived class, returns the year in the specified <see cref="T:System.DateTime" />.</summary><returns>An integer that represents the year in <paramref name="time" />.</returns><param name="time">The <see cref="T:System.DateTime" /> to read. </param>
+
+        // Returns the year part of the specified DateTime. The returned value is an
+        // integer between 1 and 9999.
+        //
+
         public abstract int GetYear(DateTime time);
-        
-        
-        /// <summary>Determines whether the specified date in the current era is a leap day.</summary><returns>true if the specified day is a leap day; otherwise, false.</returns><param name="year">An integer that represents the year. </param><param name="month">A positive integer that represents the month. </param><param name="day">A positive integer that represents the day. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar.-or- <paramref name="month" /> is outside the range supported by the calendar.-or- <paramref name="day" /> is outside the range supported by the calendar. </exception>
+
+        // Checks whether a given day in the current era is a leap day. This method returns true if
+        // the date is a leap day, or false if not.
+        //
+
         public virtual bool IsLeapDay(int year, int month, int day)
         {
-             throw new NotImplementedException();
+            return (IsLeapDay(year, month, day, CurrentEra));
         }
-        
-        
-        /// <summary>When overridden in a derived class, determines whether the specified date in the specified era is a leap day.</summary><returns>true if the specified day is a leap day; otherwise, false.</returns><param name="year">An integer that represents the year. </param><param name="month">A positive integer that represents the month. </param><param name="day">A positive integer that represents the day. </param><param name="era">An integer that represents the era. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar.-or- <paramref name="month" /> is outside the range supported by the calendar.-or- <paramref name="day" /> is outside the range supported by the calendar.-or- <paramref name="era" /> is outside the range supported by the calendar. </exception>
+
+        // Checks whether a given day in the specified era is a leap day. This method returns true if
+        // the date is a leap day, or false if not.
+        //
+
         public abstract bool IsLeapDay(int year, int month, int day, int era);
-        
-        
-        /// <summary>Determines whether the specified month in the specified year in the current era is a leap month.</summary><returns>true if the specified month is a leap month; otherwise, false.</returns><param name="year">An integer that represents the year. </param><param name="month">A positive integer that represents the month. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar.-or- <paramref name="month" /> is outside the range supported by the calendar. </exception>
+
+        // Checks whether a given month in the current era is a leap month. This method returns true if
+        // month is a leap month, or false if not.
+        //
+
         public virtual bool IsLeapMonth(int year, int month)
         {
-             throw new NotImplementedException();
+            return (IsLeapMonth(year, month, CurrentEra));
         }
-        
-        
-        /// <summary>When overridden in a derived class, determines whether the specified month in the specified year in the specified era is a leap month.</summary><returns>true if the specified month is a leap month; otherwise, false.</returns><param name="year">An integer that represents the year. </param><param name="month">A positive integer that represents the month. </param><param name="era">An integer that represents the era. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar.-or- <paramref name="month" /> is outside the range supported by the calendar.-or- <paramref name="era" /> is outside the range supported by the calendar. </exception>
+
+        // Checks whether a given month in the specified era is a leap month. This method returns true if
+        // month is a leap month, or false if not.
+        //
+
         public abstract bool IsLeapMonth(int year, int month, int era);
-        
-        
-        /// <summary>Calculates the leap month for a specified year.</summary><returns>A positive integer that indicates the leap month in the specified year.-or-Zero if this calendar does not support a leap month or if the <paramref name="year" /> parameter does not represent a leap year.</returns><param name="year">A year.</param>
-        [ComVisibleAttribute(false)]
+
+        // Returns  the leap month in a calendar year of the current era. This method returns 0
+        // if this calendar does not have leap month, or this year is not a leap year.
+        //
+
+        [System.Runtime.InteropServices.ComVisible(false)]
         public virtual int GetLeapMonth(int year)
         {
-             throw new NotImplementedException();
+            return (GetLeapMonth(year, CurrentEra));
         }
-        
-        
-        /// <summary>Calculates the leap month for a specified year and era.</summary><returns>A positive integer that indicates the leap month in the specified year and era.-or-Zero if this calendar does not support a leap month or if the <paramref name="year" /> and <paramref name="era" /> parameters do not specify a leap year.</returns><param name="year">A year.</param><param name="era">An era.</param>
-        [ComVisibleAttribute(false)]
+
+        // Returns  the leap month in a calendar year of the specified era. This method returns 0
+        // if this calendar does not have leap month, or this year is not a leap year.
+        //
+
+        [System.Runtime.InteropServices.ComVisible(false)]
         public virtual int GetLeapMonth(int year, int era)
         {
-             throw new NotImplementedException();
+            if (!IsLeapYear(year, era))
+                return 0;
+
+            int monthsCount = GetMonthsInYear(year, era);
+            for (int month = 1; month <= monthsCount; month++)
+            {
+                if (IsLeapMonth(year, month, era))
+                    return month;
+            }
+
+            return 0;
         }
-        
-        
-        /// <summary>Determines whether the specified year in the current era is a leap year.</summary><returns>true if the specified year is a leap year; otherwise, false.</returns><param name="year">An integer that represents the year. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar. </exception>
+
+        // Checks whether a given year in the current era is a leap year. This method returns true if
+        // year is a leap year, or false if not.
+        //
+
         public virtual bool IsLeapYear(int year)
         {
-             throw new NotImplementedException();
+            return (IsLeapYear(year, CurrentEra));
         }
-        
-        
-        /// <summary>When overridden in a derived class, determines whether the specified year in the specified era is a leap year.</summary><returns>true if the specified year is a leap year; otherwise, false.</returns><param name="year">An integer that represents the year. </param><param name="era">An integer that represents the era. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar.-or- <paramref name="era" /> is outside the range supported by the calendar. </exception>
+
+        // Checks whether a given year in the specified era is a leap year. This method returns true if
+        // year is a leap year, or false if not.
+        //
+
         public abstract bool IsLeapYear(int year, int era);
-        
-        
-        /// <summary>Returns a <see cref="T:System.DateTime" /> that is set to the specified date and time in the current era.</summary><returns>The <see cref="T:System.DateTime" /> that is set to the specified date and time in the current era.</returns><param name="year">An integer that represents the year. </param><param name="month">A positive integer that represents the month. </param><param name="day">A positive integer that represents the day. </param><param name="hour">An integer from 0 to 23 that represents the hour. </param><param name="minute">An integer from 0 to 59 that represents the minute. </param><param name="second">An integer from 0 to 59 that represents the second. </param><param name="millisecond">An integer from 0 to 999 that represents the millisecond. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar.-or- <paramref name="month" /> is outside the range supported by the calendar.-or- <paramref name="day" /> is outside the range supported by the calendar.-or- <paramref name="hour" /> is less than zero or greater than 23.-or- <paramref name="minute" /> is less than zero or greater than 59.-or- <paramref name="second" /> is less than zero or greater than 59.-or- <paramref name="millisecond" /> is less than zero or greater than 999. </exception>
+
+        // Returns the date and time converted to a DateTime value.  Throws an exception if the n-tuple is invalid.
+        //
+
         public virtual DateTime ToDateTime(int year, int month, int day, int hour, int minute, int second, int millisecond)
         {
-             throw new NotImplementedException();
+            return (ToDateTime(year, month, day, hour, minute, second, millisecond, CurrentEra));
         }
-        
-        
-        /// <summary>When overridden in a derived class, returns a <see cref="T:System.DateTime" /> that is set to the specified date and time in the specified era.</summary><returns>The <see cref="T:System.DateTime" /> that is set to the specified date and time in the current era.</returns><param name="year">An integer that represents the year. </param><param name="month">A positive integer that represents the month. </param><param name="day">A positive integer that represents the day. </param><param name="hour">An integer from 0 to 23 that represents the hour. </param><param name="minute">An integer from 0 to 59 that represents the minute. </param><param name="second">An integer from 0 to 59 that represents the second. </param><param name="millisecond">An integer from 0 to 999 that represents the millisecond. </param><param name="era">An integer that represents the era. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar.-or- <paramref name="month" /> is outside the range supported by the calendar.-or- <paramref name="day" /> is outside the range supported by the calendar.-or- <paramref name="hour" /> is less than zero or greater than 23.-or- <paramref name="minute" /> is less than zero or greater than 59.-or- <paramref name="second" /> is less than zero or greater than 59.-or- <paramref name="millisecond" /> is less than zero or greater than 999.-or- <paramref name="era" /> is outside the range supported by the calendar. </exception>
+
+        // Returns the date and time converted to a DateTime value.  Throws an exception if the n-tuple is invalid.
+        //
+
         public abstract DateTime ToDateTime(int year, int month, int day, int hour, int minute, int second, int millisecond, int era);
-        
-        
-        /// <summary>Converts the specified year to a four-digit year by using the <see cref="P:System.Globalization.Calendar.TwoDigitYearMax" /> property to determine the appropriate century.</summary><returns>An integer that contains the four-digit representation of <paramref name="year" />.</returns><param name="year">A two-digit or four-digit integer that represents the year to convert. </param><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="year" /> is outside the range supported by the calendar. </exception>
+
+        internal virtual Boolean TryToDateTime(int year, int month, int day, int hour, int minute, int second, int millisecond, int era, out DateTime result)
+        {
+            result = DateTime.MinValue;
+            try
+            {
+                result = ToDateTime(year, month, day, hour, minute, second, millisecond, era);
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+        }
+
+        internal virtual bool IsValidYear(int year, int era)
+        {
+            return (year >= GetYear(MinSupportedDateTime) && year <= GetYear(MaxSupportedDateTime));
+        }
+
+        internal virtual bool IsValidMonth(int year, int month, int era)
+        {
+            return (IsValidYear(year, era) && month >= 1 && month <= GetMonthsInYear(year, era));
+        }
+
+        internal virtual bool IsValidDay(int year, int month, int day, int era)
+        {
+            return (IsValidMonth(year, month, era) && day >= 1 && day <= GetDaysInMonth(year, month, era));
+        }
+
+
+        // Returns and assigns the maximum value to represent a two digit year.  This
+        // value is the upper boundary of a 100 year range that allows a two digit year
+        // to be properly translated to a four digit year.  For example, if 2029 is the
+        // upper boundary, then a two digit value of 30 should be interpreted as 1930
+        // while a two digit value of 29 should be interpreted as 2029.  In this example
+        // , the 100 year range would be from 1930-2029.  See ToFourDigitYear().
+
+        public virtual int TwoDigitYearMax
+        {
+            get
+            {
+                return (twoDigitYearMax);
+            }
+
+            set
+            {
+                VerifyWritable();
+                twoDigitYearMax = value;
+            }
+        }
+
+        // Converts the year value to the appropriate century by using the
+        // TwoDigitYearMax property.  For example, if the TwoDigitYearMax value is 2029,
+        // then a two digit value of 30 will get converted to 1930 while a two digit
+        // value of 29 will get converted to 2029.
+
         public virtual int ToFourDigitYear(int year)
         {
-             throw new NotImplementedException();
+            if (year < 0)
+            {
+                throw new ArgumentOutOfRangeException("year",
+                    Environment.GetResourceString("ArgumentOutOfRange_NeedNonNegNum"));
+            }
+            if (year < 100)
+            {
+                return ((TwoDigitYearMax / 100 - (year > TwoDigitYearMax % 100 ? 1 : 0)) * 100 + year);
+            }
+            // If the year value is above 100, just return the year value.  Don't have to do
+            // the TwoDigitYearMax comparison.
+            return (year);
         }
-        
-        
+
+        // Return the tick count corresponding to the given hour, minute, second.
+        // Will check the if the parameters are valid.
+        internal static long TimeToTicks(int hour, int minute, int second, int millisecond)
+        {
+            if (hour >= 0 && hour < 24 && minute >= 0 && minute < 60 && second >= 0 && second < 60)
+            {
+                if (millisecond < 0 || millisecond >= MillisPerSecond)
+                {
+                    throw new ArgumentOutOfRangeException(
+                                "millisecond",
+                                String.Format(
+                                    CultureInfo.InvariantCulture,
+                                    Environment.GetResourceString("ArgumentOutOfRange_Range"), 0, MillisPerSecond - 1));
+                }
+                return TimeSpan.TimeToTicks(hour, minute, second) + millisecond * TicksPerMillisecond;
+            }
+            throw new ArgumentOutOfRangeException(null, Environment.GetResourceString("ArgumentOutOfRange_BadHourMinuteSecond"));
+        }
+
+        //[System.Security.SecuritySafeCritical]  // auto-generated
+        //internal static int GetSystemTwoDigitYearSetting(int CalID, int defaultYearValue)
+        //{
+        //    // Call nativeGetTwoDigitYearMax
+        //    int twoDigitYearMax = CalendarData.nativeGetTwoDigitYearMax(CalID);
+        //    if (twoDigitYearMax < 0)
+        //    {
+        //        twoDigitYearMax = defaultYearValue;
+        //    }
+        //    return (twoDigitYearMax);
+        //}
     }
 }
