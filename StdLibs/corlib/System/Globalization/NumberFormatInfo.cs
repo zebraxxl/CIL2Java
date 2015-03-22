@@ -241,6 +241,20 @@ namespace System.Globalization
                 }
             }
         }
+
+        internal static void ValidateParseStyleFloatingPoint(NumberStyles style)
+        {
+            // Check for undefined flags
+            if ((style & InvalidNumberStyles) != 0)
+            {
+                throw new ArgumentException(Environment.GetResourceString("Argument_InvalidNumberStyles"), "style");
+            }
+
+            if ((style & NumberStyles.AllowHexSpecifier) != 0)
+            { // Check for hex number
+                throw new ArgumentException(Environment.GetResourceString("Arg_HexStyleNotSupported"));
+            }
+        }
     
     
         public NumberFormatInfo()

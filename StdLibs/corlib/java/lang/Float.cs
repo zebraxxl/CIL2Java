@@ -1,6 +1,7 @@
 ﻿using CIL2Java.Attributes;
 using System;
 using System.Collections.Generic;
+using boolean = System.Boolean;
 
 namespace java.lang
 {
@@ -51,5 +52,17 @@ namespace java.lang
 
         [FromJava]
         public int compareTo(object obj) { return 0; }
+
+        [FromJava]
+        public static int floatToIntBits(float value) { return 0; }
+
+        [FromJava]
+        public static string ToString(float f) { return null; }
+
+        [FromJava]
+        public static float parseFloat(string s) { return 0.0f; }
+
+        [FromJava]
+        public float floatValue() { return 0.0f; }
     }
 }

@@ -129,5 +129,38 @@ namespace System {
         {
             throw new NotImplementedException();
         }
+
+        public static string FormatSingle(float value, string format, NumberFormatInfo info)
+        {
+            //TODO: Format Single as .NET
+            return java.lang.Float.ToString(value);
+        }
+
+        internal static float ParseSingle(string s, NumberStyles style, NumberFormatInfo info)
+        {
+            //TODO: Parse Single as .NET
+            try
+            {
+                return java.lang.Float.parseFloat(s);
+            }
+            catch (Exception)
+            {
+                throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+            }
+        }
+
+        internal static bool TryParseSingle(string s, NumberStyles style, NumberFormatInfo info, out float result)
+        {
+            result = 0.0f;
+            try
+            {
+                result = ParseSingle(s, style, info);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
