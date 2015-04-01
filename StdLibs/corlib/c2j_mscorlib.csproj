@@ -101,6 +101,8 @@
     <Compile Include="java\lang\StringBuilder.cs" />
     <Compile Include="java\lang\Thread.cs" />
     <Compile Include="java\text\Collator.cs" />
+    <Compile Include="java\text\Format.cs" />
+    <Compile Include="java\text\NumberFormat.cs" />
     <Compile Include="java\util\AbstractMap.cs" />
     <Compile Include="java\util\Collections.cs" />
     <Compile Include="java\util\Comparator.cs" />

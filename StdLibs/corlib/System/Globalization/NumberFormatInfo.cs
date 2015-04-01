@@ -9,6 +9,10 @@ namespace System.Globalization
     [ComVisibleAttribute(true)]
     public sealed class NumberFormatInfo : ICloneable, IFormatProvider
     {
+        private java.text.NumberFormat javaFormat;
+        private bool readOnly;
+
+        private static NumberFormatInfo currentFormatInfo;
     
         /// <summary>Gets the default read-only <see cref="T:System.Globalization.NumberFormatInfo" /> that is culture-independent (invariant).</summary><returns>The default read-only <see cref="T:System.Globalization.NumberFormatInfo" /> that is culture-independent (invariant).</returns>
         public static NumberFormatInfo InvariantInfo
@@ -74,7 +78,11 @@ namespace System.Globalization
         /// <summary>Gets a read-only <see cref="T:System.Globalization.NumberFormatInfo" /> that formats values based on the current culture.</summary><returns>A read-only <see cref="T:System.Globalization.NumberFormatInfo" /> based on the <see cref="T:System.Globalization.CultureInfo" /> of the current thread.</returns>
         public static NumberFormatInfo CurrentInfo
         {
-            get { throw new NotImplementedException(); }
+            get {
+                if (currentFormatInfo == null)
+                    currentFormatInfo = new NumberFormatInfo(java.text.NumberFormat.getInstance());
+                return currentFormatInfo;
+            }
         }
     
         /// <summary>Gets or sets the string that represents the IEEE NaN (not a number) value.</summary><returns>The string that represents the IEEE NaN (not a number) value. The default for <see cref="P:System.Globalization.NumberFormatInfo.InvariantInfo" /> is "NaN".</returns><exception cref="T:System.ArgumentNullException">The property is being set to null. </exception><exception cref="T:System.InvalidOperationException">The property is being set and the <see cref="T:System.Globalization.NumberFormatInfo" /> is read-only. </exception>
@@ -254,6 +262,12 @@ namespace System.Globalization
             { // Check for hex number
                 throw new ArgumentException(Environment.GetResourceString("Arg_HexStyleNotSupported"));
             }
+        }
+
+        private NumberFormatInfo(java.text.NumberFormat javaFormat)
+        {
+            this.javaFormat = javaFormat;
+            this.readOnly = true;
         }
     
     
