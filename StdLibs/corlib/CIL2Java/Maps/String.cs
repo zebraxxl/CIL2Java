@@ -1018,27 +1018,188 @@ namespace CIL2Java.Maps
         #region Format
         public static string Format(string format, object arg0)
         {
-            throw new NotImplementedException();
+            return Format(null, format, new object[] { arg0 });
         }
 
         public static string Format(string format, object arg0, object arg1)
         {
-            throw new NotImplementedException();
+            return Format(null, format, new object[] { arg0, arg1 });
         }
 
         public static string Format(string format, object arg0, object arg1, object arg2)
         {
-            throw new NotImplementedException();
+            return Format(null, format, new object[] { arg0, arg1, arg2 });
         }
 
         public static string Format(string format, params  object[] args)
         {
-            throw new NotImplementedException();
+            return Format(null, format, args);
         }
 
         public static string Format(IFormatProvider provider, string format, params  object[] args)
         {
-            throw new NotImplementedException();
+            java.lang.StringBuilder result = new javaStringBuilder();
+
+            if (format == null)
+                throw new ArgumentNullException("format");
+
+            int pos = 0;
+            int len = format.Length;
+            char ch = '\x0';
+
+            ICustomFormatter cf = null;
+            if (provider != null)
+                cf = (ICustomFormatter)provider.GetFormat(typeof(ICustomFormatter));
+
+            while (true)
+            {
+                int p = pos;
+                int i = pos;
+
+                while (pos < len)
+                {
+                    ch = format[pos];
+
+                    pos++;
+                    if (ch == '}')
+                    {
+                        if (pos < len && format[pos] == '}') // Treat as escape character for }}
+                            pos++;
+                        else
+                            throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+                    }
+
+                    if (ch == '{')
+                    {
+                        if (pos < len && format[pos] == '{') // Treat as escape character for {{
+                            pos++;
+                        else
+                        {
+                            pos--;
+                            break;
+                        }
+                    }
+
+                    result.append(ch);
+                }
+
+                if (pos == len) break;
+                pos++;
+                if (pos == len || (ch = format[pos]) < '0' || ch > '9') throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+                int index = 0;
+                do
+                {
+                    index = index * 10 + ch - '0';
+                    pos++;
+                    if (pos == len) throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+                    ch = format[pos];
+                } while (ch >= '0' && ch <= '9' && index < 1000000);
+                if (index >= args.Length) throw new FormatException(Environment.GetResourceString("Format_IndexOutOfRange"));
+                while (pos < len && (ch = format[pos]) == ' ') pos++;
+                bool leftJustify = false;
+                int width = 0;
+                if (ch == ',')
+                {
+                    pos++;
+                    while (pos < len && format[pos] == ' ') pos++;
+
+                    if (pos == len) throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+                    ch = format[pos];
+                    if (ch == '-')
+                    {
+                        leftJustify = true;
+                        pos++;
+                        if (pos == len) throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+                        ch = format[pos];
+                    }
+                    if (ch < '0' || ch > '9') throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+                    do
+                    {
+                        width = width * 10 + ch - '0';
+                        pos++;
+                        if (pos == len) throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+                        ch = format[pos];
+                    } while (ch >= '0' && ch <= '9' && width < 1000000);
+                }
+
+                while (pos < len && (ch = format[pos]) == ' ') pos++;
+                object arg = args[index];
+                java.lang.StringBuilder fmt = null;
+                if (ch == ':')
+                {
+                    pos++;
+                    p = pos;
+                    i = pos;
+                    while (true)
+                    {
+                        if (pos == len) throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+                        ch = format[pos];
+                        pos++;
+                        if (ch == '{')
+                        {
+                            if (pos < len && format[pos] == '{')  // Treat as escape character for {{
+                                pos++;
+                            else
+                                throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+                        }
+                        else if (ch == '}')
+                        {
+                            if (pos < len && format[pos] == '}')  // Treat as escape character for }}
+                                pos++;
+                            else
+                            {
+                                pos--;
+                                break;
+                            }
+                        }
+
+                        if (fmt == null)
+                        {
+                            fmt = new javaStringBuilder();
+                        }
+                        fmt.append(ch);
+                    }
+                }
+                if (ch != '}') throw new FormatException(Environment.GetResourceString("Format_InvalidString"));
+                pos++;
+                string sFmt = null;
+                string s = null;
+                if (cf != null)
+                {
+                    if (fmt != null)
+                    {
+                        sFmt = fmt.ToString();
+                    }
+                    s = cf.Format(sFmt, arg, provider);
+                }
+
+                if (s == null)
+                {
+                    IFormattable formattableArg = arg as IFormattable;
+
+                    if (formattableArg != null)
+                    {
+                        if (sFmt == null && fmt != null)
+                        {
+                            sFmt = fmt.ToString();
+                        }
+
+                        s = formattableArg.ToString(sFmt, provider);
+                    }
+                    else if (arg != null)
+                    {
+                        s = arg.ToString();
+                    }
+
+                    if (s == null) s = String.Empty;
+                    int pad = width - s.Length;
+                    if (!leftJustify && pad > 0) for (int pad_i = 0; pad_i < pad; pad_i++) result.append(' ');
+                    result.append(s);
+                    if (leftJustify && pad > 0) for (int pad_i = 0; pad_i < pad; pad_i++) result.append(' ');
+                }
+            }
+
+            return result.ToString();
         }
         #endregion
 
