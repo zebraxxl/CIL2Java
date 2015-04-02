@@ -11,8 +11,13 @@ namespace System.IO
     [ComVisibleAttribute(true)]
     public abstract class Stream : MarshalByRefObject, IDisposable
     {
+        //We pick a value that is the largest multiple of 4096 that is still smaller than the large object heap threshold (85K).
+        // The CopyTo/CopyToAsync buffer is short-lived and is likely to be collected at Gen0, and it offers a significant
+        // improvement in Copy performance.
+        private const int _DefaultCopyBufferSize = 81920;
+
         /// <summary>A Stream with no backing store.</summary><filterpriority>1</filterpriority>
-        public static readonly Stream Null;
+        public static readonly Stream Null = new NullStream();
     
         /// <summary>When overridden in a derived class, gets a value indicating whether the current stream supports reading.</summary><returns>true if the stream supports reading; otherwise, false.</returns><filterpriority>1</filterpriority>
         public abstract bool CanRead
@@ -30,7 +35,7 @@ namespace System.IO
         [ComVisibleAttribute(false)]
         public virtual bool CanTimeout
         {
-            get { throw new NotImplementedException(); }
+            get { return false; }
         }
     
         /// <summary>When overridden in a derived class, gets a value indicating whether the current stream supports writing.</summary><returns>true if the stream supports writing; otherwise, false.</returns><filterpriority>1</filterpriority>
@@ -56,16 +61,16 @@ namespace System.IO
         [ComVisibleAttribute(false)]
         public virtual int ReadTimeout
         {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
+            get { throw new InvalidOperationException(Environment.GetResourceString("InvalidOperation_TimeoutsNotSupported")); }
+            set { throw new InvalidOperationException(Environment.GetResourceString("InvalidOperation_TimeoutsNotSupported")); }
         }
     
         /// <summary>Gets or sets a value, in miliseconds, that determines how long the stream will attempt to write before timing out. </summary><returns>A value, in miliseconds, that determines how long the stream will attempt to write before timing out.</returns><exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout" /> method always throws an <see cref="T:System.InvalidOperationException" />. </exception><filterpriority>2</filterpriority>
         [ComVisibleAttribute(false)]
         public virtual int WriteTimeout
         {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
+            get { throw new InvalidOperationException(Environment.GetResourceString("InvalidOperation_TimeoutsNotSupported")); }
+            set { throw new InvalidOperationException(Environment.GetResourceString("InvalidOperation_TimeoutsNotSupported")); }
         }
     
     
@@ -73,7 +78,7 @@ namespace System.IO
         [ComVisibleAttribute(false)]
         public Task CopyToAsync(Stream destination)
         {
-             throw new NotImplementedException();
+            return CopyToAsync(destination, _DefaultCopyBufferSize);
         }
         
         
@@ -81,7 +86,7 @@ namespace System.IO
         [ComVisibleAttribute(false)]
         public Task CopyToAsync(Stream destination, int bufferSize)
         {
-             throw new NotImplementedException();
+            return CopyToAsync(destination, bufferSize, CancellationToken.None);
         }
         
         
@@ -89,42 +94,91 @@ namespace System.IO
         [ComVisibleAttribute(false)]
         public virtual Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
-             throw new NotImplementedException();
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException("bufferSize", Environment.GetResourceString("ArgumentOutOfRange_NeedPosNum"));
+            if (!CanRead && !CanWrite)
+                throw new ObjectDisposedException(null, Environment.GetResourceString("ObjectDisposed_StreamClosed"));
+            if (!destination.CanRead && !destination.CanWrite)
+                throw new ObjectDisposedException("destination", Environment.GetResourceString("ObjectDisposed_StreamClosed"));
+            if (!CanRead)
+                throw new NotSupportedException(Environment.GetResourceString("NotSupported_UnreadableStream"));
+            if (!destination.CanWrite)
+                throw new NotSupportedException(Environment.GetResourceString("NotSupported_UnwritableStream"));
+
+            return CopyToAsyncInternal(destination, bufferSize, cancellationToken);
         }
-        
+
+        private async Task CopyToAsyncInternal(Stream destination, Int32 bufferSize, CancellationToken cancellationToken)
+        {
+            byte[] buffer = new byte[bufferSize];
+            int bytesRead;
+            while ((bytesRead = await ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false)) != 0)
+            {
+                await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+            }
+        }
         
         /// <summary>Reads the bytes from the current stream and writes them to another stream.</summary><param name="destination">The stream to which the contents of the current stream will be copied.</param><exception cref="T:System.ArgumentNullException"><paramref name="destination" /> is null.</exception><exception cref="T:System.NotSupportedException">The current stream does not support reading.-or-<paramref name="destination" /> does not support writing.</exception><exception cref="T:System.ObjectDisposedException">Either the current stream or <paramref name="destination" /> were closed before the <see cref="M:System.IO.Stream.CopyTo(System.IO.Stream)" /> method was called.</exception><exception cref="T:System.IO.IOException">An I/O error occurred.</exception>
         public void CopyTo(Stream destination)
         {
-             throw new NotImplementedException();
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (!CanRead && !CanWrite)
+                throw new ObjectDisposedException(null, Environment.GetResourceString("ObjectDisposed_StreamClosed"));
+            if (!destination.CanRead && !destination.CanWrite)
+                throw new ObjectDisposedException("destination", Environment.GetResourceString("ObjectDisposed_StreamClosed"));
+            if (!CanRead)
+                throw new NotSupportedException(Environment.GetResourceString("NotSupported_UnreadableStream"));
+            if (!destination.CanWrite)
+                throw new NotSupportedException(Environment.GetResourceString("NotSupported_UnwritableStream"));
+
+            InternalCopyTo(destination, _DefaultCopyBufferSize);
         }
-        
         
         /// <summary>Reads the bytes from the current stream and writes them to another stream, using a specified buffer size.</summary><param name="destination">The stream to which the contents of the current stream will be copied.</param><param name="bufferSize">The size of the buffer. This value must be greater than zero. The default size is 4096.</param><exception cref="T:System.ArgumentNullException"><paramref name="destination" /> is null.</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="bufferSize" /> is negative or zero.</exception><exception cref="T:System.NotSupportedException">The current stream does not support reading.-or-<paramref name="destination" /> does not support writing.</exception><exception cref="T:System.ObjectDisposedException">Either the current stream or <paramref name="destination" /> were closed before the <see cref="M:System.IO.Stream.CopyTo(System.IO.Stream)" /> method was called.</exception><exception cref="T:System.IO.IOException">An I/O error occurred.</exception>
         public void CopyTo(Stream destination, int bufferSize)
         {
-             throw new NotImplementedException();
+            if (destination == null)
+                throw new ArgumentNullException("destination");
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException("bufferSize",
+                        Environment.GetResourceString("ArgumentOutOfRange_NeedPosNum"));
+            if (!CanRead && !CanWrite)
+                throw new ObjectDisposedException(null, Environment.GetResourceString("ObjectDisposed_StreamClosed"));
+            if (!destination.CanRead && !destination.CanWrite)
+                throw new ObjectDisposedException("destination", Environment.GetResourceString("ObjectDisposed_StreamClosed"));
+            if (!CanRead)
+                throw new NotSupportedException(Environment.GetResourceString("NotSupported_UnreadableStream"));
+            if (!destination.CanWrite)
+                throw new NotSupportedException(Environment.GetResourceString("NotSupported_UnwritableStream"));
+
+            InternalCopyTo(destination, bufferSize);
         }
-        
+
+        private void InternalCopyTo(Stream destination, int bufferSize)
+        {
+            byte[] buffer = new byte[bufferSize];
+            int read;
+            while ((read = Read(buffer, 0, buffer.Length)) != 0)
+                destination.Write(buffer, 0, read);
+        }
         
         public virtual void Close()
         {
-             throw new NotImplementedException();
+            Dispose(true);
         }
-        
         
         public void Dispose()
         {
-             throw new NotImplementedException();
+            Close();
         }
-        
         
         /// <summary>Releases the unmanaged resources used by the <see cref="T:System.IO.Stream" /> and optionally releases the managed resources.</summary><param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-             throw new NotImplementedException();
         }
-        
         
         public abstract void Flush();
         
@@ -132,32 +186,30 @@ namespace System.IO
         [ComVisibleAttribute(false)]
         public Task FlushAsync()
         {
-             throw new NotImplementedException();
+            return FlushAsync(CancellationToken.None);
         }
-        
         
         /// <summary>Asynchronously clears all buffers for this stream, causes any buffered data to be written to the underlying device, and monitors cancellation requests.</summary><returns>A task that represents the asynchronous flush operation.</returns><param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="P:System.Threading.CancellationToken.None" />.</param><exception cref="T:System.ObjectDisposedException">The stream has been disposed.</exception>
         [ComVisibleAttribute(false)]
         public virtual Task FlushAsync(CancellationToken cancellationToken)
         {
-             throw new NotImplementedException();
+            return Task.Factory.StartNew(state => ((Stream)state).Flush(), this,
+                cancellationToken, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
         }
-        
         
         [ObsoleteAttribute("CreateWaitHandle will be removed eventually.  Please use \"new ManualResetEvent(false)\" instead.")]
         protected virtual WaitHandle CreateWaitHandle()
         {
-             throw new NotImplementedException();
+            return new ManualResetEvent(false);
         }
-        
         
         /// <summary>Begins an asynchronous read operation. (Consider using <see cref="M:System.IO.Stream.ReadAsync(System.Byte[],System.Int32,System.Int32)" /> instead; see the Remarks section.)</summary><returns>An <see cref="T:System.IAsyncResult" /> that represents the asynchronous read, which could still be pending.</returns><param name="buffer">The buffer to read the data into. </param><param name="offset">The byte offset in <paramref name="buffer" /> at which to begin writing data read from the stream. </param><param name="count">The maximum number of bytes to read. </param><param name="callback">An optional asynchronous callback, to be called when the read is complete. </param><param name="state">A user-provided object that distinguishes this particular asynchronous read request from other requests. </param><exception cref="T:System.IO.IOException">Attempted an asynchronous read past the end of the stream, or a disk error occurs. </exception><exception cref="T:System.ArgumentException">One or more of the arguments is invalid. </exception><exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception><exception cref="T:System.NotSupportedException">The current Stream implementation does not support the read operation. </exception><filterpriority>2</filterpriority>
         public virtual IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
         {
-             throw new NotImplementedException();
+            throw new NotImplementedException();
         }
         
-        
+
         /// <summary>Waits for the pending asynchronous read to complete. (Consider using <see cref="M:System.IO.Stream.ReadAsync(System.Byte[],System.Int32,System.Int32)" /> instead; see the Remarks section.)</summary><returns>The number of bytes read from the stream, between zero (0) and the number of bytes you requested. Streams return zero (0) only at the end of the stream, otherwise, they should block until at least one byte is available.</returns><param name="asyncResult">The reference to the pending asynchronous request to finish. </param><exception cref="T:System.ArgumentNullException"><paramref name="asyncResult" /> is null. </exception><exception cref="T:System.ArgumentException">A handle to the pending read operation is not available.-or-The pending operation does not support reading.</exception><exception cref="T:System.InvalidOperationException"><paramref name="asyncResult" /> did not originate from a <see cref="M:System.IO.Stream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)" /> method on the current stream.</exception><exception cref="T:System.IO.IOException">The stream is closed or an internal error has occurred.</exception><filterpriority>2</filterpriority>
         public virtual int EndRead(IAsyncResult asyncResult)
         {
@@ -225,7 +277,11 @@ namespace System.IO
         
         public virtual int ReadByte()
         {
-             throw new NotImplementedException();
+            byte[] oneByteArray = new byte[1];
+            int r = Read(oneByteArray, 0, 1);
+            if (r == 0)
+                return -1;
+            return oneByteArray[0];
         }
         
         
@@ -236,7 +292,9 @@ namespace System.IO
         /// <summary>Writes a byte to the current position in the stream and advances the position within the stream by one byte.</summary><param name="value">The byte to write to the stream. </param><exception cref="T:System.IO.IOException">An I/O error occurs. </exception><exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception><exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception><filterpriority>2</filterpriority>
         public virtual void WriteByte(byte value)
         {
-             throw new NotImplementedException();
+            byte[] oneByteArray = new byte[1];
+            oneByteArray[0] = value;
+            Write(oneByteArray, 0, 1);
         }
         
         
@@ -250,15 +308,79 @@ namespace System.IO
         [ObsoleteAttribute("Do not call or override this method.")]
         protected virtual void ObjectInvariant()
         {
-             throw new NotImplementedException();
         }
         
-        
-        protected Stream()
+        //protected Stream()
+        //{
+        //     throw new NotImplementedException();
+        //}
+
+        [Serializable]
+        private sealed class NullStream : Stream
         {
-             throw new NotImplementedException();
+            internal NullStream() { }
+
+            public override bool CanRead
+            {
+                get { return true; }
+            }
+
+            public override bool CanWrite
+            {
+                get { return true; }
+            }
+
+            public override bool CanSeek
+            {
+                get { return true; }
+            }
+
+            public override long Length
+            {
+                get { return 0; }
+            }
+
+            public override long Position
+            {
+                get { return 0; }
+                set { }
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                // Do nothing - we don't want NullStream singleton (static) to be closable
+            }
+
+            public override void Flush()
+            {
+            }
+
+            public override int Read([In, Out] byte[] buffer, int offset, int count)
+            {
+                return 0;
+            }
+
+            public override int ReadByte()
+            {
+                return -1;
+            }
+
+            public override void Write(byte[] buffer, int offset, int count)
+            {
+            }
+
+            public override void WriteByte(byte value)
+            {
+            }
+
+            public override long Seek(long offset, SeekOrigin origin)
+            {
+                return 0;
+            }
+
+            public override void SetLength(long length)
+            {
+            }
         }
-        
-        
     }
 }
