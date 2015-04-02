@@ -4,6 +4,7 @@ using System.Security;
 using System;
 using System.Text;
 using System.Collections.Generic;
+using javaFile = java.io.File;
 
 namespace System.IO
 {
@@ -103,7 +104,8 @@ namespace System.IO
         [SecuritySafeCriticalAttribute()]
         public static bool Exists(string path)
         {
-             throw new NotImplementedException();
+            javaFile file = new javaFile(path);
+            return ((file.exists()) && (!file.isDirectory()));
         }
         
         

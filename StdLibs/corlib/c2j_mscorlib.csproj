@@ -72,6 +72,7 @@
     <Compile Include="CIL2Java\VES\MethodPointers\Global.cs" />
     <Compile Include="CIL2Java\VES\ThreadPools.cs" />
     <Compile Include="CIL2Java\VES\Types.cs" />
+    <Compile Include="java\io\File.cs" />
     <Compile Include="java\io\PrintWriter.cs" />
     <Compile Include="java\lang\AbstractStringBuilder.cs" />
     <Compile Include="java\lang\annotation\Annotation.cs" />
